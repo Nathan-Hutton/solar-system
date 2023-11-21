@@ -1,0 +1,1 @@
+Rotation happens around the origin, so it's common to first translate the object to the origin, apply the rotation, then translate it back to its original spot.

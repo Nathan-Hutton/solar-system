@@ -1,0 +1,20 @@
+- The vector facing the right of the camera is the x axis (view space). We can calculate it by getting the cross product of the direction and the up vector relative to the world (0,1,0)
+- The camera's up vector is relative to the camera and can get it with the cross product of the direction vector and the right vector
+- Cross product will find a vector which is at right angles to both vectors
+- First we define the position of the camera, then the direction vector, the right vector, then the up vector
+- Direction is in reverse since we move the world instead of the camera when we "move" the camera
+
+- View matrix is defined with:
+Rx Ry Rz 0      1 0 0 -Px
+Ux Uy Uz 0      0 1 0 -Py
+Dx Dy Dz 0  *   0 0 1 -Pz
+0  0  0  1      0 0 0  1
+
+- Wee can just use glm::mat4 viewMatrix = glm::lookAt(position, target, up);
+- Position is postion of the camera, target is a point for the camera to look at, and up is the upwards direction of the world. Lookat uses this to calculate up and right for the camera.
+- Target can be defined as the camera's position with a direction added to it.
+- Up is relative to the world so it will most often just be (0,1,0)
+
+- We bind the view matrix to a uniform on the shader
+- Apply it between projection and model matrices
+- gl_Position = projection * view * model * vec3(pos, 1.0)

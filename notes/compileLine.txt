@@ -1,0 +1,1 @@
+g++ main.cpp Mesh.cpp -o main -lglfw -lGLEW -lGL -lGLU
