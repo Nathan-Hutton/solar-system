@@ -14,6 +14,7 @@
 #include "Shader.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Sphere.h"
 
 const float toRadians = acos(-1) / 180.0f;
 
@@ -29,40 +30,6 @@ GLfloat lastTime = 0.0f;
 static const char* vShader = "shaders/shader.vert";
 // Fragment shader
 static const char* fShader = "shaders/shader.frag";
-
-void generateSphereData(std::vector<GLfloat>& vertices, 
-                        std::vector<GLuint>& indices,
-                        float radius, 
-                        int stacks, 
-                        int slices) {
-    for (int i = 0; i <= stacks; ++i) {
-        float V = i / (float) stacks;
-        float phi = V * M_PI;
-
-        for (int j = 0; j <= slices; ++j) {
-            float U = j / (float) slices;
-            float theta = U * M_PI * 2;
-
-            float x = cos(theta) * sin(phi);
-            float y = cos(phi);
-            float z = sin(theta) * sin(phi);
-
-            vertices.push_back(x * radius);
-            vertices.push_back(y * radius);
-            vertices.push_back(z * radius);
-        }
-    }
-
-    for (int i = 0; i < slices * stacks + slices; ++i) {
-        indices.push_back(i);
-        indices.push_back(i + slices + 1);
-        indices.push_back(i + slices);
-
-        indices.push_back(i + slices + 1);
-        indices.push_back(i);
-        indices.push_back(i + 1);
-    }
-}
 
 void CreateObjects()
 {
@@ -81,7 +48,7 @@ void CreateObjects()
         0.0f, 1.0f, 0.0f
     };
 
-    // Need to make this a pointer so that when the method is done it doesn't call the Mesh destroy
+    // Create pyramids
     Mesh *obj1 = new Mesh();
     obj1->CreateMesh(vertices, indices, 12, 12);
     meshList.push_back(obj1);
@@ -90,18 +57,12 @@ void CreateObjects()
     obj2->CreateMesh(vertices, indices, 12, 12);
     meshList.push_back(obj2);
 
-    // First we copy and paste ChatGPT code
-    // Alter it so that instead of using a vector of vertices it's a vector of GLfloats
-    // Have ChatGPT give us code for indices
-    // Create a mesh object pointer like we did above
-    // Pass the vertices, indices, numOfVertices, and numOfIndices into CreateMesh method
-    // Push it to the meshList
+    // Create sphere
     std::vector<GLfloat> sphereVertices;
     std::vector<GLuint> sphereIndices;
-    generateSphereData(sphereVertices, sphereIndices, 1.0f, 20, 20);
-    Mesh *sphere = new Mesh();
-    sphere->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
-    meshList.push_back(sphere);
+    Sphere *sphere = new Sphere(sphereVertices, sphereIndices, 1.0f, 20, 20);
+    sphere->getMeshPointer()->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
+    meshList.push_back(sphere->getMeshPointer());
 }
 
 void CreateShaders()
