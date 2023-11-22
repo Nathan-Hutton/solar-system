@@ -113,7 +113,6 @@ void CreateShaders()
 
 int main()
 {
-    mainWindow = Window();
     mainWindow.initialize();
 
     CreateObjects();
@@ -135,7 +134,7 @@ int main()
         // Get + Handle user input events
         glfwPollEvents();
 
-        // Move the camera based on key presses
+        // Move the camera based on input
         camera.keyControl(mainWindow.getKeys(), deltaTime);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
@@ -155,8 +154,6 @@ int main()
         //model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.4f,0.4f,1.0f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
         meshList[0]->RenderMesh();
 
         // set model back to identity
@@ -172,6 +169,10 @@ int main()
         model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[2]->RenderMesh();
+
+        // Apply projection and view
+        glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
         
         glUseProgram(0);
 
