@@ -16,15 +16,18 @@
 #include "Camera.h"
 #include "Sphere.h"
 
-const float toRadians = acos(-1) / 180.0f;
+const float toRadians = M_PI / 180.0f;
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
+std::vector<Sphere*> sphereList;
 std::vector<Shader> shaderList;
 Camera camera;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
+
+GLfloat gravitationalForce = -1.0f;
 
 // vertex shader
 static const char* vShader = "shaders/shader.vert";
@@ -34,35 +37,43 @@ static const char* fShader = "shaders/shader.frag";
 void CreateObjects()
 {
     // indexed draws lets us number the vertices then refer to them so we can reuse them
-    unsigned int indices[] = {
-        0,3,1,
-        1,3,2,
-        2,3,0,
-        0,1,2
-    };
+    // unsigned int indices[] = {
+    //     0,3,1,
+    //     1,3,2,
+    //     2,3,0,
+    //     0,1,2
+    // };
 
-    GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f,
-        0.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
+    // GLfloat vertices[] = {
+    //     -1.0f, -1.0f, 0.0f,
+    //     0.0f, -1.0f, 1.0f,
+    //     1.0f, -1.0f, 0.0f,
+    //     0.0f, 1.0f, 0.0f
+    // };
 
-    // Create pyramids
-    Mesh *obj1 = new Mesh();
-    obj1->CreateMesh(vertices, indices, 12, 12);
-    meshList.push_back(obj1);
+    // // Create pyramids
+    // Mesh *obj1 = new Mesh();
+    // obj1->CreateMesh(vertices, indices, 12, 12);
+    // meshList.push_back(obj1);
 
-    Mesh *obj2 = new Mesh();
-    obj2->CreateMesh(vertices, indices, 12, 12);
-    meshList.push_back(obj2);
+    // Mesh *obj2 = new Mesh();
+    // obj2->CreateMesh(vertices, indices, 12, 12);
+    // meshList.push_back(obj2);
 
-    // Create sphere
+    // Create spheres
     std::vector<GLfloat> sphereVertices;
     std::vector<GLuint> sphereIndices;
-    Sphere *sphere = new Sphere(sphereVertices, sphereIndices, 1.0f, 20, 20);
-    sphere->getMeshPointer()->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
-    meshList.push_back(sphere->getMeshPointer());
+    Sphere *sphere1 = new Sphere(sphereVertices, sphereIndices, 1.0f, 20, 20, 0.0f, -1.0f, -2.5f);
+    sphereList.push_back(sphere1);
+    sphere1->getMeshPointer()->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
+    meshList.push_back(sphere1->getMeshPointer());
+
+    // std::vector<GLfloat> sphereVertices;
+    // std::vector<GLuint> sphereIndices;
+    Sphere *sphere2 = new Sphere(sphereVertices, sphereIndices, 1.0f, 20, 20, 0.0f, 1.0f, -2.5f);
+    sphereList.push_back(sphere2);
+    sphere2->getMeshPointer()->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
+    meshList.push_back(sphere2->getMeshPointer());
 }
 
 void CreateShaders()
@@ -71,6 +82,11 @@ void CreateShaders()
     shader1->createFromFiles(vShader, fShader);
     shaderList.push_back(*shader1);
 }
+
+// glm::vec3 GetForceVector(Sphere *sphere1, Sphere *sphere2)
+// {
+
+// }
 
 int main()
 {
@@ -109,27 +125,22 @@ int main()
         uniformProjection = shaderList[0].getProjectionLocation();
         uniformView = shaderList[0].getViewLocation();
 
-        glm::mat4 model = glm::mat4(1.0f);
         // We will only alter the model, not the shader, to do transformation. Model ID is then passed to the uniform variable in the shader
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(sphereList[0]->getX(), sphereList[0]->getY(), sphereList[0]->getZ()));
         //model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.4f,0.4f,1.0f));
+        model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[0]->RenderMesh();
 
         // set model back to identity
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
-        model = glm::scale(model, glm::vec3(0.4f,0.4f,1.0f));
-        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        meshList[1]->RenderMesh();
-
-        // set model back to identity
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
+        model = glm::translate(model, glm::vec3(sphereList[1]->getX(), sphereList[1]->getY(), sphereList[1]->getZ()));
         model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        meshList[2]->RenderMesh();
+        meshList[1]->RenderMesh();
+        
+        // Make sure I don't apply different scales to the different spheres since they're variables are already set
 
         // Apply projection and view
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
