@@ -36,43 +36,12 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjects()
 {
-    // indexed draws lets us number the vertices then refer to them so we can reuse them
-    // unsigned int indices[] = {
-    //     0,3,1,
-    //     1,3,2,
-    //     2,3,0,
-    //     0,1,2
-    // };
-
-    // GLfloat vertices[] = {
-    //     -1.0f, -1.0f, 0.0f,
-    //     0.0f, -1.0f, 1.0f,
-    //     1.0f, -1.0f, 0.0f,
-    //     0.0f, 1.0f, 0.0f
-    // };
-
-    // // Create pyramids
-    // Mesh *obj1 = new Mesh();
-    // obj1->CreateMesh(vertices, indices, 12, 12);
-    // meshList.push_back(obj1);
-
-    // Mesh *obj2 = new Mesh();
-    // obj2->CreateMesh(vertices, indices, 12, 12);
-    // meshList.push_back(obj2);
-
-    // Create spheres
-    std::vector<GLfloat> sphereVertices;
-    std::vector<GLuint> sphereIndices;
-    Sphere *sphere1 = new Sphere(sphereVertices, sphereIndices, 1.0f, 20, 20, 0.0f, -1.0f, -2.5f);
+    Sphere *sphere1 = new Sphere(1.0f, 20, 20, 0.0f, -1.0f, -2.5f);
     sphereList.push_back(sphere1);
-    sphere1->getMeshPointer()->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
     meshList.push_back(sphere1->getMeshPointer());
 
-    // std::vector<GLfloat> sphereVertices;
-    // std::vector<GLuint> sphereIndices;
-    Sphere *sphere2 = new Sphere(sphereVertices, sphereIndices, 1.0f, 20, 20, 0.0f, 1.0f, -2.5f);
+    Sphere *sphere2 = new Sphere(1.0f, 20, 20, 0.0f, 1.0f, -2.5f);
     sphereList.push_back(sphere2);
-    sphere2->getMeshPointer()->CreateMesh(sphereVertices.data(), sphereIndices.data(), sphereVertices.size(), sphereIndices.size());
     meshList.push_back(sphere2->getMeshPointer());
 }
 
@@ -83,10 +52,28 @@ void CreateShaders()
     shaderList.push_back(*shader1);
 }
 
-// glm::vec3 GetForceVector(Sphere *sphere1, Sphere *sphere2)
-// {
+glm::vec3 GetForceVector(Sphere *sphere1, Sphere *sphere2)
+{
+    /**
+     * sphere1 is the sphere being affected by the force vector
+    */
+    // Vector going from sphere2 to sphere1
+    glm::vec3 displacementVector = sphere1->getPositionVector() - sphere2->getPositionVector();
+    glm::vec3 directionVector = glm::normalize(displacementVector);
+    float displacementVectorLengthSquared = pow(glm::length(displacementVector), 2);
+    
+    return ((gravitationalForce * sphere1->getMass() * sphere2->getMass()) / displacementVectorLengthSquared) * directionVector;
+}
 
-// }
+glm::vec3 getAccelerationVector(Sphere *sphere, glm::vec3 forceVector)
+{
+    return forceVector / sphere->getMass();
+}
+
+glm::vec3 getNewPositionVector(Sphere *sphere, glm::vec3 accelerateVector, GLfloat deltaTime)
+{
+    return sphere->getPositionVector() + accelerateVector * deltaTime;
+}
 
 int main()
 {
@@ -111,23 +98,34 @@ int main()
         // Get + Handle user input events
         glfwPollEvents();
 
+        glm::vec3 sphere1ForceVector = GetForceVector(sphereList[0], sphereList[1]);
+        glm::vec3 sphere2ForceVector = GetForceVector(sphereList[1], sphereList[0]);
+        glm::vec3 sphere1AccelerationVector = getAccelerationVector(sphereList[0], sphere1ForceVector);
+        glm::vec3 sphere2AccelerationVector = getAccelerationVector(sphereList[1], sphere2ForceVector);
+        glm::vec3 sphere1NewPositionVector = getNewPositionVector(sphereList[0], sphere1AccelerationVector, deltaTime);
+        glm::vec3 sphere2NewPositionVector = getNewPositionVector(sphereList[1], sphere2AccelerationVector, deltaTime);
+
+        sphereList[0]->setPositionVector(sphere1NewPositionVector);
+        sphereList[1]->setPositionVector(sphere2NewPositionVector);
+
         // Move the camera based on input
         camera.keyControl(mainWindow.getKeys(), deltaTime);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
-        // Clear window
+        // Clear window and color and depth buffer bit
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        // clear the color and depth buffer bit (z-buffer)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shaderList[0].useShader();
         uniformModel = shaderList[0].getModelLocation();
         uniformProjection = shaderList[0].getProjectionLocation();
         uniformView = shaderList[0].getViewLocation();
+        glm::vec3 myVector = GetForceVector(sphereList[0], sphereList[1]);
+        //printf("%f %f %f\n", myVector.x, myVector.y, myVector.z);
 
         // We will only alter the model, not the shader, to do transformation. Model ID is then passed to the uniform variable in the shader
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sphereList[0]->getX(), sphereList[0]->getY(), sphereList[0]->getZ()));
+        model = glm::translate(model, sphereList[0]->getPositionVector());
         //model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -135,13 +133,11 @@ int main()
 
         // set model back to identity
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sphereList[1]->getX(), sphereList[1]->getY(), sphereList[1]->getZ()));
+        model = glm::translate(model, sphereList[1]->getPositionVector());
         model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[1]->RenderMesh();
         
-        // Make sure I don't apply different scales to the different spheres since they're variables are already set
-
         // Apply projection and view
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
