@@ -39,11 +39,17 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjects()
 {
-    Sphere *sphere1 = new Sphere(1.0f, 20, 20, glm::vec3(0.0f, -10.0f, -2.5f));
+    Sphere *sphere1 = new Sphere(1.0f, 1.0f, glm::vec3(0.0f, -10.0f, -2.5f));
+    sphere1->setVelocity(glm::vec3(10.0f, 0.0f, 0.0f));
+    sphere1->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
+    sphere1->setRotationSpeed(1.0f);
     sphereList.push_back(sphere1);
     meshList.push_back(sphere1->getMeshPointer());
 
-    Sphere *sphere2 = new Sphere(2.0f, 20, 20, glm::vec3(0.0f, 0.0f, -2.5f), 0.5f);
+    Sphere *sphere2 = new Sphere(2.0f, 0.5f, glm::vec3(0.0f, 0.0f, -2.5f));
+    sphere2->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
+    sphere2->setAngle(90.0f);
+    sphere2->setRotationSpeed(-0.2f);
     sphereList.push_back(sphere2);
     meshList.push_back(sphere2->getMeshPointer());
 }
@@ -73,12 +79,12 @@ glm::vec3 getForce(Sphere *sphere1, Sphere *sphere2)
 
 glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force)
 {
-    return force/ mass;
+    return force / mass;
 }
 
 glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat deltaTime)
 {
-    return oldVelocity+ acceleration* deltaTime;
+    return oldVelocity + acceleration * deltaTime;
 }
 
 glm::vec3 getNewPosition(glm::vec3 oldPosition, glm::vec3 velocity, GLfloat deltaTime)
@@ -96,7 +102,7 @@ int main()
 
     // TODO: Figure out how to update the volocity instead of just updating positions with force. We need to add to the velocity
     // This is the the force that's just always pulling the planet
-    glm::vec3 sphere1OldVelocity= glm::vec3(10.0f, 0.0f, 0.0f);
+    //glm::vec3 sphere1OldVelocity = glm::vec3(10.0f, 0.0f, 0.0f);
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
 
@@ -112,27 +118,31 @@ int main()
         lastTime = now;
 
         // Update rotation angle
-        sphere1CurAngle += 1;
-        sphere2CurAngle -= 0.2;
-        if (sphere1CurAngle >= 360)
-            sphere1CurAngle -= 360;
-        if (sphere2CurAngle <= 0)
-            sphere2CurAngle += 360;
+        for (Sphere *sphere : sphereList)
+        {
+            sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed());
+            if (sphere->getAngle() >= 360)
+                sphere->setAngle(sphere->getAngle() - 360);
+            if (sphere->getAngle() <= -360)
+                sphere->setAngle(sphere->getAngle() + 360);
+        }
         
         // Get + Handle user input events
         glfwPollEvents();
 
         glm::vec3 sphere1Force = getForce(sphereList[0], sphereList[1]);
-        //glm::vec3 sphere2ForceVector = GetForceVector(sphereList[1], sphereList[0]);
+        //glm::vec3 sphere2Force= getForce(sphereList[1], sphereList[0]);
         glm::vec3 sphere1Acceleration = getAcceleration(sphereList[0]->getMass(), sphere1Force);
-        glm::vec3 sphere1NewVelocity = getNewVelocity(sphere1OldVelocity, sphere1Acceleration, deltaTime);
-        sphere1OldVelocity = sphere1NewVelocity;
-        //glm::vec3 sphere2AccelerationVector = getAccelerationVector(sphereList[1], sphere2ForceVector);
-        glm::vec3 sphere1NewPositionVector = getNewPosition(sphereList[0]->getPosition(), sphere1NewVelocity, deltaTime);
-        //glm::vec3 sphere2NewPositionVector = getNewPositionVector(sphereList[1], sphere2AccelerationVector, deltaTime);
+        //glm::vec3 sphere2Acceleration = getAcceleration(sphereList[1]->getMass(), sphere2Force);
+        glm::vec3 sphere1NewVelocity = getNewVelocity(sphereList[0]->getVelocity(), sphere1Acceleration, deltaTime);
+        //glm::vec3 sphere2NewVelocity = getNewVelocity(sphereList[1]->getVelocity(), sphere2Acceleration, deltaTime);
+        sphereList[0]->setVelocity(sphere1NewVelocity);
+        //sphereList[1]->setVelocity(sphere2NewVelocity);
+        glm::vec3 sphere1NewPosition = getNewPosition(sphereList[0]->getPosition(), sphere1NewVelocity, deltaTime);
+        //glm::vec3 sphere2NewPosition = getNewPosition(sphereList[1]->getPosition(), sphere2NewVelocity, deltaTime);
 
-        sphereList[0]->setPosition(sphere1NewPositionVector);
-        //sphereList[1]->setPositionVector(sphere2NewPositionVector);
+        sphereList[0]->setPosition(sphere1NewPosition);
+        //sphereList[1]->setPosition(sphere2NewPosition);
 
         // Move the camera based on input
         camera.keyControl(mainWindow.getKeys(), deltaTime);
@@ -146,12 +156,11 @@ int main()
         uniformModel = shaderList[0].getModelLocation();
         uniformProjection = shaderList[0].getProjectionLocation();
         uniformView = shaderList[0].getViewLocation();
-        glm::vec3 myVector = getForce(sphereList[0], sphereList[1]);
 
         // We will only alter the model, not the shader, to do transformation. Model ID is then passed to the uniform variable in the shader
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, sphereList[0]->getPosition());
-        model = glm::rotate(model, sphere1CurAngle * toRadians, glm::vec3(1.0f, 0.0f, 2.0f));
+        model = glm::rotate(model, sphereList[0]->getAngle() * toRadians, glm::vec3(1.0f, 0.0f, 2.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[0]->RenderMesh();
@@ -159,7 +168,7 @@ int main()
         // set model back to identity
         model = glm::mat4(1.0f);
         model = glm::translate(model, sphereList[1]->getPosition());
-        model = glm::rotate(model, sphere2CurAngle * toRadians, glm::vec3(1.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, sphereList[1]->getAngle() * toRadians, glm::vec3(1.0f, 1.0f, 0.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[1]->RenderMesh();
