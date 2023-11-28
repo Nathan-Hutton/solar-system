@@ -10,7 +10,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Mesh.h"
 #include "Shader.h"
 #include "Window.h"
 #include "Camera.h"
@@ -21,7 +20,6 @@
 const float toRadians = M_PI / 180.0f;
 
 Window mainWindow;
-std::vector<Mesh*> meshList;
 //std::vector<Sphere*> sphereList;
 Planet *planet;
 Sun *sun;
@@ -43,33 +41,17 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjects()
 {
-    // Sphere *sphere1 = new Sphere(1.0f, 1.0f, glm::vec3(0.0f, -10.0f, -2.5f));
-    // sphere1->setVelocity(glm::vec3(10.0f, 0.0f, 0.0f));
-    // sphere1->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
-    // sphere1->setRotationSpeed(1.0f);
-    // sphereList.push_back(sphere1);
-    // meshList.push_back(sphere1->getMeshPointer());
-
-    // Sphere *sphere2 = new Sphere(2.0f, 0.5f, glm::vec3(0.0f, 0.0f, -2.5f));
-    // sphere2->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
-    // sphere2->setAngle(90.0f);
-    // sphere2->setRotationSpeed(-0.2f);
-    // sphereList.push_back(sphere2);
-    // meshList.push_back(sphere2->getMeshPointer());
-
     sun = new Sun(2.0f, 0.5f, glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-0.2f);
     //sphereList.push_back(sphere2);
-    meshList.push_back(sun->getMeshPointer());
 
     planet = new Planet(1.0f, 1.0f, sun, glm::vec3(0.0f, -10.0f, -2.5f));
     planet->setVelocity(glm::vec3(10.0f, 0.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(1.0f);
     //sphereList.push_back(sphere1);
-    meshList.push_back(planet->getMeshPointer());
 }
 
 void CreateShaders()
@@ -118,10 +100,6 @@ int main()
     CreateObjects();
     CreateShaders();
 
-    // TODO: Figure out how to update the volocity instead of just updating positions with force. We need to add to the velocity
-    // This is the the force that's just always pulling the planet
-    //glm::vec3 sphere1OldVelocity = glm::vec3(10.0f, 0.0f, 0.0f);
-
     camera = Camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
 
     // All the uniform objects are uniform IDs
@@ -136,15 +114,6 @@ int main()
         lastTime = now;
 
         // Update rotation angle
-        // for (Sphere *sphere : sphereList)
-        // {
-        //     sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed());
-        //     if (sphere->getAngle() >= 360)
-        //         sphere->setAngle(sphere->getAngle() - 360);
-        //     if (sphere->getAngle() <= -360)
-        //         sphere->setAngle(sphere->getAngle() + 360);
-        // }
-
         planet->setAngle(planet->getAngle() + planet->getRotationSpeed());
         if (planet->getAngle() >= 360)
             planet->setAngle(planet->getAngle() - 360);
@@ -160,12 +129,12 @@ int main()
         // Get + Handle user input events
         glfwPollEvents();
 
+        // Update sphere velocity and position
         glm::vec3 sphere1Force = getForce(planet, sun);
         glm::vec3 sphere1Acceleration = getAcceleration(planet->getMass(), sphere1Force);
         glm::vec3 sphere1NewVelocity = getNewVelocity(planet->getVelocity(), sphere1Acceleration, deltaTime);
-        planet->setVelocity(sphere1NewVelocity);
         glm::vec3 sphere1NewPosition = getNewPosition(planet->getPosition(), sphere1NewVelocity, deltaTime);
-
+        planet->setVelocity(sphere1NewVelocity);
         planet->setPosition(sphere1NewPosition);
 
         // Move the camera based on input
@@ -187,7 +156,7 @@ int main()
         model = glm::rotate(model, planet->getAngle() * toRadians, glm::vec3(1.0f, 0.0f, 2.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        meshList[1]->RenderMesh();
+        planet->getMeshPointer()->RenderMesh();
 
         // set model back to identity
         model = glm::mat4(1.0f);
@@ -195,7 +164,7 @@ int main()
         model = glm::rotate(model, sun->getAngle() * toRadians, glm::vec3(1.0f, 1.0f, 0.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        meshList[0]->RenderMesh();
+        sun->getMeshPointer()->RenderMesh();
         
         // Apply projection and view
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
