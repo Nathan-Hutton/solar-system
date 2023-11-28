@@ -5,16 +5,16 @@ Sphere::Sphere()
     this->radius = 0.5f;
     this->density = 1.0f;
     this->mass = 0;
-    this->positionVector = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
     this->sphereMesh = new Mesh();
 }
 
-Sphere::Sphere(float radius, int stacks, int slices, GLfloat x, GLfloat y, GLfloat z, GLfloat density)
+Sphere::Sphere(float radius, int stacks, int slices, glm::vec3 position, GLfloat density)
 {
     this->radius = radius;
     this->density = density;
     this->mass = (4.0f/3.0f) * M_PI * pow(radius, 3) * density;
-    this->positionVector = glm::vec3(x, y, z);
+    this->position = position;
 
     this->sphereMesh = new Mesh();
     std::vector<GLfloat> vertices;
@@ -72,12 +72,12 @@ GLfloat Sphere::getRadius()
 
 glm::vec3 Sphere::getPosition() const
 {
-    return positionVector;
+    return position;
 }
 
 void Sphere::setPosition(glm::vec3 newPositionVector)
 {
-    this->positionVector = newPositionVector;
+    this->position = newPositionVector;
 }
 
 Sphere::~Sphere()

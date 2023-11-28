@@ -39,11 +39,11 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjects()
 {
-    Sphere *sphere1 = new Sphere(1.0f, 20, 20, 0.0f, -10.0f, -2.5f);
+    Sphere *sphere1 = new Sphere(1.0f, 20, 20, glm::vec3(0.0f, -10.0f, -2.5f));
     sphereList.push_back(sphere1);
     meshList.push_back(sphere1->getMeshPointer());
 
-    Sphere *sphere2 = new Sphere(2.0f, 20, 20, 0.0f, 0.0f, -2.5f, 0.5f);
+    Sphere *sphere2 = new Sphere(2.0f, 20, 20, glm::vec3(0.0f, 0.0f, -2.5f), 0.5f);
     sphereList.push_back(sphere2);
     meshList.push_back(sphere2->getMeshPointer());
 }
@@ -147,7 +147,6 @@ int main()
         uniformProjection = shaderList[0].getProjectionLocation();
         uniformView = shaderList[0].getViewLocation();
         glm::vec3 myVector = getForce(sphereList[0], sphereList[1]);
-        //printf("%f %f %f\n", myVector.x, myVector.y, myVector.z);
 
         // We will only alter the model, not the shader, to do transformation. Model ID is then passed to the uniform variable in the shader
         glm::mat4 model = glm::mat4(1.0f);

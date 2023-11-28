@@ -10,7 +10,7 @@ class Sphere
 {
     public:
         Sphere();
-        Sphere(float radius, int stacks, int slices, GLfloat x=0, GLfloat y=0, GLfloat z=0, GLfloat density=1.0f);
+        Sphere(float radius, int stacks, int slices, glm::vec3 position, GLfloat density=1.0f);
 
         void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices);
         Mesh* getMeshPointer();
@@ -26,5 +26,5 @@ class Sphere
         GLfloat radius;
         GLfloat density;
         GLfloat mass;
-        glm::vec3 positionVector;
+        glm::vec3 position;
 };
