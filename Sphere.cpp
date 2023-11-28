@@ -70,12 +70,12 @@ GLfloat Sphere::getRadius()
     return radius;
 }
 
-glm::vec3 Sphere::getPositionVector() const
+glm::vec3 Sphere::getPosition() const
 {
     return positionVector;
 }
 
-void Sphere::setPositionVector(glm::vec3 newPositionVector)
+void Sphere::setPosition(glm::vec3 newPositionVector)
 {
     this->positionVector = newPositionVector;
 }

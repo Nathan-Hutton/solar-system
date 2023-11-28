@@ -16,8 +16,8 @@ class Sphere
         Mesh* getMeshPointer();
         GLfloat getMass();
         GLfloat getRadius();
-        glm::vec3 getPositionVector() const;
-        void setPositionVector(glm::vec3 newPositionVector);
+        glm::vec3 getPosition() const;
+        void setPosition(glm::vec3 newPositionVector);
 
         ~Sphere();
 
