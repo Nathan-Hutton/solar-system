@@ -23,6 +23,7 @@ Window mainWindow;
 //std::vector<Sphere*> sphereList;
 Sun *sun;
 Planet *planet;
+Planet *planet1;
 Moon *moon;
 std::vector<Shader> shaderList;
 Camera camera;
@@ -42,19 +43,24 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjects()
 {
-    sun = new Sun(2.0f, 0.75f, glm::vec3(0.0f, 0.0f, -2.5f));
+    sun = new Sun(2.0f, 5.0f, glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-0.2f);
     //sphereList.push_back(sphere2);
 
-    planet = new Planet(1.0f, 8.0f, sun, glm::vec3(0.0f, -15.0f, -2.5f));
-    planet->setVelocity(glm::vec3(10.0f, 0.0f, 0.0f));
+    planet = new Planet(1.0f, 8.0f, sun, glm::vec3(0.0f, -20.0f, -2.5f));
+    planet->setVelocity(glm::vec3(25.0f, 0.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(1.0f);
     //sphereList.push_back(sphere1);
 
-    moon = new Moon(0.5f, 1.0f, planet, glm::vec3(0.0f, -20.0f, -2.5f));
+    planet1 = new Planet(1.0f, 8.0f, sun, glm::vec3(0.0f, -15.0f, -2.5f));
+    planet1->setVelocity(glm::vec3(10.0f, 0.0f, 0.0f));
+    planet1->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
+    planet1->setRotationSpeed(1.0f);
+
+    moon = new Moon(0.5f, 1.0f, planet, glm::vec3(0.0f, -25.0f, -2.5f));
     moon->setVelocity(glm::vec3(2.0f, 0.0f, 8.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     moon->setRotationSpeed(1.0f);
@@ -106,7 +112,7 @@ int main()
     CreateObjects();
     CreateShaders();
 
-    camera = Camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
+    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
 
     // All the uniform objects are uniform IDs
     GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
@@ -120,17 +126,29 @@ int main()
         lastTime = now;
 
         // Update rotation angle
+        sun->setAngle(sun->getAngle() + sun->getRotationSpeed());
+        if (sun->getAngle() >= 360)
+            sun->setAngle(sun->getAngle() - 360);
+        if (sun->getAngle() <= -360)
+            sun->setAngle(sun->getAngle() + 360);
+
         planet->setAngle(planet->getAngle() + planet->getRotationSpeed());
         if (planet->getAngle() >= 360)
             planet->setAngle(planet->getAngle() - 360);
         if (planet->getAngle() <= -360)
             planet->setAngle(planet->getAngle() + 360);
 
-        sun->setAngle(sun->getAngle() + sun->getRotationSpeed());
-        if (sun->getAngle() >= 360)
-            sun->setAngle(sun->getAngle() - 360);
-        if (sun->getAngle() <= -360)
-            sun->setAngle(sun->getAngle() + 360);
+        planet1->setAngle(planet1->getAngle() + planet1->getRotationSpeed());
+        if (planet1->getAngle() >= 360)
+            planet1->setAngle(planet1->getAngle() - 360);
+        if (planet1->getAngle() <= -360)
+            planet1->setAngle(planet1->getAngle() + 360);
+
+        moon->setAngle(moon->getAngle() + moon->getRotationSpeed());
+        if (moon->getAngle() >= 360)
+            moon->setAngle(moon->getAngle() - 360);
+        if (moon->getAngle() <= -360)
+            moon->setAngle(moon->getAngle() + 360);
         
         // Get + Handle user input events
         glfwPollEvents();
@@ -141,7 +159,12 @@ int main()
         glm::vec3 planetNewVelocity = getNewVelocity(planet->getVelocity(), planetAcceleration, deltaTime);
         glm::vec3 planetNewPosition = getNewPosition(planet->getPosition(), planetNewVelocity, deltaTime);
         planet->setVelocity(planetNewVelocity);
-        planet->setPosition(planetNewPosition);
+
+        glm::vec3 planet1Force = getForce(planet1, sun);
+        glm::vec3 planet1Acceleration = getAcceleration(planet1->getMass(), planet1Force);
+        glm::vec3 planet1NewVelocity = getNewVelocity(planet1->getVelocity(), planet1Acceleration, deltaTime);
+        glm::vec3 planet1NewPosition = getNewPosition(planet1->getPosition(), planet1NewVelocity, deltaTime);
+        planet1->setVelocity(planet1NewVelocity);
 
         glm::vec3 moonForcePlanet = getForce(moon, planet);
         glm::vec3 moonForceSun = getForce(moon, sun);
@@ -149,8 +172,10 @@ int main()
         glm::vec3 moonAcceleration = getAcceleration(moon->getMass(), moonForce);
         glm::vec3 moonNewVelocity = getNewVelocity(moon->getVelocity(), moonAcceleration, deltaTime);
         glm::vec3 moonNewPosition = getNewPosition(moon->getPosition(), moonNewVelocity, deltaTime);
-
         moon->setVelocity(moonNewVelocity);
+
+        planet->setPosition(planetNewPosition);
+        planet1->setPosition(planet1NewPosition);
         moon->setPosition(moonNewPosition);
 
         // Move the camera based on input
@@ -175,8 +200,15 @@ int main()
         planet->getMeshPointer()->RenderMesh();
 
         model = glm::mat4(1.0f);
+        model = glm::translate(model, planet1->getPosition());
+        model = glm::rotate(model, planet1->getAngle() * toRadians, glm::vec3(1.0f, 0.0f, 2.0f));
+        //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
+        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+        planet1->getMeshPointer()->RenderMesh();
+
+        model = glm::mat4(1.0f);
         model = glm::translate(model, moon->getPosition());
-        //model = glm::rotate(model, moon->getAngle() * toRadians, glm::vec3(1.0f, 0.0f, 2.0f));
+        model = glm::rotate(model, moon->getAngle() * toRadians, glm::vec3(1.0f, 0.0f, 2.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         moon->getMeshPointer()->RenderMesh();
