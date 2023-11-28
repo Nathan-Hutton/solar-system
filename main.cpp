@@ -29,6 +29,9 @@ GLfloat lastTime = 0.0f;
 
 GLfloat gravitationalForce = -100.0f;
 
+float sphere1CurAngle = 0.0f;
+float sphere2CurAngle = 90.0f;
+
 // vertex shader
 static const char* vShader = "shaders/shader.vert";
 // Fragment shader
@@ -80,12 +83,17 @@ glm::vec3 getNewPositionVector(Sphere *sphere, glm::vec3 accelerateVector, GLflo
 
 int main()
 {
+    mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
     CreateObjects();
     CreateShaders();
 
-    camera = Camera(glm::vec3(0.0f, 0.0f, 17.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
+    // TODO: Figure out how to update the volocity instead of just updating positions with force. We need to add to the velocity
+    // This is the the force that's just always pulling the planet
+    //glm::vec3 sphere1ForceVectorTest = glm::vec3(87.5f, 0.0f, 0.0f);
+
+    camera = Camera(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
 
     // All the uniform objects are uniform IDs
     GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
@@ -97,6 +105,14 @@ int main()
         GLfloat now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
+
+        // Update rotation angle
+        sphere1CurAngle += 1;
+        sphere2CurAngle -= 1;
+        if (sphere1CurAngle >= 360)
+            sphere1CurAngle -= 360;
+        if (sphere2CurAngle <= 0)
+            sphere2CurAngle += 360;
         
         // Get + Handle user input events
         glfwPollEvents();
@@ -129,7 +145,7 @@ int main()
         // We will only alter the model, not the shader, to do transformation. Model ID is then passed to the uniform variable in the shader
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, sphereList[0]->getPositionVector());
-        //model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, sphere1CurAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[0]->RenderMesh();
@@ -137,6 +153,7 @@ int main()
         // set model back to identity
         model = glm::mat4(1.0f);
         model = glm::translate(model, sphereList[1]->getPositionVector());
+        model = glm::rotate(model, sphere2CurAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
         //model = glm::scale(model, glm::vec3(0.4f,0.4f,0.4f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         meshList[1]->RenderMesh();

@@ -1,1 +1,1 @@
-g++ main.cpp Mesh.cpp -o main -lglfw -lGLEW -lGL -lGLU
+g++ main.cpp Mesh.cpp Shader.cpp Window.cpp Camera.cpp Sphere.cpp -o main -lglfw -lGLEW -lGL -lGLU
