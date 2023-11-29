@@ -22,10 +22,6 @@ const float toRadians = M_PI / 180.0f;
 Window mainWindow;
 std::vector<Sun*> stars;
 std::vector<Sphere*> satellites;
-Sun *sun;
-Planet *planet;
-Planet *planet1;
-Moon *moon;
 std::vector<Shader> shaderList;
 Camera camera;
 
@@ -44,26 +40,26 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjects()
 {
-    sun = new Sun(2.0f, 5.0f, glm::vec3(0.0f, 0.0f, -2.5f));
+    Sun *sun = new Sun(2.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-0.2f);
     stars.push_back(sun);
 
-    planet = new Planet(1.0f, 2.0f, sun, glm::vec3(-15.0f, -20.0f, -2.5f));
-    planet->setVelocity(glm::vec3(-30.0f, 6.0f, 0.0f));
+    Planet *planet = new Planet(1.0f, 3.0f, sun, glm::vec3(-5.0f, -10.0f, -2.5f));
+    planet->setVelocity(glm::vec3(-30.0f, 0.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(1.0f);
     satellites.push_back(planet);
 
-    planet1 = new Planet(1.0f, 2.0f, sun, glm::vec3(7.5f, 10.0f, -2.5f));
-    planet1->setVelocity(glm::vec3(20.0f, -12.0f, 0.0f));
+    Planet *planet1 = new Planet(1.0f, 2.0f, sun, glm::vec3(7.5f, 10.0f, -2.5f));
+    planet1->setVelocity(glm::vec3(20.0f, -12.0f, 10.0f));
     planet1->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
     planet1->setRotationSpeed(1.0f);
     satellites.push_back(planet1);
 
-    moon = new Moon(0.5f, 1.0f, planet, glm::vec3(-15.0f, -15.0f, -2.5f));
-    moon->setVelocity(glm::vec3(-30.0f, 2.0f, 1.0f));
+    Moon *moon = new Moon(0.5f, 1.0f, planet, glm::vec3(-5.0f, -12.0f, -2.5f));
+    moon->setVelocity(glm::vec3(-35.0f, 2.0f, 1.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     moon->setRotationSpeed(1.0f);
     satellites.push_back(moon);
@@ -138,6 +134,7 @@ void updateSatellitePositions()
 
 void updateCelestialBodyAngles()
 {
+    // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
     for (Sphere *sphere : satellites) 
     {
         sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed());
@@ -212,6 +209,7 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Apply shaders and render meshes
         shaderList[0].useShader();
         uniformModel = shaderList[0].getModelLocation();
         uniformProjection = shaderList[0].getProjectionLocation();
