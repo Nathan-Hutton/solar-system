@@ -25,11 +25,9 @@ Camera camera;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
+GLfloat timeChange = 1.0f;
 
 GLfloat gravitationalForce = -100.0f;
-
-float sphere1CurAngle = 0.0f;
-float sphere2CurAngle = 90.0f;
 
 // vertex shader
 static const char* vShader = "shaders/shader.vert";
@@ -56,8 +54,8 @@ void CreateObjects()
     planet1->setRotationSpeed(1.0f);
     satellites.push_back(planet1);
 
-    Sphere *moon = new Sphere(0.5f, 1.0f, glm::vec3(-5.0f, -12.0f, -2.5f));
-    moon->setVelocity(glm::vec3(-35.0f, 2.0f, 1.0f));
+    Sphere *moon = new Sphere(0.5f, 0.5f, glm::vec3(-7.0f, -14.0f, -2.5f));
+    moon->setVelocity(glm::vec3(-40.0f, 2.0f, 1.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     moon->setRotationSpeed(1.0f);
     satellites.push_back(moon);
@@ -68,6 +66,21 @@ void CreateShaders()
     Shader *shader1 = new Shader();
     shader1->createFromFiles(vShader, fShader);
     shaderList.push_back(*shader1);
+}
+
+void handleTimeChange(GLfloat yScrollOffset)
+{
+    //printf("%f\n", yScrollOffset);
+    if (yScrollOffset == 0.0f) return;
+
+    timeChange += (yScrollOffset * 0.1f);
+    if (timeChange > 2.0f)
+    {
+        timeChange = 2.0f;
+        return;
+    }
+    if (timeChange < 0.0f)
+        timeChange = 0.0f;
 }
 
 // Get the force vector pointing to sphere2 from sphere1
@@ -90,12 +103,12 @@ glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force)
 
 glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat deltaTime)
 {
-    return oldVelocity + acceleration * deltaTime;
+    return oldVelocity + acceleration * deltaTime * timeChange;
 }
 
 glm::vec3 getNewPosition(glm::vec3 oldPosition, glm::vec3 velocity, GLfloat deltaTime)
 {
-    return oldPosition + velocity * deltaTime;
+    return oldPosition + velocity * deltaTime * timeChange;
 }
 
 // Update the positions of all moons and planets
@@ -106,13 +119,14 @@ void updateSatellitePositions()
     {
         glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
         
-        // Add up forces from all other objects
+        // Add up forces from stars
         for (Sun *star : stars)
             force += getForce(satellites[i], star);
+            
+        // Add up forces for other satellites
         for (int j = 0; j < satellites.size(); j++) 
         {
-            if (i == j) 
-                continue;
+            if (i == j) continue;
             force += getForce(satellites[i], satellites[j]);
         }
 
@@ -125,9 +139,7 @@ void updateSatellitePositions()
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
     for (int i = 0; i < satellites.size(); i++)
-    {
         satellites[i]->setPosition(newPositions[i]);
-    }
 }
 
 void updateCelestialBodyAngles()
@@ -135,7 +147,7 @@ void updateCelestialBodyAngles()
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
     for (Sphere *sphere : satellites) 
     {
-        sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed());
+        sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed() * timeChange);
         if (sphere->getAngle() >= 360)
             sphere->setAngle(sphere->getAngle() - 360);
         if (sphere->getAngle() <= -360)
@@ -180,7 +192,7 @@ int main()
     CreateObjects();
     CreateShaders();
 
-    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.3f);
+    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 
     // All the uniform objects are uniform IDs
     GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
@@ -202,6 +214,7 @@ int main()
         // Move the camera based on input
         camera.keyControl(mainWindow.getKeys(), deltaTime);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+        handleTimeChange(mainWindow.getYScrollOffset());
 
         // Clear window and color and depth buffer bit
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

@@ -21,6 +21,7 @@ class Window
         bool* getKeys() { return keys; }
         GLfloat getXChange();
         GLfloat getYChange();
+        GLfloat getYScrollOffset();
         
         void swapBuffers() { glfwSwapBuffers(mainWindow); }
 
@@ -41,6 +42,7 @@ class Window
         GLfloat lastY;
         GLfloat xChange;
         GLfloat yChange;
+        GLfloat yScrollOffset;
         // When we start the scene, the mouse will go somewhere and we don't want that to be counted as movement
         bool mouseFirstMoved;
 
@@ -50,4 +52,5 @@ class Window
         // The callback function needs to have all 4 of these params or it won't work
         static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
         static void handleMouse(GLFWwindow* window, double xPos, double yPos);
+        static void handleScroll(GLFWwindow* window, double xPos, double yPos);
 };
