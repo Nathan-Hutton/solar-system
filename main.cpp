@@ -76,7 +76,7 @@ void CreateObjectsFigureEight()
     stars.push_back(sun2);
 
     Sphere *planet = new Sphere(1.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
-    planet->setVelocity(glm::vec3(17.0f, 25.0f, 0.0f));
+    planet->setVelocity(glm::vec3(17.0f, 24.675f, 0.0f));
     planet->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
