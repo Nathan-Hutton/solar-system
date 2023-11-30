@@ -34,31 +34,53 @@ static const char* vShader = "shaders/shader.vert";
 // Fragment shader
 static const char* fShader = "shaders/shader.frag";
 
-void CreateObjects()
+void CreateObjectsDefault()
 {
     Sun *sun = new Sun(2.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
-    sun->setRotationSpeed(-0.2f);
+    sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
 
     Sphere *planet = new Sphere(1.0f, 3.0f, glm::vec3(-5.0f, -10.0f, -2.5f));
     planet->setVelocity(glm::vec3(-30.0f, 0.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
-    planet->setRotationSpeed(1.0f);
+    planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
 
     Sphere *planet1 = new Sphere(1.0f, 2.0f, glm::vec3(7.5f, 10.0f, -2.5f));
     planet1->setVelocity(glm::vec3(20.0f, -12.0f, 10.0f));
     planet1->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
-    planet1->setRotationSpeed(1.0f);
+    planet1->setRotationSpeed(-100.0f);
     satellites.push_back(planet1);
 
     Sphere *moon = new Sphere(0.5f, 0.5f, glm::vec3(-7.0f, -14.0f, -2.5f));
     moon->setVelocity(glm::vec3(-40.0f, 2.0f, 1.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
-    moon->setRotationSpeed(1.0f);
+    moon->setRotationSpeed(200.0f);
     satellites.push_back(moon);
+}
+
+void CreateObjectsFigureEight()
+{
+    Sun *sun1 = new Sun(2.0f, 2.0f, glm::vec3(-15.0f, 0.0f, -2.5f));
+    sun1->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
+    sun1->setAngle(90.0f);
+    sun1->setRotationSpeed(-25.2f);
+    stars.push_back(sun1);
+
+    Sun *sun2 = new Sun(2.0f, 2.0f, glm::vec3(15.0f, 0.0f, -2.5f));
+    sun2->setRotation(glm::vec3(0.0f, 1.0f, 1.0f));
+    sun2->setAngle(90.0f);
+    sun2->setRotationSpeed(25.0f);
+    stars.push_back(sun2);
+
+    Sphere *planet = new Sphere(1.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
+    // 17 and 22 work best right now
+    planet->setVelocity(glm::vec3(17.0f, 22.0f, 0.0f));
+    planet->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
+    planet->setRotationSpeed(100.0f);
+    satellites.push_back(planet);
 }
 
 void CreateShaders()
@@ -70,7 +92,6 @@ void CreateShaders()
 
 void handleTimeChange(GLfloat yScrollOffset)
 {
-    //printf("%f\n", yScrollOffset);
     if (yScrollOffset == 0.0f) return;
 
     timeChange += (yScrollOffset * 0.1f);
@@ -101,18 +122,39 @@ glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force)
     return force / mass;
 }
 
-glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat deltaTime)
+glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat timeStep)
 {
-    return oldVelocity + acceleration * deltaTime * timeChange;
+    return oldVelocity + acceleration * timeStep;
 }
 
-glm::vec3 getNewPosition(glm::vec3 oldPosition, glm::vec3 velocity, GLfloat deltaTime)
+glm::vec3 getNewPosition(glm::vec3 oldPosition, glm::vec3 velocity, GLfloat timeStep)
 {
-    return oldPosition + velocity * deltaTime * timeChange;
+    return oldPosition + velocity * timeStep;
+}
+
+void updateCelestialBodyAngles(GLfloat timeStep)
+{
+    // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
+    for (Sphere *sphere : satellites) 
+    {
+        sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed() * timeStep);
+        if (sphere->getAngle() >= 360)
+            sphere->setAngle(sphere->getAngle() - 360);
+        if (sphere->getAngle() <= -360)
+            sphere->setAngle(sphere->getAngle() + 360);
+    }
+    for (Sphere *star : stars) 
+    {
+        star->setAngle(star->getAngle() + star->getRotationSpeed() * timeStep);
+        if (star->getAngle() >= 360)
+            star->setAngle(star->getAngle() - 360);
+        if (star->getAngle() <= -360)
+            star->setAngle(star->getAngle() + 360);
+    }
 }
 
 // Update the positions of all moons and planets
-void updateSatellitePositions()
+void updateSatellitePositions(GLfloat timeStep)
 {
     std::vector<glm::vec3> newPositions;
     for (int i = 0; i < satellites.size(); i++) 
@@ -131,8 +173,8 @@ void updateSatellitePositions()
         }
 
         glm::vec3 acceleration = getAcceleration(satellites[i]->getMass(), force);
-        glm::vec3 newVelocity = getNewVelocity(satellites[i]->getVelocity(), acceleration, deltaTime);
-        glm::vec3 newPosition = getNewPosition(satellites[i]->getPosition(), newVelocity, deltaTime);
+        glm::vec3 newVelocity = getNewVelocity(satellites[i]->getVelocity(), acceleration, timeStep);
+        glm::vec3 newPosition = getNewPosition(satellites[i]->getPosition(), newVelocity, timeStep);
         satellites[i]->setVelocity(newVelocity);
         newPositions.push_back(newPosition);
     }
@@ -140,27 +182,6 @@ void updateSatellitePositions()
     // Update positions at the end of the loop so that no objects move before we get all of our data
     for (int i = 0; i < satellites.size(); i++)
         satellites[i]->setPosition(newPositions[i]);
-}
-
-void updateCelestialBodyAngles()
-{
-    // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
-    for (Sphere *sphere : satellites) 
-    {
-        sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed() * timeChange);
-        if (sphere->getAngle() >= 360)
-            sphere->setAngle(sphere->getAngle() - 360);
-        if (sphere->getAngle() <= -360)
-            sphere->setAngle(sphere->getAngle() + 360);
-    }
-    for (Sphere *star : stars) 
-    {
-        star->setAngle(star->getAngle() + star->getRotationSpeed());
-        if (star->getAngle() >= 360)
-            star->setAngle(star->getAngle() - 360);
-        if (star->getAngle() <= -360)
-            star->setAngle(star->getAngle() + 360);
-    }
 }
 
 void renderObjects(GLuint uniformModel)
@@ -189,7 +210,7 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    CreateObjects();
+    CreateObjectsDefault();
     CreateShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
@@ -199,14 +220,23 @@ int main()
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
 
     // Loop until window closed
+    GLfloat timeStep = 0.0f;
     while(!mainWindow.getShouldClose())
     {
         GLfloat now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
+        timeStep = deltaTime * timeChange;
 
-        updateCelestialBodyAngles();
-        updateSatellitePositions();
+        updateCelestialBodyAngles(timeStep);
+
+        // This loop ensures that we follow a curve even when the framerate sucks
+        while (timeStep > 0.005f)
+        {
+            updateSatellitePositions(0.005f);
+            timeStep -= 0.005f;
+        }
+        updateSatellitePositions(timeStep);
 
         // Get + Handle user input events
         glfwPollEvents();
