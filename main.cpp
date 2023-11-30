@@ -76,8 +76,7 @@ void CreateObjectsFigureEight()
     stars.push_back(sun2);
 
     Sphere *planet = new Sphere(1.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
-    // 17 and 22 work best right now
-    planet->setVelocity(glm::vec3(17.0f, 22.0f, 0.0f));
+    planet->setVelocity(glm::vec3(17.0f, 25.0f, 0.0f));
     planet->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
@@ -210,7 +209,8 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    CreateObjectsDefault();
+    //CreateObjectsDefault();
+    CreateObjectsFigureEight();
     CreateShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
