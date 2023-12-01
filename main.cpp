@@ -82,6 +82,21 @@ void CreateObjectsFigureEight()
     satellites.push_back(planet);
 }
 
+void Create1Sun1Planet()
+{
+    Sun *sun = new Sun(2.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
+    sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
+    sun->setAngle(90.0f);
+    sun->setRotationSpeed(-25.0f);
+    stars.push_back(sun);
+
+    Sphere *planet = new Sphere(1.0f, 3.0f, glm::vec3(17.5f, 0.0f, -2.5f));
+    planet->setVelocity(glm::vec3(0.0f, 15.0f, 0.0f));
+    planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
+    planet->setRotationSpeed(100.0f);
+    satellites.push_back(planet);
+}
+
 void CreateShaders()
 {
     Shader *shader1 = new Shader();
@@ -94,9 +109,9 @@ void handleTimeChange(GLfloat yScrollOffset)
     if (yScrollOffset == 0.0f) return;
 
     timeChange += (yScrollOffset * 0.1f);
-    if (timeChange > 2.0f)
+    if (timeChange > 3.0f)
     {
-        timeChange = 2.0f;
+        timeChange = 3.0f;
         return;
     }
     if (timeChange < 0.0f)
@@ -165,6 +180,7 @@ void updateSatellitePositions(GLfloat timeStep)
             force += getForce(satellites[i], star);
             
         // Add up forces for other satellites
+        // For a less chaotic solar system, comment this loop out
         for (int j = 0; j < satellites.size(); j++) 
         {
             if (i == j) continue;
@@ -209,8 +225,9 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
+    Create1Sun1Planet();
     //CreateObjectsDefault();
-    CreateObjectsFigureEight();
+    //CreateObjectsFigureEight();
     CreateShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
