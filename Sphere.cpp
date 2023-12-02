@@ -38,11 +38,11 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
 {
     this->radius = radius;
     for (int i = 0; i <= stacks; ++i) {
-        float V = i / (float) stacks;
+        float V = i / static_cast<float>(stacks);
         float phi = V * M_PI;
 
         for (int j = 0; j <= slices; ++j) {
-            float U = j / (float) slices;
+            float U = j / static_cast<float>(slices);
             float theta = U * M_PI * 2;
 
             float x = cos(theta) * sin(phi);
@@ -52,6 +52,10 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
             vertices.push_back(x * radius);
             vertices.push_back(y * radius);
             vertices.push_back(z * radius);
+
+            // Calculate texture coordinates
+            vertices.push_back(U);
+            vertices.push_back(V);
         }
     }
 

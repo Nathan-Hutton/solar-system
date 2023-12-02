@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
@@ -14,6 +16,7 @@
 #include "Window.h"
 #include "Camera.h"
 #include "Sun.h"
+#include "Texture.h"
 
 const float toRadians = M_PI / 180.0f;
 
@@ -22,6 +25,9 @@ std::vector<Sun*> stars;
 std::vector<Sphere*> satellites;
 std::vector<Shader> shaderList;
 Camera camera;
+
+Texture brickTexture;
+Texture dirtTexture;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -216,6 +222,7 @@ void renderObjects(GLuint uniformModel)
         model = glm::translate(model, satellite->getPosition());
         model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+        brickTexture.useTexture();
         satellite->getMeshPointer()->RenderMesh();
     }
 }
@@ -231,6 +238,11 @@ int main()
     CreateShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
+
+    brickTexture = Texture((char*)("Textures/brick.png"));
+    brickTexture.loadTexture();
+    dirtTexture = Texture((char*)("Textures/dirt.png"));
+    dirtTexture.loadTexture();
 
     // All the uniform objects are uniform IDs
     GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
