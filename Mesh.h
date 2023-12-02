@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include "Texture.h"
 
 class Mesh
 {
@@ -8,7 +9,8 @@ class Mesh
         Mesh();
 
         void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numIndices);
-        void RenderMesh();
+        void setTexturePointer(Texture *texture);
+        void renderMesh();
         void ClearMesh();
 
         ~Mesh();
@@ -16,4 +18,5 @@ class Mesh
     private:
         GLuint VAO, VBO, IBO;
         GLsizei indexCount;
+        Texture *texture;
 };

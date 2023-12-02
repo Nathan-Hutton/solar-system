@@ -42,25 +42,33 @@ static const char* fShader = "shaders/shader.frag";
 
 void CreateObjectsDefault()
 {
-    Sun *sun = new Sun(2.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
+    Sun *sun = new Sun(2.0f, 2.0f);
+    sun->setTexturePointer(&brickTexture);
+    sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
 
-    Sphere *planet = new Sphere(1.0f, 3.0f, glm::vec3(-5.0f, -10.0f, -2.5f));
+    Sphere *planet = new Sphere(1.0f, 3.0f);
+    planet->setTexturePointer(&brickTexture);
+    planet->setPosition(glm::vec3(-5.0f, -10.0f, -2.5f));
     planet->setVelocity(glm::vec3(-30.0f, 0.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
 
-    Sphere *planet1 = new Sphere(1.0f, 2.0f, glm::vec3(7.5f, 10.0f, -2.5f));
+    Sphere *planet1 = new Sphere(1.0f, 2.0f);
+    planet1->setTexturePointer(&brickTexture);
+    planet1->setPosition(glm::vec3(7.5f, 10.0f, -2.5f));
     planet1->setVelocity(glm::vec3(20.0f, -12.0f, 10.0f));
     planet1->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
     planet1->setRotationSpeed(-100.0f);
     satellites.push_back(planet1);
 
-    Sphere *moon = new Sphere(0.5f, 0.5f, glm::vec3(-7.0f, -14.0f, -2.5f));
+    Sphere *moon = new Sphere(0.5f, 0.5f);
+    moon->setTexturePointer(&brickTexture);
+    moon->setPosition(glm::vec3(-7.0f, -14.0f, -2.5f));
     moon->setVelocity(glm::vec3(-40.0f, 2.0f, 1.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     moon->setRotationSpeed(200.0f);
@@ -69,19 +77,25 @@ void CreateObjectsDefault()
 
 void CreateObjectsFigureEight()
 {
-    Sun *sun1 = new Sun(2.0f, 2.0f, glm::vec3(-15.0f, 0.0f, -2.5f));
+    Sun *sun1 = new Sun(2.0f, 2.0f);
+    sun1->setTexturePointer(&brickTexture);
+    sun1->setPosition(glm::vec3(-15.0f, 0.0f, -2.5f));
     sun1->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun1->setAngle(90.0f);
     sun1->setRotationSpeed(-25.2f);
     stars.push_back(sun1);
 
-    Sun *sun2 = new Sun(2.0f, 2.0f, glm::vec3(15.0f, 0.0f, -2.5f));
+    Sun *sun2 = new Sun(2.0f, 2.0f);
+    sun2->setTexturePointer(&brickTexture);
+    sun2->setPosition(glm::vec3(15.0f, 0.0f, -2.5f));
     sun2->setRotation(glm::vec3(0.0f, 1.0f, 1.0f));
     sun2->setAngle(90.0f);
     sun2->setRotationSpeed(25.0f);
     stars.push_back(sun2);
 
-    Sphere *planet = new Sphere(1.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
+    Sphere *planet = new Sphere(1.0f, 2.0f);
+    planet->setTexturePointer(&brickTexture);
+    planet->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     planet->setVelocity(glm::vec3(17.0f, 24.675f, 0.0f));
     planet->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
     planet->setRotationSpeed(100.0f);
@@ -90,13 +104,17 @@ void CreateObjectsFigureEight()
 
 void Create1Sun1Planet()
 {
-    Sun *sun = new Sun(2.0f, 2.0f, glm::vec3(0.0f, 0.0f, -2.5f));
+    Sun *sun = new Sun(2.0f, 2.0f);
+    sun->setTexturePointer(&brickTexture);
+    sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
 
-    Sphere *planet = new Sphere(1.0f, 3.0f, glm::vec3(17.5f, 0.0f, -2.5f));
+    Sphere *planet = new Sphere(1.0f, 3.0f);
+    planet->setTexturePointer(&brickTexture);
+    planet->setPosition(glm::vec3(17.5f, 0.0f, -2.5f));
     planet->setVelocity(glm::vec3(0.0f, 15.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(100.0f);
@@ -208,13 +226,14 @@ void updateSatellitePositions(GLfloat timeStep)
 void renderObjects(GLuint uniformModel)
 {
     glm::mat4 model;
+    brickTexture.useTexture();
     for (Sun *star : stars)
     {
         model = glm::mat4(1.0f);
         model = glm::translate(model, star->getPosition());
         model = glm::rotate(model, star->getAngle() * toRadians, star->getRotation());
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        star->getMeshPointer()->RenderMesh();
+        star->renderMesh();
     }
     for (Sphere *satellite : satellites)
     {
@@ -222,8 +241,7 @@ void renderObjects(GLuint uniformModel)
         model = glm::translate(model, satellite->getPosition());
         model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        brickTexture.useTexture();
-        satellite->getMeshPointer()->RenderMesh();
+        satellite->renderMesh();
     }
 }
 
@@ -232,17 +250,17 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    Create1Sun1Planet();
-    //CreateObjectsDefault();
-    //CreateObjectsFigureEight();
-    CreateShaders();
-
-    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
-
     brickTexture = Texture((char*)("Textures/brick.png"));
     brickTexture.loadTexture();
     dirtTexture = Texture((char*)("Textures/dirt.png"));
     dirtTexture.loadTexture();
+
+    //Create1Sun1Planet();
+    CreateObjectsDefault();
+    //CreateObjectsFigureEight();
+    CreateShaders();
+
+    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 
     // All the uniform objects are uniform IDs
     GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;

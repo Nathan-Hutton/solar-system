@@ -6,6 +6,7 @@ Mesh::Mesh()
     VBO = 0;
     IBO = 0;
     indexCount = 0;
+    this->texture = NULL;
 }
 
 void Mesh::CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices)
@@ -34,8 +35,14 @@ void Mesh::CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::RenderMesh()
+void Mesh::setTexturePointer(Texture *texture)
 {
+    this->texture = texture;
+}
+
+void Mesh::renderMesh()
+{
+    texture->useTexture();
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);

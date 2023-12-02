@@ -11,6 +11,7 @@ Sphere::Sphere()
     this->angle = 0.0f;
     this->rotationSpeed = 0.0f;
     this->sphereMesh = new Mesh();
+    this->texture = NULL;
 }
 
 Sphere::Sphere(float radius, GLfloat density, glm::vec3 position, int stacks, int slices)
@@ -25,6 +26,7 @@ Sphere::Sphere(float radius, GLfloat density, glm::vec3 position, int stacks, in
     this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     this->angle = 0.0f;
     this->rotationSpeed = 0.0f;
+    this->texture = NULL;
 
     // Create the mesh
     this->sphereMesh = new Mesh();
@@ -68,6 +70,11 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
         indices.push_back(i);
         indices.push_back(i + 1);
     }
+}
+
+void Sphere::renderMesh()
+{
+    sphereMesh->renderMesh();
 }
 
 Mesh* Sphere::getMeshPointer()
@@ -133,6 +140,17 @@ GLfloat Sphere::getRotationSpeed()
 void Sphere::setRotationSpeed(GLfloat speed)
 {
     this->rotationSpeed = speed;
+}
+
+Texture* Sphere::getTexturePointer()
+{
+    return texture;
+}
+
+void Sphere::setTexturePointer(Texture *texture)
+{
+    this->texture = texture;
+    this->sphereMesh->setTexturePointer(texture);
 }
 
 Sphere::~Sphere()
