@@ -1,6 +1,6 @@
 // This file will handle setting up the scene (creating the spheres) and calling their render methods
-#ifndef MYFUNCTIONS_H
-#define MYFUNCTIONS_H
+#ifndef SCENEFUNCTIONS_H
+#define SCENEFUNCTIONS_H
 
 #include <vector>
 #include <math.h>
