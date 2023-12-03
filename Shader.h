@@ -20,6 +20,7 @@ class Shader
         GLuint getProjectionLocation();
         GLuint getModelLocation();
         GLuint getViewLocation();
+        GLuint getShaderID();
 
         void useShader();
         void clearShader();

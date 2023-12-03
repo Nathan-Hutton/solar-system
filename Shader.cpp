@@ -123,6 +123,11 @@ GLuint Shader::getViewLocation()
     return uniformView;
 }
 
+GLuint Shader::getShaderID()
+{
+    return shaderID;
+}
+
 void Shader::useShader()
 {
     glUseProgram(shaderID);

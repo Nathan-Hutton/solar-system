@@ -1,9 +1,6 @@
 #version 330
-
 // input texture
 uniform sampler2D theTexture;
-uniform sampler2D brightTexture;
-
 
 in vec4 vCol;
 in vec2 texCoord;
@@ -14,10 +11,9 @@ void main()
 {    
     // Sample the scene and bright textures
     vec3 sceneColor = texture(theTexture, texCoord).rgb;
-    vec3 brightColor = texture(brightTexture, texCoord).rgb;
 
     // Combine the scene and bright textures
-    vec3 finalColor = sceneColor + brightColor;
+    vec3 finalColor = sceneColor;
 
     // Output the final color
     color = vec4(finalColor, 1.0);
