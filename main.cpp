@@ -16,6 +16,7 @@
 #include "Window.h"
 #include "Camera.h"
 #include "Sun.h"
+#include "Light.h"
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
 
@@ -27,6 +28,8 @@ std::vector<Sphere*> satellites;
 std::vector<Shader*> shaderList;
 Camera camera;
 
+Light mainLight;
+
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 GLfloat timeChange = 1.0f;
@@ -37,7 +40,7 @@ GLfloat gravitationalForce = -100.0f;
 static const char* vShader = "shaders/shader.vert";
 // Fragment shader
 static const char* fShader = "shaders/shader.frag";
-static const char* fShader2 = "shaders/shader.frag2";
+static const char* fShader2 = "shaders/shader.frag";
 
 void createShaders()
 {
@@ -75,6 +78,7 @@ int main()
     createShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
+    mainLight = Light();
 
     // All the uniform objects are uniform IDs
     GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
@@ -112,7 +116,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Apply shaders and render meshes
-        SceneFunctions::renderObjects(stars, satellites, shaderList, &camera, &projection);
+        SceneFunctions::renderObjects(stars, satellites, shaderList, &camera, &projection, &mainLight);
 
         // Apply projection and view
         //glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));

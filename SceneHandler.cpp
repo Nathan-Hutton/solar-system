@@ -102,13 +102,16 @@ void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sph
     satellites.push_back(planet);
 }
 
-void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, std::vector<Shader*>& shaderList, Camera *camera, glm::mat4 *projection)
+void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, std::vector<Shader*>& shaderList, Camera *camera, glm::mat4 *projection, Light *light)
 {
     // Apply shaders to stars
     shaderList[0]->useShader();
     GLuint uniformModel = shaderList[0]->getModelLocation();
     GLuint uniformProjection = shaderList[0]->getProjectionLocation();
     GLuint uniformView = shaderList[0]->getViewLocation();
+    GLuint uniformAmbientIntensity = shaderList[0]->getAmbientIntensityLocation();
+    GLuint uniformAmbientColor = shaderList[0]->getAmbientColorLocation();
+    light->useLight(uniformAmbientIntensity, uniformAmbientColor);
     glm::mat4 model;
 
     for (Sun *star : stars)
@@ -123,11 +126,15 @@ void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*
     glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
     glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
 
+    // Uncomment out this code when we want different shaders for planets and stars
     // Apply shaders to satellites
-    shaderList[1]->useShader();
-    uniformModel = shaderList[1]->getModelLocation();
-    uniformProjection = shaderList[1]->getProjectionLocation();
-    uniformView = shaderList[1]->getViewLocation();
+    //shaderList[1]->useShader();
+    //uniformModel = shaderList[1]->getModelLocation();
+    //uniformProjection = shaderList[1]->getProjectionLocation();
+    //uniformView = shaderList[1]->getViewLocation();
+    //uniformAmbientIntensity = shaderList[1]->getAmbientIntensityLocation();
+    //uniformAmbientColor = shaderList[1]->getAmbientColorLocation();
+    //light->useLight(uniformAmbientIntensity, uniformAmbientColor);
 
     for (Sphere *satellite : satellites)
     {
