@@ -8,10 +8,10 @@ class Mesh
     public:
         Mesh();
 
-        void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numIndices);
+        void createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numIndices);
         void setTexturePointer(Texture *texture);
         void renderMesh();
-        void ClearMesh();
+        void clearMesh();
 
         ~Mesh();
 

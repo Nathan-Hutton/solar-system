@@ -2,7 +2,7 @@
 
 static const float toRadians = M_PI / 180.0f;
 
-void SceneFunctions::CreateObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
+void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
 {
     Texture *brickTexture = new Texture((char*)("Textures/brick.png"));
     brickTexture->loadTexture();
@@ -42,7 +42,7 @@ void SceneFunctions::CreateObjectsDefault(std::vector<Sun*>& stars, std::vector<
     satellites.push_back(moon);
 }
 
-void SceneFunctions::CreateObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
+void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
 {
     Texture *brickTexture = new Texture((char*)("Textures/brick.png"));
     brickTexture->loadTexture();
@@ -74,7 +74,7 @@ void SceneFunctions::CreateObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     satellites.push_back(planet);
 }
 
-void SceneFunctions::Create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
+void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
 {
     Texture *brickTexture = new Texture((char*)("Textures/brick.png"));
     brickTexture->loadTexture();

@@ -9,7 +9,7 @@ Mesh::Mesh()
     this->texture = NULL;
 }
 
-void Mesh::CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices)
+void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices)
 {
     indexCount = numOfIndices;
 
@@ -50,7 +50,7 @@ void Mesh::renderMesh()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::ClearMesh()
+void Mesh::clearMesh()
 {
     if (IBO =! 0) {
         glDeleteBuffers(1, &IBO);
@@ -72,5 +72,5 @@ void Mesh::ClearMesh()
 
 Mesh::~Mesh()
 {
-    ClearMesh();
+    clearMesh();
 }

@@ -42,7 +42,7 @@ static const char* vShader = "shaders/shader.vert";
 // Fragment shader
 static const char* fShader = "shaders/shader.frag";
 
-void CreateShaders()
+void createShader()
 {
     Shader *shader1 = new Shader();
     shader1->createFromFiles(vShader, fShader);
@@ -68,10 +68,10 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    SceneFunctions::Create1Sun1Planet(stars, satellites);
-    //SceneFunctions::CreateObjectsDefault(stars, satellites);
-    //SceneFunctions::CreateObjectsFigureEight(stars, satellites);
-    CreateShaders();
+    SceneFunctions::create1Sun1Planet(stars, satellites);
+    //SceneFunctions::createObjectsDefault(stars, satellites);
+    //SceneFunctions::createObjectsFigureEight(stars, satellites);
+    createShader();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 

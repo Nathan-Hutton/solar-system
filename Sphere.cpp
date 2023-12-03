@@ -33,7 +33,7 @@ Sphere::Sphere(float radius, GLfloat density, glm::vec3 position, int stacks, in
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;
     generateSphereData(vertices, indices, radius, stacks, slices);
-    this->sphereMesh->CreateMesh(vertices.data(), indices.data(), vertices.size(), indices.size());
+    this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size());
 }
 
 void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)

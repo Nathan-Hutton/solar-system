@@ -12,9 +12,9 @@
 #include "Sun.h"
 
 namespace SceneFunctions {
-    void CreateObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
-    void CreateObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
-    void Create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
+    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
+    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
+    void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
     void renderObjects(GLuint uniformModel, std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
 }
 
