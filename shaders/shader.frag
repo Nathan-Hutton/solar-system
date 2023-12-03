@@ -15,7 +15,7 @@ uniform DirectionalLight directionalLight;
 
 void main()
 {
-    vec4 ambientColor = vec4(directionalLight.color, 1.0f) * directionalLight.ambientIntensity;
+    vec4 LightColor = vec4(directionalLight.color, 1.0f) * directionalLight.ambientIntensity;
 
-    color = texture(theTexture, texCoord) * ambientColor;
+    color = texture(theTexture, texCoord) * LightColor;
 }

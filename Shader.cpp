@@ -6,7 +6,7 @@ Shader::Shader()
     uniformProjection = 0;
     uniformModel = 0;
     uniformAmbientIntensity = 0;
-    uniformAmbientColor = 0;
+    uniformLightColor = 0;
 }
 
 void Shader::createFromString(const char* vertexCode, const char* fragmentCode)
@@ -82,7 +82,7 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
     uniformProjection = glGetUniformLocation(shaderID, "projection");
     uniformView = glGetUniformLocation(shaderID, "view");
     uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
-    uniformAmbientColor = glGetUniformLocation(shaderID, "directionalLight.color");
+    uniformLightColor = glGetUniformLocation(shaderID, "directionalLight.color");
 }
 
 void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
@@ -128,9 +128,9 @@ GLuint Shader::getAmbientIntensityLocation()
 {
     return uniformAmbientIntensity;
 }
-GLuint Shader::getAmbientColorLocation()
+GLuint Shader::getLightColorLocation()
 {
-    return uniformAmbientColor;
+    return uniformLightColor;
 }
 
 void Shader::useShader()

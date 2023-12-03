@@ -21,7 +21,7 @@ class Shader
         GLuint getModelLocation();
         GLuint getViewLocation();
         GLuint getAmbientIntensityLocation();
-        GLuint getAmbientColorLocation();
+        GLuint getLightColorLocation();
 
         void useShader();
         void clearShader();
@@ -29,7 +29,7 @@ class Shader
         ~Shader();
 
     private:
-        GLuint shaderID, uniformProjection, uniformModel, uniformView, uniformAmbientIntensity, uniformAmbientColor;
+        GLuint shaderID, uniformProjection, uniformModel, uniformView, uniformAmbientIntensity, uniformLightColor;
 
         void compileShader(const char* vertexCode, const char* fragmentCode);
         void addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
