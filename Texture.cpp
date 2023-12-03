@@ -22,7 +22,7 @@ Texture::Texture(char* fileLocation)
 void Texture::loadTexture()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
-    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
+    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 4);
     if (!textData)
     {
         printf("Failed to find %s\n", fileLocation);

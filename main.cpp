@@ -16,7 +16,6 @@
 #include "Window.h"
 #include "Camera.h"
 #include "Sun.h"
-#include "Texture.h"
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
 
@@ -27,9 +26,6 @@ std::vector<Sun*> stars;
 std::vector<Sphere*> satellites;
 std::vector<Shader*> shaderList;
 Camera camera;
-
-Texture brickTexture;
-Texture dirtTexture;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -116,10 +112,6 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Apply shaders and render meshes
-        //shaderList[0]->useShader();
-        //uniformModel = shaderList[0]->getModelLocation();
-        //uniformProjection = shaderList[0]->getProjectionLocation();
-        //uniformView = shaderList[0]->getViewLocation();
         SceneFunctions::renderObjects(stars, satellites, shaderList, &camera, &projection);
 
         // Apply projection and view
