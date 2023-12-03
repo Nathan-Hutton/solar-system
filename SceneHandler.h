@@ -5,17 +5,21 @@
 #include <vector>
 #include <math.h>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Sun.h"
+#include "Shader.h"
+#include "Camera.h"
 
 namespace SceneFunctions {
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
     void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
     void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
-    void renderObjects(GLuint uniformModel, std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
+    void renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, std::vector<Shader*>& shaderList, Camera *camera, glm::mat4 *projection);
 }
 
 #endif

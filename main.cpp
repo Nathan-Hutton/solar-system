@@ -25,7 +25,7 @@ const float toRadians = M_PI / 180.0f;
 Window mainWindow;
 std::vector<Sun*> stars;
 std::vector<Sphere*> satellites;
-std::vector<Shader> shaderList;
+std::vector<Shader*> shaderList;
 Camera camera;
 
 Texture brickTexture;
@@ -41,12 +41,17 @@ GLfloat gravitationalForce = -100.0f;
 static const char* vShader = "shaders/shader.vert";
 // Fragment shader
 static const char* fShader = "shaders/shader.frag";
+static const char* fShader2 = "shaders/shader.frag2";
 
-void createShader()
+void createShaders()
 {
     Shader *shader1 = new Shader();
     shader1->createFromFiles(vShader, fShader);
-    shaderList.push_back(*shader1);
+    shaderList.push_back(shader1);
+
+    Shader *shader2 = new Shader();
+    shader2->createFromFiles(vShader, fShader2);
+    shaderList.push_back(shader2);
 }
 
 void handleTimeChange(GLfloat yScrollOffset)
@@ -71,7 +76,7 @@ int main()
     SceneFunctions::create1Sun1Planet(stars, satellites);
     //SceneFunctions::createObjectsDefault(stars, satellites);
     //SceneFunctions::createObjectsFigureEight(stars, satellites);
-    createShader();
+    createShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 
@@ -111,15 +116,15 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Apply shaders and render meshes
-        shaderList[0].useShader();
-        uniformModel = shaderList[0].getModelLocation();
-        uniformProjection = shaderList[0].getProjectionLocation();
-        uniformView = shaderList[0].getViewLocation();
-        SceneFunctions::renderObjects(uniformModel, stars, satellites);
+        //shaderList[0]->useShader();
+        //uniformModel = shaderList[0]->getModelLocation();
+        //uniformProjection = shaderList[0]->getProjectionLocation();
+        //uniformView = shaderList[0]->getViewLocation();
+        SceneFunctions::renderObjects(stars, satellites, shaderList, &camera, &projection);
 
         // Apply projection and view
-        glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+        //glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+        //glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
         
         glUseProgram(0);
 

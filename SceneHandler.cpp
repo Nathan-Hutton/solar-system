@@ -98,9 +98,14 @@ void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sph
     satellites.push_back(planet);
 }
 
-void SceneFunctions::renderObjects(GLuint uniformModel, std::vector<Sun*>& stars, std::vector<Sphere*>& satellites)
+void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, std::vector<Shader*>& shaderList, Camera *camera, glm::mat4 *projection)
 {
+    shaderList[0]->useShader();
+    GLuint uniformModel = shaderList[0]->getModelLocation();
+    GLuint uniformProjection = shaderList[0]->getProjectionLocation();
+    GLuint uniformView = shaderList[0]->getViewLocation();
     glm::mat4 model;
+
     for (Sun *star : stars)
     {
         model = glm::mat4(1.0f);
@@ -109,6 +114,14 @@ void SceneFunctions::renderObjects(GLuint uniformModel, std::vector<Sun*>& stars
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         star->renderMesh();
     }
+
+    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
+    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
+    shaderList[1]->useShader();
+    uniformModel = shaderList[1]->getModelLocation();
+    uniformProjection = shaderList[1]->getProjectionLocation();
+    uniformView = shaderList[1]->getViewLocation();
+
     for (Sphere *satellite : satellites)
     {
         model = glm::mat4(1.0f);
@@ -117,5 +130,7 @@ void SceneFunctions::renderObjects(GLuint uniformModel, std::vector<Sun*>& stars
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         satellite->renderMesh();
     }
+    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
+    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
 }
 
