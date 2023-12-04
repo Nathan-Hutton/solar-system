@@ -109,9 +109,13 @@ void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*
     GLuint uniformModel = shaderList[0]->getModelLocation();
     GLuint uniformProjection = shaderList[0]->getProjectionLocation();
     GLuint uniformView = shaderList[0]->getViewLocation();
+
     GLuint uniformAmbientIntensity = shaderList[0]->getAmbientIntensityLocation();
     GLuint uniformLightColor = shaderList[0]->getLightColorLocation();
-    light->useLight(uniformAmbientIntensity, uniformLightColor);
+    GLuint uniformDiffuseIntensity = shaderList[0]->getDiffuseIntensityLocation();
+    GLuint uniformDirection = shaderList[0]->getDirectionLocation();
+
+    light->useLight(uniformAmbientIntensity, uniformLightColor, uniformDiffuseIntensity, uniformDirection);
     glm::mat4 model;
 
     for (Sun *star : stars)

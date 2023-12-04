@@ -72,16 +72,16 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    //SceneFunctions::create1Sun1Planet(stars, satellites);
-    SceneFunctions::createObjectsDefault(stars, satellites);
+    SceneFunctions::create1Sun1Planet(stars, satellites);
+    //SceneFunctions::createObjectsDefault(stars, satellites);
     //SceneFunctions::createObjectsFigureEight(stars, satellites);
     createShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
-    mainLight = Light();
+    mainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 
+                      2.0f, -1.0f, -2.0f, 1.0f);
 
     // All the uniform objects are uniform IDs
-    GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
 
     // Loop until window closed
@@ -117,10 +117,6 @@ int main()
 
         // Apply shaders and render meshes
         SceneFunctions::renderObjects(stars, satellites, shaderList, &camera, &projection, &mainLight);
-
-        // Apply projection and view
-        //glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-        //glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
         
         glUseProgram(0);
 
