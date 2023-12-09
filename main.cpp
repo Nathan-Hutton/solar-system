@@ -73,8 +73,8 @@ int main()
     mainWindow.initialize();
 
     //SceneFunctions::create1Sun1Planet(stars, satellites);
-    SceneFunctions::createObjectsDefault(stars, satellites);
-    //SceneFunctions::createObjectsFigureEight(stars, satellites);
+    //SceneFunctions::createObjectsDefault(stars, satellites);
+    SceneFunctions::createObjectsFigureEight(stars, satellites);
     createShaders();
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);

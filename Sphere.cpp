@@ -59,9 +59,11 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
             vertices.push_back(U);
             vertices.push_back(V);
 
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
+            glm::vec3 normal(x,y,z);
+            normal = glm::normalize(normal);
+            vertices.push_back(normal.x);
+            vertices.push_back(normal.y);
+            vertices.push_back(normal.z);
         }
     }
 
