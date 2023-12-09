@@ -72,8 +72,8 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    SceneFunctions::create1Sun1Planet(stars, satellites);
-    //SceneFunctions::createObjectsDefault(stars, satellites);
+    //SceneFunctions::create1Sun1Planet(stars, satellites);
+    SceneFunctions::createObjectsDefault(stars, satellites);
     //SceneFunctions::createObjectsFigureEight(stars, satellites);
     createShaders();
 
