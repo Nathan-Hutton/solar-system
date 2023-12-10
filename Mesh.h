@@ -1,8 +1,9 @@
 #pragma once
 
 #include <GL/glew.h>
-#include "Texture.h"
 #include <glm/glm.hpp>
+#include "Texture.h"
+#include "Material.h"
 
 class Mesh
 {
@@ -11,7 +12,8 @@ class Mesh
 
         void createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numIndices);
         void setTexturePointer(Texture *texture);
-        void renderMesh();
+        void setMaterialPointer(Material *material);
+        void renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess);
         void clearMesh();
         void calcAverageNormals(unsigned int *indices, unsigned int indexCount, GLfloat *vertices, unsigned int vertexCount, unsigned int vLen, unsigned int normalOffset);
 
@@ -21,4 +23,5 @@ class Mesh
         GLuint VAO, VBO, IBO;
         GLsizei indexCount;
         Texture *texture;
+        Material *material;
 };

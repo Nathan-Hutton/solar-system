@@ -13,8 +13,11 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     Texture *moonTexture = new Texture((char*)("Textures/moon.jpg"));
     moonTexture->loadTexture();
 
+    Material *material = new Material(1.0f, 32);
+
     Sun *sun = new Sun(2.0f, 2.0f);
     sun->setTexturePointer(sunTexture);
+    sun->setMaterialPointer(material);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
@@ -23,6 +26,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
 
     Sphere *planet = new Sphere(1.0f, 3.0f);
     planet->setTexturePointer(earthTexture);
+    planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(-5.0f, -10.0f, -2.5f));
     planet->setVelocity(glm::vec3(-30.0f, 0.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
@@ -31,6 +35,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
 
     Sphere *planet1 = new Sphere(1.0f, 2.0f);
     planet1->setTexturePointer(marsTexture);
+    planet1->setMaterialPointer(material);
     planet1->setPosition(glm::vec3(7.5f, 10.0f, -2.5f));
     planet1->setVelocity(glm::vec3(20.0f, -12.0f, 10.0f));
     planet1->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
@@ -39,6 +44,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
 
     Sphere *moon = new Sphere(0.5f, 0.5f);
     moon->setTexturePointer(moonTexture);
+    moon->setMaterialPointer(material);
     moon->setPosition(glm::vec3(-7.0f, -14.0f, -2.5f));
     moon->setVelocity(glm::vec3(-40.0f, 2.0f, 1.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
@@ -53,8 +59,11 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     Texture *earthTexture = new Texture((char*)("Textures/earth.jpg"));
     earthTexture->loadTexture();
 
+    Material *material = new Material(1.0f, 32);
+
     Sun *sun1 = new Sun(2.0f, 2.0f);
     sun1->setTexturePointer(sunTexture);
+    sun1->setMaterialPointer(material);
     sun1->setPosition(glm::vec3(-15.0f, 0.0f, -2.5f));
     sun1->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun1->setAngle(90.0f);
@@ -63,6 +72,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
 
     Sun *sun2 = new Sun(2.0f, 2.0f);
     sun2->setTexturePointer(sunTexture);
+    sun2->setMaterialPointer(material);
     sun2->setPosition(glm::vec3(15.0f, 0.0f, -2.5f));
     sun2->setRotation(glm::vec3(0.0f, 1.0f, 1.0f));
     sun2->setAngle(90.0f);
@@ -71,6 +81,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
 
     Sphere *planet = new Sphere(1.0f, 2.0f);
     planet->setTexturePointer(earthTexture);
+    planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     planet->setVelocity(glm::vec3(17.0f, 24.675f, 0.0f));
     planet->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
@@ -85,8 +96,11 @@ void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sph
     Texture *earthTexture = new Texture((char*)("Textures/earth.jpg"));
     earthTexture->loadTexture();
 
+    Material *material = new Material(1.0f, 32);
+
     Sun *sun = new Sun(2.0f, 2.0f);
     sun->setTexturePointer(sunTexture);
+    sun->setMaterialPointer(material);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
@@ -95,6 +109,7 @@ void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sph
 
     Sphere *planet = new Sphere(1.0f, 3.0f);
     planet->setTexturePointer(earthTexture);
+    planet->setTexturePointer(sunTexture);
     planet->setPosition(glm::vec3(17.5f, 0.0f, -2.5f));
     planet->setVelocity(glm::vec3(0.0f, 15.0f, 0.0f));
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
@@ -104,6 +119,7 @@ void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sph
 
 void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, std::vector<Shader*>& shaderList, Camera *camera, glm::mat4 *projection, Light *light)
 {
+    // Consider a huge reformat where every uniformIdentiy is grabbed before the while loop since they don't change
     // Apply shaders to stars
     shaderList[0]->useShader();
     GLuint uniformModel = shaderList[0]->getModelLocation();
@@ -114,9 +130,17 @@ void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*
     GLuint uniformLightColor = shaderList[0]->getLightColorLocation();
     GLuint uniformDiffuseIntensity = shaderList[0]->getDiffuseIntensityLocation();
     GLuint uniformDirection = shaderList[0]->getDirectionLocation();
+    GLuint uniformEyePosition = shaderList[0]->getEyePositionLocation();
+    GLuint uniformSpecularIntensity = shaderList[0]->getSpecularIntensityLocation();
+    GLuint uniformShininess = shaderList[0]->getShininessLocation();
 
     light->useLight(uniformAmbientIntensity, uniformLightColor, uniformDiffuseIntensity, uniformDirection);
     glm::mat4 model;
+
+    // Apply projection and view matrices
+    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
+    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
+    glUniform3f(uniformEyePosition, camera->getPosition().x, camera->getPosition().y, camera->getPosition().z);
 
     for (Sun *star : stars)
     {
@@ -124,11 +148,8 @@ void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*
         model = glm::translate(model, star->getPosition());
         model = glm::rotate(model, star->getAngle() * toRadians, star->getRotation());
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        star->renderMesh();
+        star->renderMesh(uniformSpecularIntensity, uniformShininess);
     }
-    // Apply projection and view matrices
-    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
-    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
 
     // Uncomment out this code when we want different shaders for planets and stars
     // Apply shaders to satellites
@@ -140,16 +161,18 @@ void SceneFunctions::renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*
     //uniformLightColor = shaderList[1]->getLightColorLocation();
     //light->useLight(uniformAmbientIntensity, uniformLightColor);
 
+    // Apply projection and view matrices
+    //glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
+    //glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
+    //glUniform3f(uniformEyePosition, camera->getPosition().x, camera->getPosition().y, camera->getPosition().z);
+
     for (Sphere *satellite : satellites)
     {
         model = glm::mat4(1.0f);
         model = glm::translate(model, satellite->getPosition());
         model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        satellite->renderMesh();
+        satellite->renderMesh(uniformSpecularIntensity, uniformShininess);
     }
-    // Apply projection and view matrices
-    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projection));
-    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera->calculateViewMatrix()));
 }
 

@@ -12,6 +12,7 @@ Sphere::Sphere()
     this->rotationSpeed = 0.0f;
     this->sphereMesh = new Mesh();
     this->texture = NULL;
+    this->material = NULL;
 }
 
 Sphere::Sphere(float radius, GLfloat density, glm::vec3 position, int stacks, int slices)
@@ -78,9 +79,9 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
     }
 }
 
-void Sphere::renderMesh()
+void Sphere::renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess)
 {
-    sphereMesh->renderMesh();
+    sphereMesh->renderMesh(uniformSpecularIntensity, uniformShininess);
 }
 
 Mesh* Sphere::getMeshPointer()
@@ -157,6 +158,12 @@ void Sphere::setTexturePointer(Texture *texture)
 {
     this->texture = texture;
     this->sphereMesh->setTexturePointer(texture);
+}
+
+void Sphere::setMaterialPointer(Material *material)
+{
+    this->material = material;
+    this->sphereMesh->setMaterialPointer(material);
 }
 
 Sphere::~Sphere()

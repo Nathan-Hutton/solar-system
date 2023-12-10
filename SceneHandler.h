@@ -15,6 +15,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Material.h"
 
 namespace SceneFunctions {
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);

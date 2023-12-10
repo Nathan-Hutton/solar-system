@@ -7,6 +7,7 @@ Mesh::Mesh()
     IBO = 0;
     indexCount = 0;
     this->texture = NULL;
+    this->material = NULL;
 }
 
 void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices)
@@ -30,7 +31,6 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 5));
-    //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(normals[0]) * 3, 0);
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -43,9 +43,15 @@ void Mesh::setTexturePointer(Texture *texture)
     this->texture = texture;
 }
 
-void Mesh::renderMesh()
+void Mesh::setMaterialPointer(Material *material)
+{
+    this->material = material;
+}
+
+void Mesh::renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess)
 {
     texture->useTexture();
+    material->useMaterial(uniformSpecularIntensity, uniformShininess);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);

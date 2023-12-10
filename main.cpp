@@ -19,6 +19,7 @@
 #include "Light.h"
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
+#include "Material.h"
 
 const float toRadians = M_PI / 180.0f;
 
@@ -79,7 +80,7 @@ int main()
 
     camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
     mainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 
-                      2.0f, -1.0f, -2.0f, 1.0f);
+                      1.0f, 0.0f, 0.0f, 1.2f);
 
     // All the uniform objects are uniform IDs
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
