@@ -21,7 +21,6 @@ namespace SceneFunctions {
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
     void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
     void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
-    void renderObjects(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, std::vector<Shader*>& shaderList, Camera *camera, glm::mat4 *projection, Light *light);
 }
 
 #endif

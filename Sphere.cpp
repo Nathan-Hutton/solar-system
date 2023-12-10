@@ -89,6 +89,11 @@ Mesh* Sphere::getMeshPointer()
     return sphereMesh;
 }
 
+Material* Sphere::getMaterialPointer()
+{
+    return material;
+}
+
 GLfloat Sphere::getMass()
 {
     return mass;

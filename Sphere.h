@@ -32,6 +32,7 @@ class Sphere
         Texture* getTexturePointer();
         void setTexturePointer(Texture* texturePointer);
         void setMaterialPointer(Material* materialPointer);
+        Material* getMaterialPointer();
 
         ~Sphere();
 
