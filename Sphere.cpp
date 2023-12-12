@@ -3,8 +3,7 @@
 Sphere::Sphere()
 {
     this->radius = 0.5f;
-    this->density = 1.0f;
-    this->mass = 0;
+    this->mass = 1.0f;
     this->position = glm::vec3(0.0f, 0.0f, 0.0f);
     this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -15,11 +14,10 @@ Sphere::Sphere()
     this->material = NULL;
 }
 
-Sphere::Sphere(float radius, GLfloat density, glm::vec3 position, int stacks, int slices)
+Sphere::Sphere(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices)
 {
     this->radius = radius;
-    this->density = density;
-    this->mass = (4.0f/3.0f) * M_PI * pow(radius, 3) * density;
+    this->mass = mass;
     this->position = position;
 
     // These are default values we'll set with setters

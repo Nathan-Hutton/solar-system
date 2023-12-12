@@ -73,16 +73,15 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    //SceneFunctions::create1Sun1Planet(stars, satellites);
-    SceneFunctions::createObjectsDefault(stars, satellites);
-    //SceneFunctions::createObjectsFigureEight(stars, satellites);
+    //SceneFunctions::create1Sun1Planet(stars, satellites, &camera);
+    //SceneFunctions::createObjectsDefault(stars, satellites, &camera);
+    SceneFunctions::createObjectsFigureEight(stars, satellites, &camera);
     createShaders();
 
     GLfloat now;
     GLfloat timeStep = 0.0f;
     glm::mat4 model;
 
-    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
     mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 
                                 0.2f, 1.0f,

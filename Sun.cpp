@@ -2,7 +2,7 @@
 
 Sun::Sun() : Sphere() {}
 
-Sun::Sun(float radius, GLfloat density, glm::vec3 position, int stacks, int slices) : Sphere(radius, density, position, stacks, slices) {}
+Sun::Sun(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices) : Sphere(radius, mass, position, stacks, slices) {}
 
 Sun::~Sun()
 {

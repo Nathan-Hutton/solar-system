@@ -16,11 +16,12 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Material.h"
+#include "Camera.h"
 
 namespace SceneFunctions {
-    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
-    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
-    void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites);
+    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera);
+    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera);
+    void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera);
 }
 
 #endif

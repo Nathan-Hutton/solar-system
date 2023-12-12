@@ -12,7 +12,7 @@ class Sphere
 {
     public:
         Sphere();
-        Sphere(float radius, GLfloat density, glm::vec3 position=glm::vec3(0.0f,0.0f,0.0f), int stacks=20, int slices=20);
+        Sphere(float radius, GLfloat mass, glm::vec3 position=glm::vec3(0.0f,0.0f,0.0f), int stacks=20, int slices=20);
 
         void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices);
         void renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininiess);
@@ -41,7 +41,6 @@ class Sphere
         Texture *texture;
         Material *material;
         GLfloat radius;
-        GLfloat density;
         GLfloat mass;
         glm::vec3 position;
         glm::vec3 velocity;
