@@ -54,12 +54,10 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 	float diffuseFactor = max(dot(normalize(normal), -normalize(direction)), 0.0f);
 	vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 	
-	vec4 specularColor = vec4(0, 0, 0, 0);
+	vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	if(diffuseFactor > 0.0f)
 	{
-        //if (normal.x > 0)
-            //return vec4(1.0f, 0.0f, 0.0f, 0.0f);
 		vec3 fragToEye = normalize(eyePosition - fragPos);
 		vec3 reflectedVertex = normalize(reflect(direction, normalize(normal)));
 		
@@ -81,10 +79,10 @@ vec4 CalcDirectionalLight()
 
 vec4 CalcPointLights()
 {
-	vec4 totalColor = vec4(0, 0, 0, 0);
+	vec4 totalColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	for(int i = 0; i < pointLightCount; i++)
 	{
-		vec3 direction = pointLights[i].position - fragPos;
+		vec3 direction = fragPos - pointLights[i].position;
 		float distance = length(direction);
 		direction = normalize(direction);
 		
@@ -92,6 +90,7 @@ vec4 CalcPointLights()
 		float attenuation = pointLights[i].exponential * distance * distance +
 							pointLights[i].linear * distance +
 							pointLights[i].constant;
+        //float attenuation = 1.0f;
 		
 		totalColor += (color / attenuation);
 	}

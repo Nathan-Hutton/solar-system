@@ -84,8 +84,8 @@ int main()
     glm::mat4 model;
 
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
-    mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 
-                                0.0f, 1.0f,
+    mainLight = DirectionalLight(0.0f, 0.0f, 0.0f, 
+                                0.0f, 0.0f,
                                 1.0f, 0.0f, 0.0f);
 
 	unsigned int pointLightCount = 0;
@@ -95,8 +95,8 @@ int main()
 	//							0.1f, 0.1f, 0.3f);
 	//pointLightCount++;
 	pointLights[0] = PointLight(1.0f, 1.0f, 1.0f,
-								0.0f, 0.0f,
-								0.0f, 0.0f, 0.0f,
+								0.0f, 1.0f,
+								6.0f, 0.0f, 0.0f,
 								0.1f, 0.1f, 0.01f);
 	pointLightCount++;
 
@@ -149,8 +149,8 @@ int main()
         shaderList[0]->useShader();
 
         // Apply projection and view matrices
-        shaderList[0]->setDirectionalLight(&mainLight);
-        //shaderList[0]->setPointLights(pointLights, pointLightCount);
+        //shaderList[0]->setDirectionalLight(&mainLight);
+        shaderList[0]->setPointLights(pointLights, pointLightCount);
 
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
