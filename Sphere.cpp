@@ -75,6 +75,20 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
         indices.push_back(i);
         indices.push_back(i + 1);
     }
+
+    //int i = 0;
+    //while (i < vertices.size())
+    //{
+    //    float x = vertices[i];
+    //    float y = vertices[i + 1];
+    //    float z = vertices[i + 2];
+    //    float nx = vertices[i + 5];
+    //    float ny = vertices[i + 6];
+    //    float nz = vertices[i + 7];
+    //    printf("vertex: %f %f %f\n", x, y, z);
+    //    printf("normal: %f %f %f\n", nx, ny, nz);
+    //    i += 8;
+    //}
 }
 
 void Sphere::renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess)

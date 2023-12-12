@@ -12,11 +12,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "CommonValues.h"
 #include "Shader.h"
 #include "Window.h"
 #include "Camera.h"
 #include "Sun.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
 #include "Material.h"
@@ -30,6 +32,7 @@ std::vector<Shader*> shaderList;
 Camera camera;
 
 DirectionalLight mainLight;
+PointLight pointLights[MAX_POINT_LIGHTS];
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -37,9 +40,7 @@ GLfloat timeChange = 1.0f;
 
 GLfloat gravitationalForce = -100.0f;
 
-// vertex shader
 static const char* vShader = "shaders/shader.vert";
-// Fragment shader
 static const char* fShader = "shaders/shader.frag";
 static const char* fShader2 = "shaders/shader.frag";
 
@@ -73,9 +74,9 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    //SceneFunctions::create1Sun1Planet(stars, satellites, &camera);
+    SceneFunctions::create1Sun1Planet(stars, satellites, &camera);
     //SceneFunctions::createObjectsDefault(stars, satellites, &camera);
-    SceneFunctions::createObjectsFigureEight(stars, satellites, &camera);
+    //SceneFunctions::createObjectsFigureEight(stars, satellites, &camera);
     createShaders();
 
     GLfloat now;
@@ -84,18 +85,25 @@ int main()
 
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
     mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 
-                                0.2f, 1.0f,
+                                0.0f, 1.0f,
                                 1.0f, 0.0f, 0.0f);
+
+	unsigned int pointLightCount = 0;
+	//pointLights[0] = PointLight(0.0f, 0.0f, 1.0f,
+	//							0.0f, 1.0f,
+	//							-14.0f, 0.0f, 0.0f,
+	//							0.1f, 0.1f, 0.3f);
+	//pointLightCount++;
+	pointLights[0] = PointLight(1.0f, 1.0f, 1.0f,
+								0.0f, 0.0f,
+								0.0f, 0.0f, 0.0f,
+								0.1f, 0.1f, 0.01f);
+	pointLightCount++;
 
     // These uniform objectd IDs connect us with the values in the shaders in the GPU
     GLuint uniformModel = shaderList[0]->getModelLocation();
     GLuint uniformProjection = shaderList[0]->getProjectionLocation();
     GLuint uniformView = shaderList[0]->getViewLocation();
-
-    GLuint uniformAmbientIntensity = shaderList[0]->getAmbientIntensityLocation();
-    GLuint uniformLightColor = shaderList[0]->getLightColorLocation();
-    GLuint uniformDiffuseIntensity = shaderList[0]->getDiffuseIntensityLocation();
-    GLuint uniformDirection = shaderList[0]->getDirectionLocation();
 
     GLuint uniformEyePosition = shaderList[0]->getEyePositionLocation();
     GLuint uniformSpecularIntensity = shaderList[0]->getSpecularIntensityLocation();
@@ -107,10 +115,7 @@ int main()
     //GLuint uniformModel1 = shaderList[1]->getModelLocation();
     //GLuint uniformProjection1 = shaderList[1]->getProjectionLocation();
     //GLuint uniformView1 = shaderList[1]->getViewLocation();
-    //GLuint uniformAmbientIntensity1 = shaderList[1]->getAmbientIntensityLocation();
-    //GLuint uniformLightColor1 = shaderList[1]->getLightColorLocation();
-    //GLuint uniformDiffuseIntensity1 = shaderList[1]->getDiffuseIntensityLocation();
-    //GLuint uniformDirection1 = shaderList[1]->getDirectionLocation();
+
     //GLuint uniformEyePosition1 = shaderList[1]->getEyePositionLocation();
     //GLuint uniformSpecularIntensity1 = shaderList[1]->getSpecularIntensityLocation();
     //GLuint uniformShininess1 = shaderList[1]->getShininessLocation();
@@ -144,7 +149,9 @@ int main()
         shaderList[0]->useShader();
 
         // Apply projection and view matrices
-        mainLight.useLight(uniformAmbientIntensity, uniformLightColor, uniformDiffuseIntensity, uniformDirection);
+        shaderList[0]->setDirectionalLight(&mainLight);
+        //shaderList[0]->setPointLights(pointLights, pointLightCount);
+
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
         glUniform3f(uniformEyePosition, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
