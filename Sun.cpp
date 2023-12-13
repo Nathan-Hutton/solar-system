@@ -2,14 +2,22 @@
 
 Sun::Sun() : Sphere() {}
 
-Sun::Sun(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices) : Sphere(radius, mass, position, stacks, slices) {}
-
-void Sun::setPointLightPointer(PointLight *light)
+Sun::Sun(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices) : Sphere(radius, mass, position, stacks, slices) 
 {
-    this->light = light;
+    this->light = NULL;
 }
 
-PointLight* Sun::getPointLightPointer()
+void Sun::setPointLight(GLfloat red, GLfloat green, GLfloat blue, 
+    GLfloat ambientIntensity, GLfloat diffuseIntensity,
+    GLfloat exponential, GLfloat linear, GLfloat constant)
+{
+    this->light = new PointLight(red, green, blue, 
+            ambientIntensity, diffuseIntensity,
+            position.x, position.y, position.z, 
+            exponential, linear, constant);
+}
+
+PointLight* Sun::getPointLight()
 {
     return light;
 }

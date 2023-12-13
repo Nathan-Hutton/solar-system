@@ -28,7 +28,7 @@ const float toRadians = M_PI / 180.0f;
 
 Window mainWindow;
 std::vector<Sun*> stars;
-std::vector<Planet*> satellites;
+std::vector<Planet*> planets;
 std::vector<Shader*> shaderList;
 Camera camera;
 
@@ -42,7 +42,7 @@ GLfloat timeChange = 1.0f;
 GLfloat gravitationalForce = -100.0f;
 
 static const char* vShader = "shaders/shader.vert";
-static const char* fShader = "shaders/shader.frag";
+static const char* fShader = "shaders/planetShader.frag";
 static const char* fShader2 = "shaders/sunShader.frag";
 
 void createShaders()
@@ -75,9 +75,9 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    SceneFunctions::create1Sun1Planet(stars, satellites, &camera);
-    //SceneFunctions::createObjectsDefault(stars, satellites, &camera);
-    //SceneFunctions::createObjectsFigureEight(stars, satellites, &camera);
+    //SceneFunctions::create1Sun1Planet(stars, planets, &camera);
+    //SceneFunctions::createObjectsDefault(stars, planets, &camera);
+    SceneFunctions::createObjectsFigureEight(stars, planets, &camera);
     createShaders();
 
     GLfloat now;
@@ -89,44 +89,25 @@ int main()
                                 0.0f, 0.0f,
                                 1.0f, 0.0f, 0.0f);
 
-	//pointLights[0] = PointLight(0.0f, 0.0f, 1.0f,
-	//							0.0f, 1.0f,
-	//							-14.0f, 0.0f, 0.0f,
-	//							0.1f, 0.1f, 0.3f);
-	//pointLightCount++;
-	//pointLights[0] = PointLight(1.0f, 1.0f, 1.0f,
-								//20.0f, 100.0f,
-								//6.0f, 0.0f, 0.0f,
-								//0.1f, 0.1f, 0.01f);
-	//pointLightCount++;
-
 	unsigned int pointLightCount = 0;
     int i = 0;
     for (Sun *sun : stars)
     {
-        pointLights[i] = *(sun->getPointLightPointer());
+        pointLights[i++] = *(sun->getPointLight());
         pointLightCount++;
     }
 
-    // These uniform objectd IDs connect us with the values in the shaders in the GPU
-    GLuint uniformModel = shaderList[0]->getModelLocation();
-    GLuint uniformProjection = shaderList[0]->getProjectionLocation();
-    GLuint uniformView = shaderList[0]->getViewLocation();
+    // Uniform object IDs connect us with the values in the shaders in the GPU
+    GLuint uniformModelPlanets = shaderList[0]->getModelLocation();
+    GLuint uniformProjectionPlanets = shaderList[0]->getProjectionLocation();
+    GLuint uniformViewPlanets = shaderList[0]->getViewLocation();
+    GLuint uniformEyePositionPlanets = shaderList[0]->getEyePositionLocation();
+    GLuint uniformSpecularIntensityPlanets = shaderList[0]->getSpecularIntensityLocation();
+    GLuint uniformShininessPlanets = shaderList[0]->getShininessLocation();
 
-    GLuint uniformEyePosition = shaderList[0]->getEyePositionLocation();
-    GLuint uniformSpecularIntensity = shaderList[0]->getSpecularIntensityLocation();
-    GLuint uniformShininess = shaderList[0]->getShininessLocation();
-
-    // Uncomment out this code when we want different shaders for planets and stars
-    // Apply shaders to satellites
-    //shaderList[1]->useShader();
-    GLuint uniformModel1 = shaderList[1]->getModelLocation();
-    GLuint uniformProjection1 = shaderList[1]->getProjectionLocation();
-    GLuint uniformView1 = shaderList[1]->getViewLocation();
-
-    GLuint uniformEyePosition1 = shaderList[1]->getEyePositionLocation();
-    GLuint uniformSpecularIntensity1 = shaderList[1]->getSpecularIntensityLocation();
-    GLuint uniformShininess1 = shaderList[1]->getShininessLocation();
+    GLuint uniformModelSuns = shaderList[1]->getModelLocation();
+    GLuint uniformProjectionSuns = shaderList[1]->getProjectionLocation();
+    GLuint uniformViewSuns = shaderList[1]->getViewLocation();
 
     // Loop until window is closed
     while(!mainWindow.getShouldClose())
@@ -137,15 +118,14 @@ int main()
         timeStep = deltaTime * timeChange;
 
         // This loop ensures that we follow a curve even when the framerate sucks
-        OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, timeStep);
+        OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, planets, timeStep);
         while (timeStep > 0.005f)
         {
-            OrbitalPhysicsFunctions::updateSatellitePositions(stars, satellites, gravitationalForce, 0.005f);
+            OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, gravitationalForce, 0.005f);
             timeStep -= 0.005f;
         }
-        OrbitalPhysicsFunctions::updateSatellitePositions(stars, satellites, gravitationalForce, timeStep);
+        OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, gravitationalForce, timeStep);
 
-        // Get + Handle user input events
         glfwPollEvents();
         camera.keyControl(mainWindow.getKeys(), deltaTime);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
@@ -156,35 +136,39 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderList[0]->useShader();
 
+
         // Apply projection and view matrices
+        // Project Converts 3D coordinates to 2D coordinates in rendering pipeline
+        // View matrix represents the camera's position and orientation in world.
+        // View matrix transforms world coordinates to camera/view coordinates
+        glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+        glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+
         //shaderList[0]->setDirectionalLight(&mainLight);
         shaderList[0]->setPointLights(pointLights, pointLightCount);
 
-        glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-        glUniform3f(uniformEyePosition, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
-
         // Apply rotations, transformations, and render objects
-        for (Planet *satellite : satellites)
+        for (Planet *satellite : planets)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, satellite->getPosition());
             model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
-            glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-            satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensity, uniformShininess);
+            glUniformMatrix4fv(uniformModelPlanets, 1, GL_FALSE, glm::value_ptr(model));
+            satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
             satellite->renderMesh();
         }
 
         shaderList[1]->useShader();
-        glUniformMatrix4fv(uniformProjection1, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(uniformView1, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-        glUniform3f(uniformEyePosition1, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+        glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
         for (Sun *star : stars)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, star->getPosition());
             model = glm::rotate(model, star->getAngle() * toRadians, star->getRotation());
-            glUniformMatrix4fv(uniformModel1, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
             star->renderMesh();
         }
         
