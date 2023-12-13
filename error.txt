@@ -1,0 +1,11 @@
+Sphere.cpp:84:6: error: no declaration matches ‘void Sphere::setMeshPointer(Mesh*)’
+   84 | void Sphere::setMeshPointer(Mesh *sphereMesh)
+      |      ^~~~~~
+In file included from Sphere.cpp:1:
+Sphere.h:18:14: note: candidate is: ‘void Sphere::setMeshPointer()’
+   18 |         void setMeshPointer();
+      |              ^~~~~~~~~~~~~~
+In file included from Sphere.cpp:1:
+Sphere.h:10:7: note: ‘class Sphere’ defined here
+   10 | class Sphere
+      |       ^~~~~~

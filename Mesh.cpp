@@ -48,10 +48,9 @@ void Mesh::setMaterialPointer(Material *material)
     this->material = material;
 }
 
-void Mesh::renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess)
+void Mesh::renderMesh()
 {
     texture->useTexture();
-    material->useMaterial(uniformSpecularIntensity, uniformShininess);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);

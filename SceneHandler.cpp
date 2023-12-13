@@ -2,7 +2,7 @@
 
 static const float toRadians = M_PI / 180.0f;
 
-void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera)
+void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 110.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 
@@ -20,14 +20,13 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     //Sun *sun = new Sun(2.0f, 2.0f);
     Sun *sun = new Sun(7.0f, 429.3f);
     sun->setTexturePointer(sunTexture);
-    sun->setMaterialPointer(material);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
 
-    Sphere *planet = new Sphere(1.0f, 4.0f);
+    Planet *planet = new Planet(1.0f, 4.0f);
     planet->setTexturePointer(earthTexture);
     planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(0.0f, -15.0f, -2.5f));
@@ -37,7 +36,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
 
-    Sphere *planet1 = new Sphere(1.0f, 4.0f);
+    Planet *planet1 = new Planet(1.0f, 4.0f);
     planet1->setTexturePointer(marsTexture);
     planet1->setMaterialPointer(material);
     planet1->setPosition(glm::vec3(45.0f, 0.0f, -2.5f));
@@ -48,7 +47,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     planet1->setRotationSpeed(-100.0f);
     satellites.push_back(planet1);
 
-    Sphere *moon = new Sphere(0.5f, 1.25f);
+    Planet *moon = new Planet(0.5f, 1.25f);
     moon->setTexturePointer(moonTexture);
     moon->setMaterialPointer(material);
     moon->setPosition(glm::vec3(42.0f, 0.0f, -2.5f));
@@ -58,7 +57,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     satellites.push_back(moon);
 }
 
-void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera)
+void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 
@@ -71,7 +70,6 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
 
     Sun *sun1 = new Sun(2.0f, 67.0f);
     sun1->setTexturePointer(sunTexture);
-    sun1->setMaterialPointer(material);
     sun1->setPosition(glm::vec3(-15.0f, 0.0f, -2.5f));
     sun1->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun1->setAngle(90.0f);
@@ -80,14 +78,13 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
 
     Sun *sun2 = new Sun(2.0f, 67.0f);
     sun2->setTexturePointer(sunTexture);
-    sun2->setMaterialPointer(material);
     sun2->setPosition(glm::vec3(15.0f, 0.0f, -2.5f));
     sun2->setRotation(glm::vec3(0.0f, 1.0f, 1.0f));
     sun2->setAngle(90.0f);
     sun2->setRotationSpeed(25.0f);
     stars.push_back(sun2);
 
-    Sphere *planet = new Sphere(1.0f, 4.0f);
+    Planet *planet = new Planet(1.0f, 4.0f);
     planet->setTexturePointer(earthTexture);
     planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
@@ -97,7 +94,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     satellites.push_back(planet);
 }
 
-void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera)
+void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
 
@@ -110,14 +107,19 @@ void SceneFunctions::create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sph
 
     Sun *sun = new Sun(5.0f, 225.0f);
     sun->setTexturePointer(sunTexture);
-    sun->setMaterialPointer(material);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
 
-    Sphere *planet = new Sphere(1.0f, 4.0f);
+	PointLight *sunLight = new PointLight(1.0f, 1.0f, 1.0f,
+								2.0f, 100.0f,
+								0.0f, 0.0f, 0.0f,
+								0.1f, 0.1f, 0.01f);
+    sun->setPointLightPointer(sunLight);
+
+    Planet *planet = new Planet(1.0f, 4.0f);
     planet->setTexturePointer(earthTexture);
     planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(25.5f, 0.0f, -2.5f));

@@ -26,7 +26,7 @@ glm::vec3 OrbitalPhysicsFunctions::getNewPosition(glm::vec3 oldPosition, glm::ve
 {
     return oldPosition + velocity * timeStep;
 }
-void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, GLfloat timeStep)
+void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
     for (Sphere *sphere : satellites) 
@@ -46,7 +46,7 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars
             star->setAngle(star->getAngle() + 360);
     }
 }
-void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, GLfloat gravitationalForce, GLfloat timeStep)
+void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, GLfloat gravitationalForce, GLfloat timeStep)
 {
     std::vector<glm::vec3> newPositions;
     for (int i = 0; i < satellites.size(); i++) 

@@ -11,7 +11,6 @@ Sphere::Sphere()
     this->rotationSpeed = 0.0f;
     this->sphereMesh = new Mesh();
     this->texture = NULL;
-    this->material = NULL;
 }
 
 Sphere::Sphere(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices)
@@ -75,25 +74,16 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
         indices.push_back(i);
         indices.push_back(i + 1);
     }
-
-    //int i = 0;
-    //while (i < vertices.size())
-    //{
-    //    float x = vertices[i];
-    //    float y = vertices[i + 1];
-    //    float z = vertices[i + 2];
-    //    float nx = vertices[i + 5];
-    //    float ny = vertices[i + 6];
-    //    float nz = vertices[i + 7];
-    //    printf("vertex: %f %f %f\n", x, y, z);
-    //    printf("normal: %f %f %f\n", nx, ny, nz);
-    //    i += 8;
-    //}
 }
 
-void Sphere::renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess)
+void Sphere::renderMesh()
 {
-    sphereMesh->renderMesh(uniformSpecularIntensity, uniformShininess);
+    sphereMesh->renderMesh();
+}
+
+void Sphere::setMeshPointer(Mesh *sphereMesh)
+{
+    this->sphereMesh = sphereMesh;
 }
 
 Mesh* Sphere::getMeshPointer()
@@ -101,9 +91,15 @@ Mesh* Sphere::getMeshPointer()
     return sphereMesh;
 }
 
-Material* Sphere::getMaterialPointer()
+Texture* Sphere::getTexturePointer()
 {
-    return material;
+    return texture;
+}
+
+void Sphere::setTexturePointer(Texture *texture)
+{
+    this->texture = texture;
+    this->sphereMesh->setTexturePointer(texture);
 }
 
 GLfloat Sphere::getMass()
@@ -164,23 +160,6 @@ GLfloat Sphere::getRotationSpeed()
 void Sphere::setRotationSpeed(GLfloat speed)
 {
     this->rotationSpeed = speed;
-}
-
-Texture* Sphere::getTexturePointer()
-{
-    return texture;
-}
-
-void Sphere::setTexturePointer(Texture *texture)
-{
-    this->texture = texture;
-    this->sphereMesh->setTexturePointer(texture);
-}
-
-void Sphere::setMaterialPointer(Material *material)
-{
-    this->material = material;
-    this->sphereMesh->setMaterialPointer(material);
 }
 
 Sphere::~Sphere()

@@ -13,7 +13,7 @@ class Mesh
         void createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numIndices);
         void setTexturePointer(Texture *texture);
         void setMaterialPointer(Material *material);
-        void renderMesh(GLuint uniformSpecularIntensity, GLuint uniformShininess);
+        void renderMesh();
         void clearMesh();
         void calcAverageNormals(unsigned int *indices, unsigned int indexCount, GLfloat *vertices, unsigned int vertexCount, unsigned int vLen, unsigned int normalOffset);
 

@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Sun.h"
+#include "Planet.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "Light.h"
@@ -19,9 +20,9 @@
 #include "Camera.h"
 
 namespace SceneFunctions {
-    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera);
-    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera);
-    void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Sphere*>& satellites, Camera *camera);
+    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, Camera *camera);
+    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, Camera *camera);
+    void create1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, Camera *camera);
 }
 
 #endif
