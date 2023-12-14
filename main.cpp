@@ -75,9 +75,9 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    SceneFunctions::create1Sun1Planet(stars, planets, &camera);
+    //SceneFunctions::create1Sun1Planet(stars, planets, &camera);
     //SceneFunctions::createObjectsDefault(stars, planets, &camera);
-    //SceneFunctions::createObjectsFigureEight(stars, planets, &camera);
+    SceneFunctions::createObjectsFigureEight(stars, planets, &camera);
     createShaders();
 
     GLfloat now;
