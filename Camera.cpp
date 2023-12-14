@@ -5,7 +5,12 @@ Camera::Camera()
     position = glm::vec3(0.0f, 0.0f, 0.0f);
     worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     yaw = 90.0f;
+    oldYaw = 90.0f;
     pitch = 0.0f;
+    oldPitch = 0.0f;
+    roll = 0.0f;
+    oldRoll = 0.0f;
+    
     front = glm::vec3(0.0f, 0.0f, -1.0f);
     front = glm::normalize(front);
     right = glm::normalize(glm::cross(front, worldUp));
@@ -20,7 +25,11 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     position = startPosition;
     worldUp = startUp;
     yaw = startYaw;
+    oldYaw = startYaw;
     pitch = startPitch;
+    oldPitch = startPitch;
+    oldRoll = 0.0f;
+    roll = 0.0f;
     front = glm::vec3(0.0f, 0.0f, -1.0f);
     right = glm::normalize(glm::cross(front, worldUp));
     up = glm::normalize(glm::cross(right, front));
@@ -41,6 +50,10 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime)
         position -= front * velocity;
     if (keys[GLFW_KEY_D])
         position += right * velocity;
+    if (keys[GLFW_KEY_E])
+        roll += 1;
+    if (keys[GLFW_KEY_Q])
+        roll -= 1;
 }
 
 void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
@@ -50,12 +63,6 @@ void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
 
     yaw += xChange;
     pitch += yChange;
-
-    // This is because you typically don't want to look more up or down than 90 degrees (unless we have a plane simulator or something)
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
 
     update();
 }
@@ -73,15 +80,20 @@ glm::vec3 Camera::getPosition()
 
 void Camera::update()
 {
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front = glm::normalize(front);
+    glm::mat4 yawMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(oldYaw - yaw), up);
+    front = glm::normalize(glm::vec3(yawMatrix * glm::vec4(front, 0.0f)));
+    oldYaw = yaw;
+    right = glm::normalize(glm::cross(front, up));
 
-    // Unless we're doing rolling, we only need the right to be relative to the direction and worldUp
-    // Otherwise we'd use the camera's up vector
-    right = glm::normalize(glm::cross(front, worldUp));
+    glm::mat4 pitchMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(pitch - oldPitch), right);
+    front = glm::normalize(glm::vec3(pitchMatrix * glm::vec4(front, 0.0f)));
+    oldPitch = pitch;
     up = glm::normalize(glm::cross(right, front));
+
+    glm::mat4 rollMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(roll - oldRoll), front);
+    up = glm::normalize(glm::vec3(rollMatrix * glm::vec4(up, 0.0f)));
+    oldRoll = roll;
+    right = glm::normalize(glm::cross(front, up));
 }
 
 Camera::~Camera()

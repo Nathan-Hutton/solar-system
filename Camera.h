@@ -18,6 +18,7 @@ public:
 
     glm::vec3 getPosition();
     glm::mat4 calculateViewMatrix();
+    void update();
 
     ~Camera();
 
@@ -29,11 +30,12 @@ private:
     glm::vec3 worldUp;
 
     GLfloat yaw;
+    GLfloat oldYaw;
     GLfloat pitch;
-    // Add roll for a plane/ship simulation type of thing
+    GLfloat oldPitch;
+    GLfloat oldRoll;
+    GLfloat roll;
 
     GLfloat moveSpeed;
     GLfloat turnSpeed;
-
-    void update();
 };
