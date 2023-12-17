@@ -34,8 +34,8 @@ std::vector<Shader*> shaderList;
 Camera camera;
 
 DirectionalLight mainLight;
-PointLight pointLights[MAX_POINT_LIGHTS];
-SpotLight spotLights[MAX_SPOT_LIGHTS];
+PointLight* pointLights[MAX_POINT_LIGHTS];
+SpotLight* spotLights[MAX_SPOT_LIGHTS];
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -79,9 +79,9 @@ int main()
 
     unsigned int pointLightCount = 0;
     unsigned int spotLightCount = 0;
-    //SceneFunctions::createObjects1Sun1Planet(stars, planets, &pointLightCount, spotLights, &spotLightCount, &camera);
-    //SceneFunctions::createObjectsDefault(stars, planets, &pointLightCount, spotLights, &spotLightCount, &camera);
-    SceneFunctions::createObjectsFigureEight(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjects1Sun1Planet(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    SceneFunctions::createObjectsDefault(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjectsFigureEight(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     createShaders();
 
     GLfloat now;
@@ -108,8 +108,6 @@ int main()
     // Loop until window is closed
     while(!mainWindow.getShouldClose())
     {
-        //printf("%f %f %f\n", camera.getSpotLight()->getPosition().x, camera.getSpotLight()->getPosition().y, camera.getSpotLight()->getPosition().z);
-        printf("%f %f %f\n", spotLights[0].getPosition().x, spotLights[0].getPosition().y, spotLights[0].getPosition().z);
         now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;

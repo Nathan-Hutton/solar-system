@@ -21,16 +21,16 @@
 
 namespace SceneFunctions {
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
-            PointLight *pLights, unsigned int *pLightCount,
-            SpotLight *sLights, unsigned int *sLightCount,
+            PointLight* pLights[], unsigned int *pLightCount,
+            SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera);
     void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
-            PointLight *pLights, unsigned int *pLightCount,
-            SpotLight *sLights, unsigned int *sLightCount,
+            PointLight* pLights[], unsigned int *pLightCount,
+            SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera);
     void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
-            PointLight *pLights, unsigned int *pLightCount,
-            SpotLight *sLights, unsigned int *sLightCount,
+            PointLight* pLights[], unsigned int *pLightCount,
+            SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera);
 }
 

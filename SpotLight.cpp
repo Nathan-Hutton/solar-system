@@ -49,6 +49,11 @@ glm::vec3 SpotLight::getPosition()
     return position;
 }
 
+glm::vec3 SpotLight::getDirection()
+{
+    return direction;
+}
+
 SpotLight::~SpotLight()
 {
 }

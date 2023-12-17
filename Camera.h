@@ -48,5 +48,8 @@ private:
     GLfloat moveSpeed;
     GLfloat turnSpeed;
 
+    bool spotLightOn;
+    bool fKeyPressed;
+
     SpotLight *spotLight;
 };

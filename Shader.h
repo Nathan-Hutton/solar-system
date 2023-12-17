@@ -38,8 +38,8 @@ class Shader
         GLuint getConstantLocation();
 
         void setDirectionalLight(DirectionalLight *dLight);
-        void setPointLights(PointLight *pLights, unsigned int lightCount);
-        void setSpotLights(SpotLight *sLights, unsigned int lightCount);
+        void setPointLights(PointLight* pLights[], unsigned int lightCount);
+        void setSpotLights(SpotLight* sLights[], unsigned int lightCount);
 
         void useShader();
         void clearShader();

@@ -18,6 +18,7 @@ class SpotLight : public PointLight {
                     GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation,
                     GLuint edgeLocation);
         glm::vec3 getPosition();
+        glm::vec3 getDirection();
 
         void setFlash(glm::vec3 pos, glm::vec3 dir);
 

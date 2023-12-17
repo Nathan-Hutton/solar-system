@@ -3,11 +3,18 @@
 static const float toRadians = M_PI / 180.0f;
 
 void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
-            PointLight *pLights, unsigned int *pLightCount,
-            SpotLight *sLights, unsigned int *sLightCount,
+            PointLight* pLights[], unsigned int *pLightCount,
+            SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 110.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
+    camera->setSpotLight(1.0f, 1.0f, 1.0f,
+                         0.0f, 10.0f,
+                         camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
+                         0.0f, -1.0f, 0.0f,
+                         0.1f, 0.1f, 0.5f,
+                         20.0f);
+    sLights[*sLightCount] = camera->getSpotLight();
 
     Texture *sunTexture = new Texture((char*)("Textures/sun.jpg"));
     sunTexture->loadTexture();
@@ -28,7 +35,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
-    pLights[(*pLightCount)++] = *(sun->getPointLight());
+    pLights[(*pLightCount)++] = sun->getPointLight();
 
     Planet *planet = new Planet(1.0f, 4.0f);
     planet->setTexturePointer(earthTexture);
@@ -59,19 +66,18 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
 }
 
 void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
-            PointLight *pLights, unsigned int *pLightCount,
-            SpotLight *sLights, unsigned int *sLightCount,
+            PointLight* pLights[], unsigned int *pLightCount,
+            SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
     camera->setSpotLight(1.0f, 1.0f, 1.0f,
-                         0.0f, 100.0f,
+                         0.0f, 10.0f,
                          camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
                          0.0f, -1.0f, 0.0f,
-                         0.0f, 0.0f, 1.0f,
+                         0.1f, 0.1f, 0.5f,
                          20.0f);
-    //sLights[(*sLightCount)++] = *(camera->getSpotLight());
-    sLights[0] = *(camera->getSpotLight());
+    sLights[*sLightCount] = camera->getSpotLight();
 
     Texture *sunTexture = new Texture((char*)("Textures/sun.jpg"));
     sunTexture->loadTexture();
@@ -88,7 +94,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     sun1->setAngle(90.0f);
     sun1->setRotationSpeed(-25.2f);
     stars.push_back(sun1);
-    pLights[(*pLightCount)++] = *(sun1->getPointLight());
+    pLights[(*pLightCount)++] = sun1->getPointLight();
 
     Sun *sun2 = new Sun(2.0f, 67.0f);
     sun2->setPosition(glm::vec3(15.0f, 0.0f, -2.5f));
@@ -98,7 +104,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     sun2->setAngle(90.0f);
     sun2->setRotationSpeed(25.0f);
     stars.push_back(sun2);
-    pLights[(*pLightCount)++] = *(sun2->getPointLight());
+    pLights[(*pLightCount)++] = sun2->getPointLight();
 
     Planet *planet = new Planet(1.0f, 4.0f);
     planet->setTexturePointer(earthTexture);
@@ -111,11 +117,18 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
 }
 
 void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
-            PointLight *pLights, unsigned int *pLightCount,
-            SpotLight *sLights, unsigned int *sLightCount,
+            PointLight* pLights[], unsigned int *pLightCount,
+            SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
+    camera->setSpotLight(1.0f, 1.0f, 1.0f,
+                         0.0f, 10.0f,
+                         camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
+                         0.0f, -1.0f, 0.0f,
+                         0.1f, 0.1f, 0.5f,
+                         20.0f);
+    sLights[*sLightCount] = camera->getSpotLight();
 
     Texture *sunTexture = new Texture((char*)("Textures/sun.jpg"));
     sunTexture->loadTexture();
@@ -132,7 +145,7 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
     stars.push_back(sun);
-    pLights[(*pLightCount)++] = *(sun->getPointLight());
+    pLights[(*pLightCount)++] = sun->getPointLight();
 
     Planet *planet = new Planet(1.0f, 4.0f);
     planet->setTexturePointer(earthTexture);

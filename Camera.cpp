@@ -20,6 +20,9 @@ Camera::Camera()
     moveSpeed = 5.0f;
     turnSpeed = 1.0f;
 
+    spotLightOn = true;
+    fKeyPressed = false;
+
     spotLight = NULL;
 }
 
@@ -39,13 +42,17 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
 
     moveSpeed = startMoveSpeed;
     turnSpeed = startTurnSpeed;
+
+    spotLightOn = false;
+    fKeyPressed = false;
+
+    spotLight = NULL;
 }
 
 void Camera::keyControl(bool* keys, GLfloat deltaTime, unsigned int *sLightCount)
 {
     GLfloat velocity = moveSpeed * deltaTime;
 
-    // TODO: Add up and down movement
     if (keys[GLFW_KEY_W])
         position += front * velocity;
     if (keys[GLFW_KEY_A])
@@ -54,14 +61,40 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime, unsigned int *sLightCount
         position -= front * velocity;
     if (keys[GLFW_KEY_D])
         position += right * velocity;
+
+    // Up and down
+    if (keys[GLFW_KEY_LEFT_SHIFT])
+        position -= up * velocity;
+    if (keys[GLFW_KEY_SPACE])
+        position += up * velocity;
+
+    // Roll
     if (keys[GLFW_KEY_E])
         roll += velocity * 15;
     if (keys[GLFW_KEY_Q])
         roll -= velocity * 15;
 
-    // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
+    // Flashlight
     if (keys[GLFW_KEY_F])
-        (*sLightCount)--;
+    {
+        // We don't want to press the f key multiple times just being having it held down
+        if (fKeyPressed)
+            return;
+
+        fKeyPressed = true;
+
+        // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
+        if (spotLightOn)
+            (*sLightCount)--;
+        else
+            (*sLightCount)++;
+
+        spotLightOn = !spotLightOn;
+    }
+    else
+    {
+        fKeyPressed = false;
+    }
 }
 
 void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
