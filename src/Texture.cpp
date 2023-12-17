@@ -19,14 +19,44 @@ Texture::Texture(char* fileLocation)
 }
 
 // Load the texture at fileLocation
-void Texture::loadTexture()
+bool Texture::loadTexture()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
     unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 4);
     if (!textData)
     {
         printf("Failed to find %s\n", fileLocation);
-        return;
+        return false;
+    }
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Consider using CLAMP_TO_EDGE instead of GL_REPEAT
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // since the data has been copied to the glTextImage2D we don't need the raw data anymore so we free it
+    stbi_image_free(textData);
+    return true;
+}
+
+// Load the texture at fileLocation with alpha values
+bool Texture::loadTextureA()
+{
+    // 1 char is equal to one byte, so this is an array of bytes really
+    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 4);
+    if (!textData)
+    {
+        printf("Failed to find %s\n", fileLocation);
+        return false;
     }
 
     glGenTextures(1, &textureID);
@@ -45,6 +75,7 @@ void Texture::loadTexture()
 
     // since the data has been copied to the glTextImage2D we don't need the raw data anymore so we free it
     stbi_image_free(textData);
+    return true;
 }
 
 void Texture::useTexture()

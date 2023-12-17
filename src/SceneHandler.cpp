@@ -16,14 +16,14 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
                          20.0f);
     sLights[*sLightCount] = camera->getSpotLight();
 
-    Texture *sunTexture = new Texture((char*)("Textures/sun.jpg"));
-    sunTexture->loadTexture();
-    Texture *earthTexture = new Texture((char*)("Textures/earth.jpg"));
-    earthTexture->loadTexture();
-    Texture *marsTexture = new Texture((char*)("Textures/mars.jpg"));
-    marsTexture->loadTexture();
-    Texture *moonTexture = new Texture((char*)("Textures/moon.jpg"));
-    moonTexture->loadTexture();
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.jpg"));
+    sunTexture->loadTextureA();
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
+    earthTexture->loadTextureA();
+    Texture *marsTexture = new Texture((char*)("../assets/textures/mars.jpg"));
+    marsTexture->loadTextureA();
+    Texture *moonTexture = new Texture((char*)("../assets/textures/moon.jpg"));
+    moonTexture->loadTextureA();
 
     Material *material = new Material(0.1f, 1);
 
@@ -79,10 +79,10 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
                          20.0f);
     sLights[*sLightCount] = camera->getSpotLight();
 
-    Texture *sunTexture = new Texture((char*)("Textures/sun.jpg"));
-    sunTexture->loadTexture();
-    Texture *earthTexture = new Texture((char*)("Textures/earth.jpg"));
-    earthTexture->loadTexture();
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.jpg"));
+    sunTexture->loadTextureA();
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
+    earthTexture->loadTextureA();
 
     Material *material = new Material(0.1f, 1);
 
@@ -130,10 +130,10 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
                          20.0f);
     sLights[*sLightCount] = camera->getSpotLight();
 
-    Texture *sunTexture = new Texture((char*)("Textures/sun.jpg"));
-    sunTexture->loadTexture();
-    Texture *earthTexture = new Texture((char*)("Textures/earth.jpg"));
-    earthTexture->loadTexture();
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.jpg"));
+    sunTexture->loadTextureA();
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
+    earthTexture->loadTextureA();
 
     Material *material = new Material(1.0f, 32);
 

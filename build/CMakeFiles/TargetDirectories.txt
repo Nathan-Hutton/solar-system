@@ -1,0 +1,3 @@
+/home/nathan/school/capstone/solar-system/build/CMakeFiles/main.dir
+/home/nathan/school/capstone/solar-system/build/CMakeFiles/edit_cache.dir
+/home/nathan/school/capstone/solar-system/build/CMakeFiles/rebuild_cache.dir

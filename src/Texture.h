@@ -9,7 +9,8 @@ class Texture
         Texture();
         Texture(char* fileLocation);
 
-        void loadTexture();
+        bool loadTexture();
+        bool loadTextureA();
         void useTexture();
         void clearTexture();
 

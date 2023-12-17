@@ -43,9 +43,9 @@ GLfloat timeChange = 1.0f;
 
 GLfloat gravitationalForce = -100.0f;
 
-static const char* vShader = "shaders/shader.vert";
-static const char* fShader = "shaders/planetShader.frag";
-static const char* fShader2 = "shaders/sunShader.frag";
+static const char* vShader = "../assets/shaders/shader.vert";
+static const char* fShader = "../assets/shaders/planetShader.frag";
+static const char* fShader2 = "../assets/shaders/sunShader.frag";
 
 void createShaders()
 {
