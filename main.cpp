@@ -20,6 +20,7 @@
 #include "Planet.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
 #include "Material.h"
@@ -34,6 +35,7 @@ Camera camera;
 
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
+SpotLight spotLights[MAX_SPOT_LIGHTS];
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -75,9 +77,11 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    //SceneFunctions::create1Sun1Planet(stars, planets, &camera);
-    //SceneFunctions::createObjectsDefault(stars, planets, &camera);
-    SceneFunctions::createObjectsFigureEight(stars, planets, &camera);
+    unsigned int pointLightCount = 0;
+    unsigned int spotLightCount = 0;
+    //SceneFunctions::createObjects1Sun1Planet(stars, planets, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjectsDefault(stars, planets, &pointLightCount, spotLights, &spotLightCount, &camera);
+    SceneFunctions::createObjectsFigureEight(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     createShaders();
 
     GLfloat now;
@@ -88,14 +92,6 @@ int main()
     mainLight = DirectionalLight(0.0f, 0.0f, 0.0f, 
                                 0.0f, 0.0f,
                                 1.0f, 0.0f, 0.0f);
-
-	unsigned int pointLightCount = 0;
-    int i = 0;
-    for (Sun *sun : stars)
-    {
-        pointLights[i++] = *(sun->getPointLight());
-        pointLightCount++;
-    }
 
     // Uniform object IDs connect us with the values in the shaders in the GPU
     GLuint uniformModelPlanets = shaderList[0]->getModelLocation();
@@ -112,6 +108,8 @@ int main()
     // Loop until window is closed
     while(!mainWindow.getShouldClose())
     {
+        //printf("%f %f %f\n", camera.getSpotLight()->getPosition().x, camera.getSpotLight()->getPosition().y, camera.getSpotLight()->getPosition().z);
+        printf("%f %f %f\n", spotLights[0].getPosition().x, spotLights[0].getPosition().y, spotLights[0].getPosition().z);
         now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
@@ -127,7 +125,7 @@ int main()
         OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, gravitationalForce, timeStep);
 
         glfwPollEvents();
-        camera.keyControl(mainWindow.getKeys(), deltaTime);
+        camera.keyControl(mainWindow.getKeys(), deltaTime, &spotLightCount);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset());
 
@@ -147,6 +145,7 @@ int main()
 
         //shaderList[0]->setDirectionalLight(&mainLight);
         shaderList[0]->setPointLights(pointLights, pointLightCount);
+        shaderList[0]->setSpotLights(spotLights, spotLightCount);
 
         // Apply rotations, transformations, and render objects
         for (Planet *satellite : planets)

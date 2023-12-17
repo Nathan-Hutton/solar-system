@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <stdio.h>
 
 Camera::Camera()
 {
@@ -18,6 +19,8 @@ Camera::Camera()
 
     moveSpeed = 5.0f;
     turnSpeed = 1.0f;
+
+    spotLight = NULL;
 }
 
 Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLfloat startPitch, GLfloat startMoveSpeed, GLfloat startTurnSpeed)
@@ -38,10 +41,11 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     turnSpeed = startTurnSpeed;
 }
 
-void Camera::keyControl(bool* keys, GLfloat deltaTime)
+void Camera::keyControl(bool* keys, GLfloat deltaTime, unsigned int *sLightCount)
 {
     GLfloat velocity = moveSpeed * deltaTime;
 
+    // TODO: Add up and down movement
     if (keys[GLFW_KEY_W])
         position += front * velocity;
     if (keys[GLFW_KEY_A])
@@ -54,6 +58,10 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime)
         roll += velocity * 15;
     if (keys[GLFW_KEY_Q])
         roll -= velocity * 15;
+
+    // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
+    if (keys[GLFW_KEY_F])
+        (*sLightCount)--;
 }
 
 void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
@@ -67,6 +75,26 @@ void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
     update();
 }
 
+void Camera::setSpotLight(GLfloat red, GLfloat green, GLfloat blue, 
+                GLfloat ambientIntensity, GLfloat diffuseIntensity, 
+                GLfloat xPos, GLfloat yPos, GLfloat zPos,
+                GLfloat xDir, GLfloat yDir, GLfloat zDir,
+                GLfloat exponential, GLfloat linear, GLfloat constant,
+                GLfloat edge)
+{
+    spotLight = new SpotLight(red, green, blue,
+                        ambientIntensity, diffuseIntensity,
+                        xPos, yPos, zPos,
+                        xDir, yDir, zDir,
+                        exponential, linear, constant,
+                        edge);
+}
+
+SpotLight* Camera::getSpotLight()
+{
+    return spotLight;
+}
+
 glm::mat4 Camera::calculateViewMatrix()
 {
     // Args are where the camera is, what the camera is looking at, and what its up is
@@ -76,6 +104,11 @@ glm::mat4 Camera::calculateViewMatrix()
 glm::vec3 Camera::getPosition()
 {
     return position;
+}
+
+glm::vec3 Camera::getDirection()
+{
+    return front;
 }
 
 void Camera::update()
@@ -94,6 +127,9 @@ void Camera::update()
     up = glm::normalize(glm::vec3(rollMatrix * glm::vec4(up, 0.0f)));
     oldRoll = roll;
     right = glm::normalize(glm::cross(front, up));
+
+    // Update the flashlight position and direction
+    spotLight->setFlash(position, front);
 }
 
 Camera::~Camera()

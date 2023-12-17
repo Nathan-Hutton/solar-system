@@ -1,7 +1,7 @@
 #pragma once
 #include "Light.h"
 
-class PointLight : Light {
+class PointLight : public Light {
     public:
         PointLight();
 
@@ -17,7 +17,7 @@ class PointLight : Light {
 
         ~PointLight();
 
-    private:
+    protected:
         glm::vec3 position;
         GLfloat exponential, linear, constant;
 };
