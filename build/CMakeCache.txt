@@ -145,7 +145,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=MyAssimpProject
+CMAKE_PROJECT_NAME:STATIC=SolarSystem
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -227,15 +227,6 @@ GLEW_STATIC_LIBRARY_DEBUG:FILEPATH=GLEW_STATIC_LIBRARY_DEBUG-NOTFOUND
 //Path to a library.
 GLEW_STATIC_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLEW.a
 
-//Value Computed by CMake
-MyAssimpProject_BINARY_DIR:STATIC=/home/nathan/school/capstone/solar-system/build
-
-//Value Computed by CMake
-MyAssimpProject_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-MyAssimpProject_SOURCE_DIR:STATIC=/home/nathan/school/capstone/solar-system
-
 //Path to a file.
 OPENGL_EGL_INCLUDE_DIR:PATH=/usr/include
 
@@ -259,6 +250,15 @@ OPENGL_opengl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libOpenGL.so
 
 //Path to a file.
 OPENGL_xmesa_INCLUDE_DIR:PATH=OPENGL_xmesa_INCLUDE_DIR-NOTFOUND
+
+//Value Computed by CMake
+SolarSystem_BINARY_DIR:STATIC=/home/nathan/school/capstone/solar-system/build
+
+//Value Computed by CMake
+SolarSystem_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+SolarSystem_SOURCE_DIR:STATIC=/home/nathan/school/capstone/solar-system
 
 //The directory containing a CMake configuration file for assimp.
 assimp_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/assimp-5.2

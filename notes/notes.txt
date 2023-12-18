@@ -1,4 +1,0 @@
-Use GLUT (OpenGL utility toolkit) with glutSolidSphere or glutWireSphere to make a sphere. This will handle the triangles for us and approximate a sphere. 
-Can also mathematically create the spheres using formulas to evenly place vertices over a sphere's surface then connect vertices with triangles. Need a good understanding of geometry and trig.
-Vertex and fragment shaders will make the spheres look more realistic.
-Computationally expensive.
