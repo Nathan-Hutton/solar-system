@@ -1,9 +1,7 @@
 #pragma once
 
-#include <glm/glew.h>
-#include <glm/glm.hpp>
+#include "SpaceObject.h"
 
-#include <vector>
 #include <string>
 #include <algorithm>
 
@@ -11,34 +9,18 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Mesh.h"
-#include "Texture.h"
-
 // A mesh is a collection of vertices whereas a model is either a mesh or a collection
 // of meshes that represents a more advanced object
 // For example, a model of a human will have meshes for the limbs, torso, head, etc.
-class Model
+class Model : public SpaceObject
 {
     public:
         Model();
-        Model(GLfloat mass, glm::vec3 position=glm::vec3(0.0f, 0.0f, 0.0f));
+        Model(GLfloat mass);
 
         void loadModel(const std::string& fileName);
         void renderModel();
         void clearModel();
-
-        GLfloat getMass();
-        glm::vec3 getPosition() const;
-        void setPosition(glm::vec3 position);
-        glm::vec3 getVelocity();
-        void setVelocity(glm::vec3 velocity);
-        glm::vec3 getRotation() const;
-        void setRotation(glm::vec3 rotation);
-        GLfloat getAngle();
-        void setAngle(GLfloat angle);
-        GLfloat getRotationSpeed();
-        void setRotationSpeed(GLfloat speed);
-
 
         ~Model();
 
@@ -56,12 +38,4 @@ class Model
         // We'll create one of each texture and if a mesh uses the same texture 
         // as another, they'll just say which one it's using instead of remaking the texture
         std::vector<unsigned int> meshToTex; 
-
-        GLfloat mass;
-        glm::vec3 position;
-        glm::vec3 velocity;
-        glm::vec3 rotation;
-        GLfloat angle;
-        GLfloat rotationSpeed;
-
 };

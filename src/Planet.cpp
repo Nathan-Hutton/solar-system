@@ -2,7 +2,7 @@
 
 Planet::Planet() : Sphere() {}
 
-Planet::Planet(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices) : Sphere(radius, mass, position, stacks, slices) {}
+Planet::Planet(float radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices) {}
 
 void Planet::setMaterialPointer(Material *material)
 {
@@ -16,5 +16,5 @@ Material* Planet::getMaterialPointer()
 
 Planet::~Planet()
 {
-    delete sphereMesh, position, material;
+    delete sphereMesh, material;
 }

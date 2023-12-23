@@ -1,26 +1,10 @@
 #include "Model.h"
 
-Model::Model()
-{
-    this->mass = 0.5f;
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->angle = 0.0f;
-    this->rotationSpeed = 0.0f;
-}
+Model::Model() : SpaceObject()
+{}
 
-Model::Model(GLfloat mass, glm::vec3 position)
-{
-    this->mass = mass;
-    this->position = position;
-
-    // We'll set these with setters
-    this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->angle = 0.0f;
-    this->rotationSpeed = 0.0f;
-}
+Model::Model(GLfloat mass) : SpaceObject(mass)
+{}
 
 void Model::loadModel(const std::string& fileName)
 {
@@ -51,7 +35,7 @@ void Model::renderModel()
             textureList[materialIndex]->useTexture();
         }
 
-        meshList[i]->RenderMesh();
+        meshList[i]->renderMesh();
     }
 }
 
@@ -123,9 +107,22 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
         }
     }
 
+    // Get rid of this if we ever make collision detection
+    // We're calculating the greatest distance between vectors in the model
+    for (int i = 0; i < vertices.size(); i+=8)
+    {
+        glm::vec3 vertex1 = glm::vec3(vertices[i], vertices[i+1], vertices[i+2]);
+        for (int j = 0; i < vertices.size(); i++)
+        {
+            glm::vec3 vertex2 = glm::vec3(vertices[j], vertices[j+1], vertices[j+2]);
+            GLfloat displacementVectorLength = glm::length(vertex1 - vertex2);
+            greatestDistanceBetweenVertices = std::max(greatestDistanceBetweenVertices, displacementVectorLength);
+        }
+    }
+
     Mesh *newMesh = new Mesh();
     // In memory, the vectors are like an array, so we can just give it vertices[0] and whatnot
-    newMesh->CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
+    newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
     meshList.push_back(newMesh);
     meshToTex.push_back(mesh->mMaterialIndex);
 }
@@ -157,7 +154,7 @@ void Model::loadMaterials(const aiScene *scene)
 
             std::string filename = std::string(path.data).substr(idx + 1);
 
-            std::string textPath = std::string("../assets/textures/"), filename;
+            std::string textPath = std::string("../assets/textures/") + filename;
             textureList[i] = new Texture(textPath.c_str());
 
             if (!textureList[i]->loadTexture())
@@ -176,61 +173,5 @@ void Model::loadMaterials(const aiScene *scene)
     }
 }
 
-GLfloat Sphere::getMass()
-{
-    return mass;
-}
-
-glm::vec3 Sphere::getPosition() const
-{
-    return position;
-}
-
-void Sphere::setPosition(glm::vec3 position)
-{
-    this->position = position;
-}
-
-glm::vec3 Sphere::getVelocity() const
-{
-    return velocity;
-}
-
-void Sphere::setVelocity(glm::vec3 velocity)
-{
-    this->velocity = velocity;
-}
-
-glm::vec3 Sphere::getRotation() const
-{
-    return rotation;
-}
-
-void Sphere::setRotation(glm::vec3 rotation)
-{
-    this->rotation = rotation;
-}
-
-GLfloat Sphere::getAngle()
-{
-    return angle;
-}
-
-void Sphere::setAngle(GLfloat angle)
-{
-    this->angle = angle;
-}
-
-GLfloat Sphere::getRotationSpeed()
-{
-    return rotationSpeed;
-}
-
-void Sphere::setRotationSpeed(GLfloat speed)
-{
-    this->rotationSpeed = speed;
-}
-
 Model::~Model()
-{
-}
+{}

@@ -2,7 +2,7 @@
 
 Sun::Sun() : Sphere() {}
 
-Sun::Sun(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices) : Sphere(radius, mass, position, stacks, slices) 
+Sun::Sun(float radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices) 
 {
     this->light = NULL;
 }
@@ -24,5 +24,5 @@ PointLight* Sun::getPointLight()
 
 Sun::~Sun()
 {
-    delete sphereMesh, position, light;
+    delete sphereMesh, light;
 }

@@ -116,13 +116,13 @@ int main()
         timeStep = deltaTime * timeChange;
 
         // This loop ensures that we follow a curve even when the framerate sucks
-        OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, planets, timeStep);
+        OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, planets, complexModels, timeStep);
         while (timeStep > 0.005f)
         {
-            OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, gravitationalForce, 0.005f);
+            OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, complexModels, gravitationalForce, 0.005f);
             timeStep -= 0.005f;
         }
-        OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, gravitationalForce, timeStep);
+        OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, complexModels, gravitationalForce, timeStep);
 
         glfwPollEvents();
         camera.keyControl(mainWindow.getKeys(), deltaTime, &spotLightCount);
@@ -156,6 +156,15 @@ int main()
             glUniformMatrix4fv(uniformModelPlanets, 1, GL_FALSE, glm::value_ptr(model));
             satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
             satellite->renderMesh();
+        }
+
+        for (Model *complexModel : complexModels)
+        {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, complexModel->getPosition());
+            model = glm::rotate(model, complexModel->getAngle() * toRadians, complexModel->getRotation());
+            glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
+            complexModel->renderModel();
         }
 
         shaderList[1]->useShader();

@@ -1,29 +1,17 @@
 #include "Sphere.h"
 
-Sphere::Sphere()
+Sphere::Sphere() : SpaceObject()
 {
     this->radius = 0.5f;
-    this->mass = 1.0f;
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->angle = 0.0f;
-    this->rotationSpeed = 0.0f;
     this->sphereMesh = new Mesh();
     this->texture = NULL;
 }
 
-Sphere::Sphere(float radius, GLfloat mass, glm::vec3 position, int stacks, int slices)
+Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass)
 {
     this->radius = radius;
-    this->mass = mass;
-    this->position = position;
 
     // These are default values we'll set with setters
-    this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->angle = 0.0f;
-    this->rotationSpeed = 0.0f;
     this->texture = NULL;
 
     // Create the mesh
@@ -100,66 +88,6 @@ void Sphere::setTexturePointer(Texture *texture)
 {
     this->texture = texture;
     this->sphereMesh->setTexturePointer(texture);
-}
-
-GLfloat Sphere::getMass()
-{
-    return mass;
-}
-
-GLfloat Sphere::getRadius()
-{
-    return radius;
-}
-
-glm::vec3 Sphere::getPosition() const
-{
-    return position;
-}
-
-void Sphere::setPosition(glm::vec3 position)
-{
-    this->position = position;
-}
-
-glm::vec3 Sphere::getVelocity() const
-{
-    return velocity;
-}
-
-void Sphere::setVelocity(glm::vec3 velocity)
-{
-    this->velocity = velocity;
-}
-
-glm::vec3 Sphere::getRotation() const
-{
-    return rotation;
-}
-
-void Sphere::setRotation(glm::vec3 rotation)
-{
-    this->rotation = rotation;
-}
-
-GLfloat Sphere::getAngle()
-{
-    return angle;
-}
-
-void Sphere::setAngle(GLfloat angle)
-{
-    this->angle = angle;
-}
-
-GLfloat Sphere::getRotationSpeed()
-{
-    return rotationSpeed;
-}
-
-void Sphere::setRotationSpeed(GLfloat speed)
-{
-    this->rotationSpeed = speed;
 }
 
 Sphere::~Sphere()
