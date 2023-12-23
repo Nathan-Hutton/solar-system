@@ -13,6 +13,7 @@
 
 #include "Sun.h"
 #include "Planet.h"
+#include "Model.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "SpotLight.h"
@@ -20,15 +21,15 @@
 #include "Camera.h"
 
 namespace SceneFunctions {
-    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
+    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
             SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera);
-    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
+    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
             SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera);
-    void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites,
+    void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
             SpotLight* sLights[], unsigned int *sLightCount,
             Camera *camera);

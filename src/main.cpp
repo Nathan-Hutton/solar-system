@@ -24,12 +24,14 @@
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
 #include "Material.h"
+#include "Model.h"
 
 const float toRadians = M_PI / 180.0f;
 
 Window mainWindow;
 std::vector<Sun*> stars;
 std::vector<Planet*> planets;
+std::vector<Model*> complexModels;
 std::vector<Shader*> shaderList;
 Camera camera;
 
@@ -79,9 +81,9 @@ int main()
 
     unsigned int pointLightCount = 0;
     unsigned int spotLightCount = 0;
-    //SceneFunctions::createObjects1Sun1Planet(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
-    SceneFunctions::createObjectsDefault(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
-    //SceneFunctions::createObjectsFigureEight(stars, planets, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     createShaders();
 
     GLfloat now;

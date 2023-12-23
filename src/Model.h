@@ -1,7 +1,11 @@
 #pragma once
 
+#include <glm/glew.h>
+#include <glm/glm.hpp>
+
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -17,15 +21,28 @@ class Model
 {
     public:
         Model();
+        Model(GLfloat mass, glm::vec3 position=glm::vec3(0.0f, 0.0f, 0.0f));
 
         void loadModel(const std::string& fileName);
         void renderModel();
         void clearModel();
 
+        GLfloat getMass();
+        glm::vec3 getPosition() const;
+        void setPosition(glm::vec3 position);
+        glm::vec3 getVelocity();
+        void setVelocity(glm::vec3 velocity);
+        glm::vec3 getRotation() const;
+        void setRotation(glm::vec3 rotation);
+        GLfloat getAngle();
+        void setAngle(GLfloat angle);
+        GLfloat getRotationSpeed();
+        void setRotationSpeed(GLfloat speed);
+
+
         ~Model();
 
     private:
-
         // We tend to call each mesh in the tree a node
         // The node won't store the mesh, just a reference to it
         // Scene holds all the data from a 3D scene or model, node holds data to a specific node
@@ -39,4 +56,12 @@ class Model
         // We'll create one of each texture and if a mesh uses the same texture 
         // as another, they'll just say which one it's using instead of remaking the texture
         std::vector<unsigned int> meshToTex; 
+
+        GLfloat mass;
+        glm::vec3 position;
+        glm::vec3 velocity;
+        glm::vec3 rotation;
+        GLfloat angle;
+        GLfloat rotationSpeed;
+
 };

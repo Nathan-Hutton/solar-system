@@ -2,7 +2,24 @@
 
 Model::Model()
 {
+    this->mass = 0.5f;
+    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->angle = 0.0f;
+    this->rotationSpeed = 0.0f;
+}
 
+Model::Model(GLfloat mass, glm::vec3 position)
+{
+    this->mass = mass;
+    this->position = position;
+
+    // We'll set these with setters
+    this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->angle = 0.0f;
+    this->rotationSpeed = 0.0f;
 }
 
 void Model::loadModel(const std::string& fileName)
@@ -132,11 +149,15 @@ void Model::loadMaterials(const aiScene *scene)
             if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) != AI_SUCCESS)
                 continue;
 
+            // Chop off the parts of the path that don't matter
+            // This is complicated because they may be on linux or windows
             int idx = std::string(path.data).rfind("\\");
+            int idx1 = std::string(path.data).rfind("/");
+            idx = std::max(idx, idx1);
+
             std::string filename = std::string(path.data).substr(idx + 1);
 
             std::string textPath = std::string("../assets/textures/"), filename;
-
             textureList[i] = new Texture(textPath.c_str());
 
             if (!textureList[i]->loadTexture())
@@ -153,6 +174,61 @@ void Model::loadMaterials(const aiScene *scene)
             textureList[i]->loadTexture();
         }
     }
+}
+
+GLfloat Sphere::getMass()
+{
+    return mass;
+}
+
+glm::vec3 Sphere::getPosition() const
+{
+    return position;
+}
+
+void Sphere::setPosition(glm::vec3 position)
+{
+    this->position = position;
+}
+
+glm::vec3 Sphere::getVelocity() const
+{
+    return velocity;
+}
+
+void Sphere::setVelocity(glm::vec3 velocity)
+{
+    this->velocity = velocity;
+}
+
+glm::vec3 Sphere::getRotation() const
+{
+    return rotation;
+}
+
+void Sphere::setRotation(glm::vec3 rotation)
+{
+    this->rotation = rotation;
+}
+
+GLfloat Sphere::getAngle()
+{
+    return angle;
+}
+
+void Sphere::setAngle(GLfloat angle)
+{
+    this->angle = angle;
+}
+
+GLfloat Sphere::getRotationSpeed()
+{
+    return rotationSpeed;
+}
+
+void Sphere::setRotationSpeed(GLfloat speed)
+{
+    this->rotationSpeed = speed;
 }
 
 Model::~Model()

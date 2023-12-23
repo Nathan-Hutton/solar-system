@@ -15,7 +15,6 @@ class Mesh
         void setMaterialPointer(Material *material);
         void renderMesh();
         void clearMesh();
-        void calcAverageNormals(unsigned int *indices, unsigned int indexCount, GLfloat *vertices, unsigned int vertexCount, unsigned int vLen, unsigned int normalOffset);
 
         ~Mesh();
 
