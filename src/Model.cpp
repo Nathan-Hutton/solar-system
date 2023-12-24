@@ -150,7 +150,6 @@ void Model::loadMaterials(const aiScene *scene)
         textureList[i] = nullptr;
 
         // Diffuse is the standard texture
-        //std::cout << "1This is a test message.\n" << std::flush;
         if(material->GetTextureCount(aiTextureType_DIFFUSE))
         {
             // Handle the case where the person who made the texture used an absolute path relative to their system (dumb)
@@ -176,12 +175,9 @@ void Model::loadMaterials(const aiScene *scene)
                 textureList[i] = nullptr;
             }
         }
-        else
-            std::cout << "This is another test message.\n" << std::flush;
 
         if (!textureList[i])
         {
-            std::cout << "This is a test message.\n" << std::flush;
             textureList[i] = new Texture("../assets/textures/plain.png");
             textureList[i]->loadTexture();
         }
