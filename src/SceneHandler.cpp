@@ -65,6 +65,8 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     satellites.push_back(moon);
 
     Model *asteroid = new Model(1.0f);
+    asteroid->loadModel("../assets/models/asteroid.obj");
+    moon->setMaterialPointer(material);
     asteroid->setPosition(glm::vec3(44.0f, 0.0f, -2.5f));
     moon->setVelocity(glm::vec3(-3.0f, -47.0f, 0.0f));
     moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));

@@ -1,5 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
+#include <iostream>
+
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
@@ -163,7 +165,9 @@ int main()
             model = glm::mat4(1.0f);
             model = glm::translate(model, complexModel->getPosition());
             model = glm::rotate(model, complexModel->getAngle() * toRadians, complexModel->getRotation());
-            glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
+            model = glm::scale(model, glm::vec3(10, 10, 10));
+            glUniformMatrix4fv(uniformModelPlanets, 1, GL_FALSE, glm::value_ptr(model));
+            complexModel->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
             complexModel->renderModel();
         }
 

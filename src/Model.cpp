@@ -1,10 +1,21 @@
 #include "Model.h"
+#include <iostream>
 
 Model::Model() : SpaceObject()
 {}
 
 Model::Model(GLfloat mass) : SpaceObject(mass)
 {}
+
+void Model::setMaterialPointer(Material *material)
+{
+    this->material = material;
+}
+
+Material* Model::getMaterialPointer()
+{
+    return material;
+}
 
 void Model::loadModel(const std::string& fileName)
 {
@@ -13,7 +24,7 @@ void Model::loadModel(const std::string& fileName)
 
     if (!scene)
     {
-        printf("Model (%s) failed to load: %s", fileName, importer.GetErrorString());
+        printf("Model (%s) failed to load: %s", fileName.c_str(), importer.GetErrorString());
         return;
     }
 
@@ -139,6 +150,7 @@ void Model::loadMaterials(const aiScene *scene)
         textureList[i] = nullptr;
 
         // Diffuse is the standard texture
+        //std::cout << "1This is a test message.\n" << std::flush;
         if(material->GetTextureCount(aiTextureType_DIFFUSE))
         {
             // Handle the case where the person who made the texture used an absolute path relative to their system (dumb)
@@ -159,7 +171,7 @@ void Model::loadMaterials(const aiScene *scene)
 
             if (!textureList[i]->loadTexture())
             {
-                printf("Failed to load texture at %s\n", textPath);
+                printf("Failed to load texture at %s\n", textPath.c_str());
                 delete textureList[i];
                 textureList[i] = nullptr;
             }
@@ -167,6 +179,7 @@ void Model::loadMaterials(const aiScene *scene)
 
         if (!textureList[i])
         {
+            //std::cout << "This is a test message.\n" << std::flush;
             textureList[i] = new Texture("../assets/textures/plain.png");
             textureList[i]->loadTexture();
         }

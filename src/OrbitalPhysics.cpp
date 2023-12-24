@@ -91,7 +91,7 @@ void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars,
         
         // Add up forces from stars
         for (Sun *star : stars)
-            force += getForce(satellites[i], star, gravitationalForce);
+            force += getForce(models[i], star, gravitationalForce);
 
         for (Planet *satellite : satellites)
             force += getForce(models[i], satellite, gravitationalForce);

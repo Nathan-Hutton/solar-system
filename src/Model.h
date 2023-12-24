@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpaceObject.h"
+#include "Material.h"
 
 #include <string>
 #include <algorithm>
@@ -18,6 +19,9 @@ class Model : public SpaceObject
         Model();
         Model(GLfloat mass);
 
+        void setMaterialPointer(Material* materialPointer);
+        Material* getMaterialPointer();
+
         void loadModel(const std::string& fileName);
         void renderModel();
         void clearModel();
@@ -25,6 +29,7 @@ class Model : public SpaceObject
         ~Model();
 
     private:
+        Material *material;
         // We tend to call each mesh in the tree a node
         // The node won't store the mesh, just a reference to it
         // Scene holds all the data from a 3D scene or model, node holds data to a specific node
