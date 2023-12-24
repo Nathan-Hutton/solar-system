@@ -156,6 +156,7 @@ int main()
             model = glm::translate(model, satellite->getPosition());
             model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
             glUniformMatrix4fv(uniformModelPlanets, 1, GL_FALSE, glm::value_ptr(model));
+            satellite->getTexturePointer()->useTexture();
             satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
             satellite->renderMesh();
         }
@@ -165,7 +166,7 @@ int main()
             model = glm::mat4(1.0f);
             model = glm::translate(model, complexModel->getPosition());
             model = glm::rotate(model, complexModel->getAngle() * toRadians, complexModel->getRotation());
-            model = glm::scale(model, glm::vec3(10, 10, 10));
+            model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
             glUniformMatrix4fv(uniformModelPlanets, 1, GL_FALSE, glm::value_ptr(model));
             complexModel->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
             complexModel->renderModel();
@@ -181,6 +182,7 @@ int main()
             model = glm::translate(model, star->getPosition());
             model = glm::rotate(model, star->getAngle() * toRadians, star->getRotation());
             glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
+            star->getTexturePointer()->useTexture();
             star->renderMesh();
         }
         

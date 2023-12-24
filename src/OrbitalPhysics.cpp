@@ -7,7 +7,7 @@ glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *o
     float displacementVectorLength = glm::length(displacementVector);
     
     // TODO: fine tune this
-    if (object1->getGreatestDistanceBetweenVertices() - object2->getGreatestDistanceBetweenVertices() >= displacementVectorLength)
+    if (object1->getGreatestDistanceBetweenVertices() + object2->getGreatestDistanceBetweenVertices() >= displacementVectorLength)
         return glm::vec3(0.0f,0.0f,0.0f);
 
     return ((gravitationalForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * directionVector;

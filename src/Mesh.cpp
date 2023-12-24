@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <iostream>
 
 Mesh::Mesh()
 {
@@ -38,6 +39,11 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+Texture *Mesh::getTexturePointer()
+{
+    return texture;
+}
+
 void Mesh::setTexturePointer(Texture *texture)
 {
     this->texture = texture;
@@ -50,7 +56,7 @@ void Mesh::setMaterialPointer(Material *material)
 
 void Mesh::renderMesh()
 {
-    texture->useTexture();
+    //texture->useTexture();
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
