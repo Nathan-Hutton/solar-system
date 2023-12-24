@@ -2,10 +2,18 @@
 #include <iostream>
 
 Model::Model() : SpaceObject()
-{}
+{
+    this->material = nullptr;
+    this->scaleFactor = 1.0f;
+    this->scaleFactorVector = glm::vec3(1.0f, 1.0f, 1.0f);
+}
 
 Model::Model(GLfloat mass) : SpaceObject(mass)
-{}
+{
+    this->material = nullptr;
+    this->scaleFactor = 1.0f;
+    this->scaleFactorVector = glm::vec3(1.0f, 1.0f, 1.0f);
+}
 
 void Model::setMaterialPointer(Material *material)
 {
@@ -15,6 +23,22 @@ void Model::setMaterialPointer(Material *material)
 Material* Model::getMaterialPointer()
 {
     return material;
+}
+
+void Model::setScaleFactor(GLfloat sFactor)
+{
+    this->scaleFactor = sFactor;
+    this->scaleFactorVector = glm::vec3(sFactor, sFactor, sFactor);
+}
+
+GLfloat Model::getScaleFactor()
+{
+    return scaleFactor;
+}
+
+glm::vec3 Model::getScaleFactorVector()
+{
+    return scaleFactorVector;
 }
 
 void Model::loadModel(const std::string& fileName)

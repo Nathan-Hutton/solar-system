@@ -166,7 +166,7 @@ int main()
             model = glm::mat4(1.0f);
             model = glm::translate(model, complexModel->getPosition());
             model = glm::rotate(model, complexModel->getAngle() * toRadians, complexModel->getRotation());
-            model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+            model = glm::scale(model, complexModel->getScaleFactorVector());
             glUniformMatrix4fv(uniformModelPlanets, 1, GL_FALSE, glm::value_ptr(model));
             complexModel->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
             complexModel->renderModel();

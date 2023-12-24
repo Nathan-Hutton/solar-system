@@ -71,6 +71,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     asteroid->setVelocity(glm::vec3(-3.0f, 27.0f, 0.0f));
     asteroid->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     asteroid->setRotationSpeed(200.0f);
+    asteroid->setScaleFactor(0.5f);
     models.push_back(asteroid);
 }
 
