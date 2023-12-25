@@ -58,17 +58,8 @@ void Model::loadModel(const std::string& fileName) {
 
 void Model::renderModel()
 {
-    for (size_t i = 0; i < meshList.size(); i++)
-    {
-        unsigned int materialIndex = meshToTex[i];
-
-        // Check if it's possible for the material to be inside the textureList
-        // Then check if that index is null
-        if (materialIndex < textureList.size() && textureList[materialIndex])
-            textureList[materialIndex]->useTexture();
-
-        meshList[i]->renderMesh();
-    }
+    for (Mesh* mesh : meshList)
+        mesh->renderMesh();
 }
 
 void Model::clearModel()
@@ -158,7 +149,6 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
 
 void Model::loadMaterials(const aiScene *scene)
 {
-    // Lets us not have to use push_back, it sets the size of the array
     textureList.resize(scene->mNumMaterials);
 
     for (size_t i = 0; i < scene->mNumMaterials; i++)
@@ -200,6 +190,9 @@ void Model::loadMaterials(const aiScene *scene)
             textureList[i]->loadTexture();
         }
     }
+
+    for (size_t i = 0; i < meshToTex.size(); i++)
+        meshList[i]->setTexturePointer(textureList[meshToTex[i]]);
 }
 
 Model::~Model()
