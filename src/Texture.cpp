@@ -15,14 +15,19 @@ Texture::Texture(const char* fileLocation)
     width = 0;
     height = 0;
     bitDepth = 0;
-    this->fileLocation = fileLocation;
+    this->fileLocation = strdup(fileLocation);
+}
+
+const char* Texture::getFileLocation()
+{
+    return fileLocation;
 }
 
 // Load the texture at fileLocation
 bool Texture::loadTexture()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
-    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 4);
+    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, STBI_rgb);
     if (!textData)
     {
         printf("Failed to find %s\n", fileLocation);
@@ -52,7 +57,7 @@ bool Texture::loadTexture()
 bool Texture::loadTextureA()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
-    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 4);
+    unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, STBI_rgb_alpha);
     if (!textData)
     {
         printf("Failed to find %s\n", fileLocation);

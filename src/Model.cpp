@@ -41,8 +41,7 @@ glm::vec3 Model::getScaleFactorVector()
     return scaleFactorVector;
 }
 
-void Model::loadModel(const std::string& fileName)
-{
+void Model::loadModel(const std::string& fileName) {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 
@@ -66,9 +65,7 @@ void Model::renderModel()
         // Check if it's possible for the material to be inside the textureList
         // Then check if that index is null
         if (materialIndex < textureList.size() && textureList[materialIndex])
-        {
             textureList[materialIndex]->useTexture();
-        }
 
         meshList[i]->renderMesh();
     }
@@ -137,9 +134,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     {
         aiFace face = mesh->mFaces[i];
         for (size_t j = 0; j < face.mNumIndices; j++)
-        {
             indices.push_back(face.mIndices[j]);
-        }
     }
 
     // Get rid of this if we ever make collision detection
@@ -156,7 +151,6 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     }
 
     Mesh *newMesh = new Mesh();
-    // In memory, the vectors are like an array, so we can just give it vertices[0] and whatnot
     newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
     meshList.push_back(newMesh);
     meshToTex.push_back(mesh->mMaterialIndex);

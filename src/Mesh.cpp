@@ -56,7 +56,6 @@ void Mesh::setMaterialPointer(Material *material)
 
 void Mesh::renderMesh()
 {
-    //texture->useTexture();
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
