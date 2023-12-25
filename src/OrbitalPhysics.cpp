@@ -55,10 +55,13 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars
             model->setAngle(model->getAngle() + 360);
     }
 }
+
 void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat gravitationalForce, GLfloat timeStep)
 {
     std::vector<glm::vec3> newSatellitePositions;
     std::vector<glm::vec3> newModelPositions;
+    
+    // Apply forces to all planets and moons
     for (int i = 0; i < satellites.size(); i++) 
     {
         glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -85,6 +88,7 @@ void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars,
         newSatellitePositions.push_back(newPosition);
     }
 
+    // Apply forces to all models (.obj files)
     for (int i = 0; i < models.size(); i++) 
     {
         glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
