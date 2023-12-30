@@ -30,7 +30,9 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 
 int Window::initialize()
 {
-    // Initialize GLFW
+    // Initialize GLFW, which is a window manager
+    // Must be called before any other GLFW functions
+    // Sets up things that are OS specific and sets up input handling
     if (!glfwInit()) 
     {
         printf("GLFW initialization failed\n");
@@ -38,7 +40,7 @@ int Window::initialize()
         return 1;
     }
 
-    // Setup GLFW window properties
+    // Setup window properties. This is typically called multiple times before glfwCreateWindow
     // OpenGL version
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -47,7 +49,8 @@ int Window::initialize()
     // Allow Forward Compatibility
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    mainWindow = glfwCreateWindow(width, height, "Elden Ring", NULL, NULL);
+    // Create window and OpengGL context in our GLFW app. Allows for OpenGL input as well
+    mainWindow = glfwCreateWindow(width, height, "Solar System", NULL, NULL);
     if (!mainWindow)
     {
         printf("GLFW window creation failed\n");
@@ -58,7 +61,11 @@ int Window::initialize()
     // Get Buffer size information
     glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
 
-    // Set the context for GLFW to use
+    // Set the OpenGL context to be current. Directs OpenGL commands to this context.
+    // An OpenGL context is a complete set of OpenGL state variables. For OpenGL commands to work,
+    // a context must be current, so it needs to be attached to a thread because OpenGL is a state machine.
+    // We attach the context of the window to the current OpenGL thread. Then all OpenGL calls
+    // made by that thread will be directed to this context.
     glfwMakeContextCurrent(mainWindow);
 
     // Handle key and mouse input
@@ -70,6 +77,8 @@ int Window::initialize()
     // Allow modern extension features
     glewExperimental = GL_TRUE;
 
+    // Query and load all OpenGL extensions allowed by your drivers
+    // Allows us to access features/extensions not in the core OpenGL specification
     if(glewInit() != GLEW_OK)
     {
         printf("GLEW initialization failed!\n");
@@ -78,10 +87,11 @@ int Window::initialize()
         return 1;
     }
 
-    // Gives us a z-buffer so that we don' surfaces that are blocked by other surfaces
+    // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
     glEnable(GL_DEPTH_TEST);
 
-    // Create viewport
+    // Create viewport. This sets up the portion of the window that OpenGL will draw to
+    // Sets up the rectangular area of the window that OpenGL will draw to
     glViewport(0, 0, bufferWidth, bufferHeight);
 
     // This makes it so that we can use the static handleKeys method on an instance of a window

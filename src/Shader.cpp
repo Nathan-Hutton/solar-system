@@ -59,6 +59,9 @@ std::string Shader::readFile(const char* fileLocation)
 
 void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
 {
+    // Create a new OpenGL program object. Is the final linked version of multiple
+    // shaders combined. Shaders are written in GLSL (OpenGL shading language) and run on the GPU
+    // For rendering graphics. Creates container which we attach shaders to.
     shaderID = glCreateProgram();
 
     if (!shaderID) {
@@ -66,29 +69,38 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
         return;
     }
 
+    // Attach the shaders to the OpenGL program
     addShader(shaderID, vertexCode, GL_VERTEX_SHADER);
     addShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
+
+    // Linking all the shaders together into a single program on the GPU.
+    // Checks to make sure that the inputs and outputs of the shaders match up.
+    // Creates an executable that runs on the programmable parts of the GPU
+    glLinkProgram(shaderID);
 
     GLint result = 0;
     GLchar eLog[1024] = { 0 };
 
-    // Linking all the programs together on the GPU
-    glLinkProgram(shaderID);
+    // Check for errors
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
-
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
         printf("Error linking program: '%s'\n", eLog);
         return;
     }
 
+    // Check if the shader program can execute on the current OpenGL state
     glValidateProgram(shaderID);
-
+    glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
         printf("Error validating program: '%s'\n", eLog);
         return;
     }
+
+    // Uniform variables let us pass info from the CPU to the GPU.
+    // We want to store these IDs now so that we don't have to query
+    // for them every frame
 
     // Camera/Window
     uniformModel = glGetUniformLocation(shaderID, "model");
@@ -160,21 +172,24 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
 
 void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
 {
+    // Makes a shader object
     GLuint theShader = glCreateShader(shaderType);
 
+    // Sort the code in a way OpenGL can understand
     const GLchar* theCode[1];
     theCode[0] = shaderCode;
-
     GLint codeLength[1];
     codeLength[0] = strlen(shaderCode);
 
+    // Give the source code to the shader 
     glShaderSource(theShader, 1, theCode, codeLength);
+    // Compile the shader source code
     glCompileShader(theShader);
 
     GLint result = 0;
     GLchar eLog[1024] = { 0 };
 
-    // Validating all the programs together on the GPU
+    // Check for compilation errors
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result) {
         glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
@@ -182,6 +197,7 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
         return;
     }
 
+    // Attach the now compiled shader to the OpenGL program
     glAttachShader(theProgram, theShader);
 }
 
@@ -218,8 +234,10 @@ void Shader::setDirectionalLight(DirectionalLight *dLight)
 
 void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount)
 {
+    // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
 
+    // Pass the number of lights we're using
     glUniform1i(uniformPointLightCount, lightCount);
 
     for (size_t i = 0; i < lightCount; i++)

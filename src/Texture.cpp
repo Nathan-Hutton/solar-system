@@ -34,18 +34,32 @@ bool Texture::loadTexture()
         return false;
     }
 
+    // Create 1 texture object and store its name (ID) in an array which textureID points to
     glGenTextures(1, &textureID);
+    
+    // Bind texture to a texture target so that when we call methods on that target, it's applied to it.
+    // The target in our case is GL_TEXTURE_2D.
+    // Means that all subsequent calls to that texture target will be applied to our texture.
+    // This is due to the fact that OpenGL works as a state machine, so commands affect the
+    // currently bound object
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    // Consider using CLAMP_TO_EDGE instead of GL_REPEAT
+    // Apply params to our texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    // Specify our texture.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
+
+    // Mipmaps are smaller versions of textures used for rendering at different distances.
+    // Imporves performance and reduces artifacts (look at some of the imported models, for example)
+    // In our case, we only defined one glTexImage2D (at the base level, 0),
+    // so we won't really be using this but we do have to call it.
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    // Unbind the texture
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // since the data has been copied to the glTextImage2D we don't need the raw data anymore so we free it
@@ -85,15 +99,11 @@ bool Texture::loadTextureA()
 
 void Texture::useTexture()
 {
-    // This is a texture unit. When the texture is run in the fragment shader, there's a sampler, and the sampler has the data
-    // for the texture but it accesses it through the texture unit.
-    // GL_TEXTURE0 is a texture unit. There's usually like 32 of them, this is the first. If we wanted this would let us
-    // bind multiple textures at once. We're making the first texture unit active for this project then binding it
-    // Then the fragment shader could access all of them. Would require writing a uniform variable for each one in the shader
-    // 0 is default so technically we don't need this arg
+    // Specify which texture unit we'll be using for texture operations.
+    // We'll only have 1 active at a time.
     glActiveTexture(GL_TEXTURE0);
-    // Binds this texture (this class we're in, Texture.h) to the unit we just activated
-    // So now when we try to draw GL_TEXTURE0 (texture unit) it will draw this texture
+
+    // Bind our texture for draw operations
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 

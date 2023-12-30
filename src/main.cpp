@@ -86,10 +86,15 @@ int main()
     //SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     //SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+
+    // Setup the OpenGL program
     createShaders();
 
     GLfloat now;
     GLfloat timeStep = 0.0f;
+
+    // Model matrix positions and orients objects in the world.
+    // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
     glm::mat4 model;
 
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
@@ -97,7 +102,9 @@ int main()
                                 0.0f, 0.0f,
                                 1.0f, 0.0f, 0.0f);
 
-    // Uniform object IDs connect us with the values in the shaders in the GPU
+    // Uniform object IDs let us pass values from the CPU to the GPU.
+    // We use things like glUniform1f (for one value) to set these values
+    // on the GPU
     GLuint uniformModelPlanets = shaderList[0]->getModelLocation();
     GLuint uniformProjectionPlanets = shaderList[0]->getProjectionLocation();
     GLuint uniformViewPlanets = shaderList[0]->getViewLocation();
@@ -105,6 +112,8 @@ int main()
     GLuint uniformSpecularIntensityPlanets = shaderList[0]->getSpecularIntensityLocation();
     GLuint uniformShininessPlanets = shaderList[0]->getShininessLocation();
 
+    // For the sun shaders we don't do any light calculation (suns are always fully lit)
+    // so we have less variables to worry about
     GLuint uniformModelSuns = shaderList[1]->getModelLocation();
     GLuint uniformProjectionSuns = shaderList[1]->getProjectionLocation();
     GLuint uniformViewSuns = shaderList[1]->getViewLocation();
@@ -137,10 +146,10 @@ int main()
         shaderList[0]->useShader();
 
 
-        // Apply projection and view matrices
-        // Project Converts 3D coordinates to 2D coordinates in rendering pipeline
+        // Apply projection and view matrices.
+        // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
         // View matrix represents the camera's position and orientation in world.
-        // View matrix transforms world coordinates to camera/view coordinates
+        // The world is actually rotated around the camera with the view matrix. The camera is stationary.
         glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
         glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
@@ -150,6 +159,12 @@ int main()
         shaderList[0]->setSpotLights(spotLights, spotLightCount);
 
         // Apply rotations, transformations, and render objects
+        // Objects vertices are first transformed by the model matrix, then the view matrix
+        // to bring them into camera space, positioning them relative to the camera,
+        // then the projection matrix is applied to the view space coordinates to project them
+        // onto our 2D screen. 
+        // In the shader: gl_Position = projection * view * model * vec4(pos, 1.0);
+
         for (Planet *satellite : planets)
         {
             model = glm::mat4(1.0f);
