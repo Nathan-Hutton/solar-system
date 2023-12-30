@@ -15,6 +15,8 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
 {
     indexCount = numOfIndices;
 
+    // VBOs store the vertex data itself whereas VAOs are like the instructions for how to interpret that data
+
     // Create ID for VAO. VAOs cache all the state needed for vertex input, reducing number of state
     // changes and function calls to render objects, improving performance.
     glGenVertexArrays(1, &VAO);
@@ -56,8 +58,8 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
 
     // Unbind everything
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 Texture *Mesh::getTexturePointer()
