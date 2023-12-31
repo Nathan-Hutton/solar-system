@@ -140,7 +140,7 @@ int main()
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset());
 
-        // Clear window and color and depth buffer bit
+        // Clear window and color and depth buffer bit. Also make the image black
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderList[0]->useShader();

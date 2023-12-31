@@ -15,7 +15,8 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
 {
     indexCount = numOfIndices;
 
-    // VBOs store the vertex data itself whereas VAOs are like the instructions for how to interpret that data
+    // VBOs store the vertex data itself whereas VAOs are like the instructions for how to interpret that data.
+    // A single VAO can reference multiple VBOs.
 
     // Create ID for VAO. VAOs cache all the state needed for vertex input, reducing number of state
     // changes and function calls to render objects, improving performance.
@@ -86,8 +87,35 @@ void Mesh::renderMesh()
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
-    // Draw. OpenGL will automatically give the shader the vertex attributes 
-    // for each vertex defined by the VAO
+    // ==========================================================
+    // Summary of each major component of the rendering pipeline:
+    // ==========================================================
+
+    // 1. Vertex shader: handles UV coords, normals, etc. Uutputs transformed vertices.
+    // OpenGL will automatically give the vertex shader the vertex attributes for each
+    // vertex defined by the VAO. This is what the 'layout' keyword means. Vertex shader
+    // can choose to pass these (usually processed) values along to the fragment shader 
+    // with the 'out' keyword.
+    // When data is passed from the vertex shader to the fragment shader, it's interpolated.
+    // In our case, we do pass things like the normals, texCoord, and vec positions
+     
+    // 2. Primitive assembly: After this the vertices are assembled into primitives (triangles 
+    // based on drawing mode.
+    // VAO determines which vertices and in what order to make the primitives. VAO doesn't store the
+    // vertices but just how to work with them from the VBO(s).
+    // The value passed out of the vertex shader that makes up the primitives is gl_Position
+    
+    // 2. Rasterization: Turns the primitives into fragments, which correspond to pixels on the screen.
+    // Interpolates vertex attributes like color, texture coordinates, and normals for each fragment
+    
+    // 3. Fragment shader: Receives each fragment and calculates the final color and property
+    // of each pixel. involves textures, lighting calculations, and per-pixel effects.
+    // The fragment shader knows nothing about vertices, it just has the interpolated fragments.
+    
+    // Per-fragment operations: After the fragment shader, we do things like the depth test and 
+    // alpha blending. Final result is the processed fragment which are written to a framebuffer
+    // creating the image we see on the screen
+
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 
     // Unbind VOA and IBO

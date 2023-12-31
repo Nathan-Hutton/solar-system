@@ -1,6 +1,5 @@
 #version 330
 
-in vec4 vCol;
 in vec2 texCoord;
 in vec3 normal;
 in vec3 fragPos;
