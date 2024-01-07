@@ -3,6 +3,7 @@
 in vec2 texCoord;
 in vec3 normal;
 in vec3 fragPos;
+in vec4 directionalLightSpacePos;
 
 out vec4 color;
 
@@ -51,12 +52,56 @@ uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 
+// sampler2D is what GLSL uses for textures
 uniform sampler2D theTexture;
+uniform sampler2D directionalShadowMap; // Use this to see if the point we're looking at is in shadow or not
+
 uniform Material material;
 
 uniform vec3 eyePosition;
 
-vec4 CalcLightByDirection(Light light, vec3 direction)
+float calcDirectionalShadowFactor(DirectionalLight light)
+{
+	// Normalize from -1 to 1
+	vec3 projCoords = directionalLightSpacePos.xyz / directionalLightSpacePos.w;
+	
+	// Go from a -1, 1 scale to a 0, 1 scale
+	projCoords = (projCoords * 0.5) + 0.5;
+
+	// Depth of the fragment we're looking at relative to the light
+	float currentDepth = projCoords.z;
+
+	// Could be in shadow, but the far plane doesn't extend that far,
+	// so it would be greater than 1 and always return 1.0 (in shadow)
+	if (currentDepth > 1.0)
+		return 0.0;
+
+	// Implement a bias whose magnitude is dependent on the angle between the light and fragment
+	vec3 normal = normalize(normal);
+	vec3 lightDir = normalize(light.direction);
+	float bias = max(0.0005 * (1 - dot(normal, lightDir)), 0.005);
+
+	float shadow = 0.0;
+
+	// Add PCF for soft shadows
+	vec2 texelSize = 1.0 / textureSize(directionalShadowMap, 0);
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			float pcfDepth = texture(directionalShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            // 1.0 is full shadow. 0.0 is no shadow
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+
+	shadow /= 9.0;
+    float closestDepth = texture(directionalShadowMap, projCoords.xy).r;
+
+	return shadow;
+}
+
+vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 {
 	vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
 	
@@ -78,12 +123,13 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 		}
 	}
 
-	return (ambientColor + diffuseColor + specularColor);
+	return ambientColor + (1.0f - shadowFactor) * (diffuseColor + specularColor);
 }
 
 vec4 CalcDirectionalLight()
 {
-	return CalcLightByDirection(directionalLight.base, directionalLight.direction);
+	float shadowFactor = calcDirectionalShadowFactor(directionalLight);
+	return CalcLightByDirection(directionalLight.base, directionalLight.direction, shadowFactor);
 }
 
 vec4 CalcPointLight(PointLight pLight)
@@ -92,7 +138,7 @@ vec4 CalcPointLight(PointLight pLight)
     float distance = length(direction);
     direction = normalize(direction);
     
-    vec4 color = CalcLightByDirection(pLight.base, direction);
+    vec4 color = CalcLightByDirection(pLight.base, direction, 0.0f);
     float attenuation = pLight.exponential * distance * distance +
                         pLight.linear * distance +
                         pLight.constant;
@@ -105,10 +151,14 @@ vec4 CalcSpotLight(SpotLight sLight)
     vec3 rayDirection = normalize(fragPos - sLight.base.position);
     float slFactor = dot(rayDirection, sLight.direction);
 
-	if (slFactor <= sLight.edge)
-		return vec4(0, 0, 0, 0);
-
-	vec4 color = CalcPointLight(sLight.base);
+	if (slFactor <= sLight.edge)
+
+		return vec4(0, 0, 0, 0);
+
+
+
+	vec4 color = CalcPointLight(sLight.base);
+
     return color * (1.0f - (1.0f - slFactor) * (1.0f / (1.0f - sLight.edge)));
 }
 

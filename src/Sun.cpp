@@ -1,5 +1,6 @@
 #include "Sun.h"
 
+// TODO: Consider removing normals from suns since we don't use them
 Sun::Sun() : Sphere() {}
 
 Sun::Sun(float radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices) 

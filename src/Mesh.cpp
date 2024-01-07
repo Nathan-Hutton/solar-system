@@ -20,6 +20,7 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
 
     // Create ID for VAO. VAOs cache all the state needed for vertex input, reducing number of state
     // changes and function calls to render objects, improving performance.
+    // Once the VAO is binded, you can bind VBOs and IBOs and they'll all work together
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -91,30 +92,37 @@ void Mesh::renderMesh()
     // Summary of each major component of the rendering pipeline:
     // ==========================================================
 
-    // 1. Vertex shader: handles UV coords, normals, etc. Uutputs transformed vertices.
-    // OpenGL will automatically give the vertex shader the vertex attributes for each
-    // vertex defined by the VAO. This is what the 'layout' keyword means. Vertex shader
-    // can choose to pass these (usually processed) values along to the fragment shader 
-    // with the 'out' keyword.
-    // When data is passed from the vertex shader to the fragment shader, it's interpolated.
-    // In our case, we do pass things like the normals, texCoord, and vec positions
+    /*
+    1. Vertex shader: handles UV coords, normals, etc. Uutputs transformed vertices.
+    OpenGL will automatically give the vertex shader the vertex attributes for each
+    vertex defined by the VAO. This is what the 'layout' keyword means. Vertex shader
+    can choose to pass these (usually processed) values along to the fragment shader 
+    with the 'out' keyword.
+    When data is passed from the vertex shader to the fragment shader, it's interpolated.
+    In our case, we do pass things like the normals, texCoord, and vec positions
      
-    // 2. Primitive assembly: After this the vertices are assembled into primitives (triangles 
-    // based on drawing mode.
-    // VAO determines which vertices and in what order to make the primitives. VAO doesn't store the
-    // vertices but just how to work with them from the VBO(s).
-    // The value passed out of the vertex shader that makes up the primitives is gl_Position
+    2. Primitive assembly: After this the vertices are assembled into primitives (triangles 
+    based on drawing mode.
+    VAO determines which vertices and in what order to make the primitives. VAO doesn't store the
+    vertices but just how to work with them from the VBO(s).
+    The value passed out of the vertex shader that makes up the primitives is gl_Position
     
-    // 2. Rasterization: Turns the primitives into fragments, which correspond to pixels on the screen.
-    // Interpolates vertex attributes like color, texture coordinates, and normals for each fragment
+    2. Rasterization: Turns the primitives into fragments, which correspond to pixels on the screen.
+    Interpolates vertex attributes like color, texture coordinates, and normals for each fragment
     
-    // 3. Fragment shader: Receives each fragment and calculates the final color and property
-    // of each pixel. involves textures, lighting calculations, and per-pixel effects.
-    // The fragment shader knows nothing about vertices, it just has the interpolated fragments.
+    3. Fragment shader: Receives each fragment and calculates the final color and property
+    of each pixel. involves textures, lighting calculations, and per-pixel effects.
+    The fragment shader knows nothing about vertices, it just has the interpolated fragments.
     
-    // Per-fragment operations: After the fragment shader, we do things like the depth test and 
-    // alpha blending. Final result is the processed fragment which are written to a framebuffer
-    // creating the image we see on the screen
+    Per-fragment operations: After the fragment shader, we do things like the depth test and 
+    alpha blending. Final result is the processed fragment which are written to a framebuffer
+    creating the image we see on the screen
+    
+    OpenGL gives us a default framebuffer that the output is written to which is what we see
+    on our screen. We can create custom framebuffers which can handle off-screen things. For
+    instance, we can render to a texture, which is what we do for shadow mapping and post-
+    processing effects.
+    */
 
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 
