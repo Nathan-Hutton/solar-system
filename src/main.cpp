@@ -46,7 +46,7 @@ Camera camera;
 unsigned int pointLightCount = 0;
 unsigned int spotLightCount = 0;
 
-DirectionalLight mainLight;
+//DirectionalLight mainLight;
 PointLight* pointLights[MAX_POINT_LIGHTS];
 SpotLight* spotLights[MAX_SPOT_LIGHTS];
 
@@ -185,16 +185,16 @@ void renderPass(glm::mat4 projection, glm::mat4 view)
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-	shaderList[0]->setDirectionalLight(&mainLight);
+	//shaderList[0]->setDirectionalLight(&mainLight);
 	shaderList[0]->setPointLights(pointLights, pointLightCount);
 	shaderList[0]->setSpotLights(spotLights, spotLightCount);
 
 	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
-	glm::mat4 lightTransform = mainLight.calculateLightTransform();
-	shaderList[0]->setDirectionalLightTransform(&lightTransform);
+	//glm::mat4 lightTransform = mainLight.calculateLightTransform();
+	//shaderList[0]->setDirectionalLightTransform(&lightTransform);
 
  	// Handle/bind the shadow map texture to texture unit 1
-	mainLight.getShadowMap()->read(GL_TEXTURE1);
+	//mainLight.getShadowMap()->read(GL_TEXTURE1);
 	shaderList[0]->setTexture(0);
     shaderList[0]->setDirectionalShadowMap(1);
 
@@ -233,10 +233,10 @@ int main()
     GLfloat timeStep = 0.0f;
 
     glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
-    mainLight = DirectionalLight(2048, 2048,
-                                1.0f, 1.0f, 1.0f, 
-                                0.0f, 1.0f,
-                                0.0f, -15.0f, -1.0f);
+    //mainLight = DirectionalLight(2048, 2048,
+    //                            1.0f, 1.0f, 1.0f, 
+    //                            0.0f, 1.0f,
+    //                            0.0f, -15.0f, -1.0f);
 
     // Uniform object IDs let us pass values from the CPU to the GPU.
     // We use things like glUniform1f (for one value) to set these values
@@ -281,7 +281,7 @@ int main()
 
 		// Render the scene to a framebuffer (only depth values) which will save it to a 
         // texture which we'll use in the main render pass
-        directionalShadowMapPass(&mainLight);
+        //directionalShadowMapPass(&mainLight);
         renderPass(projection, camera.calculateViewMatrix());
 
         glUseProgram(0);
