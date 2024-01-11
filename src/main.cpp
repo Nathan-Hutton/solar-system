@@ -279,12 +279,12 @@ int main()
     SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     
 	std::vector<std::string> skyboxFaces;
-	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox041.png");
-	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox042.png");
-	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox043.png");
-	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox044.png");
-	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox045.png");
-	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox046.png");
+	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/leftImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/upImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/downImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
 
 	skybox = Skybox(skyboxFaces);
 
