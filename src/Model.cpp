@@ -58,8 +58,17 @@ void Model::loadModel(const std::string& fileName) {
 
 void Model::renderModel()
 {
-    for (Mesh* mesh : meshList)
-        mesh->renderMesh();
+    for (size_t i = 0; i < meshList.size(); i++)
+    {
+        unsigned int materialIndex = meshToTex[i];
+
+        // Check if it's possible for the material to be inside the textureList
+        // Then check if that index is null
+        if (materialIndex < textureList.size() && textureList[materialIndex])
+            textureList[materialIndex]->useTexture();
+
+        meshList[i]->renderMesh();
+    }
 }
 
 void Model::clearModel()

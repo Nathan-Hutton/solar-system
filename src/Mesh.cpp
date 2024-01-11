@@ -81,9 +81,6 @@ void Mesh::setMaterialPointer(Material *material)
 
 void Mesh::renderMesh()
 {
-    // Bind our texture so that OpenGL knows which one to use
-    texture->useTexture();
-
     // Bind the VAO and IBO
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);

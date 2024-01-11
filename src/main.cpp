@@ -27,6 +27,7 @@
 #include "OrbitalPhysics.h"
 #include "Material.h"
 #include "Model.h"
+#include "Skybox.h"
 
 const float toRadians = M_PI / 180.0f;
 
@@ -53,6 +54,8 @@ unsigned int spotLightCount = 0;
 //DirectionalLight mainLight;
 PointLight* pointLights[MAX_POINT_LIGHTS];
 SpotLight* spotLights[MAX_SPOT_LIGHTS];
+
+Skybox skybox;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -121,6 +124,7 @@ void renderPlanets(GLuint uniformModel)
         model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
+        satellite->getTexturePointer()->useTexture();
         satellite->renderMesh();
     }
 
@@ -146,6 +150,7 @@ void renderSuns()
         model = glm::translate(model, star->getPosition());
         model = glm::rotate(model, star->getAngle() * toRadians, star->getRotation());
         glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
+        star->getTexturePointer()->useTexture();
         star->renderMesh();
     }
 }
@@ -210,12 +215,14 @@ void renderPass(glm::mat4 projection, glm::mat4 view)
     // RENDER PLANETS, MOONS, and ASTEROIDS
     // ====================================
 
-	shaderList[0]->useShader();
-
     // Set viewport. Clear window, color, and depth buffer bit. Make the image black
 	glViewport(0, 0, 1920, 1200);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    skybox.drawSkybox(view, projection);
+
+	shaderList[0]->useShader();
 
     // Apply projection and view matrices.
     // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
@@ -267,9 +274,19 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     //SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
-    //SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    
+	std::vector<std::string> skyboxFaces;
+	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox041.png");
+	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox042.png");
+	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox043.png");
+	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox044.png");
+	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox045.png");
+	skyboxFaces.push_back("../assets/textures/skybox/StarSkybox046.png");
+
+	skybox = Skybox(skyboxFaces);
 
     // Setup the OpenGL program
     createShaders();
