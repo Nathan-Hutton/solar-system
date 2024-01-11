@@ -310,7 +310,7 @@ void Shader::setDirectionalLight(DirectionalLight *dLight)
     uniformDirectionalLight.uniformDirection);
 }
 
-void Shader::setPointLights(PointLight* pLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
+void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
 {
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
@@ -320,20 +320,20 @@ void Shader::setPointLights(PointLight* pLights, unsigned int lightCount, unsign
 
     for (size_t i = 0; i < lightCount; i++)
     {
-        pLights[i].useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
+        pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
                             uniformPointLights[i].uniformColor, uniformPointLights[i].uniformPosition, 
                             uniformPointLights[i].uniformExponential, uniformPointLights[i].uniformLinear, uniformPointLights[i].uniformConstant);
 
         // We need the GL_TEXTURE0 since it needs to be an enum type
-        pLights[i].getShadowMap()->read(GL_TEXTURE0 + textureUnit + i);
+        pLights[i]->getShadowMap()->read(GL_TEXTURE0 + textureUnit + i);
         // Offset for point lights will usually just be 0.
         // The offset is to take into account that the shadowmaps are all 1 array in the shader
         glUniform1i(uniformOmniShadowMaps[i + offset].shadowMap, textureUnit + i);
-        glUniform1f(uniformOmniShadowMaps[i + offset].farPlane, pLights[i].getFarPlane());
+        glUniform1f(uniformOmniShadowMaps[i + offset].farPlane, pLights[i]->getFarPlane());
     }
 }
 
-void Shader::setSpotLights(SpotLight* sLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
+void Shader::setSpotLights(SpotLight* sLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
 {
     if (lightCount > MAX_SPOT_LIGHTS) lightCount =  MAX_SPOT_LIGHTS;
 
@@ -341,16 +341,16 @@ void Shader::setSpotLights(SpotLight* sLights, unsigned int lightCount, unsigned
 
     for (size_t i = 0; i < lightCount; i++)
     {
-        sLights[i].useLight(uniformSpotLights[i].uniformAmbientIntensity, uniformSpotLights[i].uniformDiffuseIntensity,
+        sLights[i]->useLight(uniformSpotLights[i].uniformAmbientIntensity, uniformSpotLights[i].uniformDiffuseIntensity,
                             uniformSpotLights[i].uniformColor, uniformSpotLights[i].uniformPosition, uniformSpotLights[i].uniformDirection,
                             uniformSpotLights[i].uniformExponential, uniformSpotLights[i].uniformLinear, uniformSpotLights[i].uniformConstant,
                             uniformSpotLights[i].uniformEdge);
 
         // We need the GL_TEXTURE0 since it needs to be an enum type
-        sLights[i].getShadowMap()->read(GL_TEXTURE0 + textureUnit + i);
+        sLights[i]->getShadowMap()->read(GL_TEXTURE0 + textureUnit + i);
         // The offset is to take into account that the shadowmaps are all 1 array in the shader
         glUniform1i(uniformOmniShadowMaps[i + offset].shadowMap, textureUnit + i);
-        glUniform1f(uniformOmniShadowMaps[i + offset].farPlane, sLights[i].getFarPlane());
+        glUniform1f(uniformOmniShadowMaps[i + offset].farPlane, sLights[i]->getFarPlane());
     }
 }
 

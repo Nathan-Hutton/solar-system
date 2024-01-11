@@ -226,8 +226,8 @@ void renderPass(glm::mat4 projection, glm::mat4 view)
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
 	//shaderList[0]->setDirectionalLight(&mainLight);
-	shaderList[0]->setPointLights(*pointLights, pointLightCount, 3, 0);
-	shaderList[0]->setSpotLights(*spotLights, spotLightCount, 3 + pointLightCount, pointLightCount);
+	shaderList[0]->setPointLights(pointLights, pointLightCount, 3, 0);
+	shaderList[0]->setSpotLights(spotLights, spotLightCount, 3 + pointLightCount, pointLightCount);
 
 	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
 	//glm::mat4 lightTransform = mainLight.calculateLightTransform();
@@ -267,8 +267,8 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
-    //SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
-    SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    //SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     //SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
 
     // Setup the OpenGL program
