@@ -232,7 +232,7 @@ int main()
     GLfloat now;
     GLfloat timeStep = 0.0f;
 
-    glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
     //mainLight = DirectionalLight(2048, 2048,
     //                            1.0f, 1.0f, 1.0f, 
     //                            0.0f, 1.0f,
