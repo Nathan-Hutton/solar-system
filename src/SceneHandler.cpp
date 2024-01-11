@@ -8,7 +8,9 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
             Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 110.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
-    camera->setSpotLight(1.0f, 1.0f, 1.0f,
+    camera->setSpotLight(1024, 1024, 
+                         0.01f, 100.0f,
+                         1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
                          camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
                          0.0f, -1.0f, 0.0f,
@@ -29,7 +31,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
 
     Sun *sun = new Sun(7.0f, 429.3f);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
-    sun->setPointLight(1.0f, 1.0f, 1.0f, 0.1f, 1.0f, 0.0f, 0.001f, 1.0f);
+    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 1.0f, 0.0f, 0.001f, 1.0f);
     sun->setTexturePointer(sunTexture);
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
@@ -81,7 +83,9 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
             Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
-    camera->setSpotLight(1.0f, 1.0f, 1.0f,
+    camera->setSpotLight(1024, 1024, 
+                         0.01f, 100.0f,
+                         1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
                          camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
                          0.0f, -1.0f, 0.0f,
@@ -99,7 +103,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     Sun *sun1 = new Sun(2.0f, 67.0f);
     sun1->setPosition(glm::vec3(-15.0f, 0.0f, -2.5f));
     sun1->setTexturePointer(sunTexture);
-    sun1->setPointLight(1.0f, 1.0f, 1.0f, 0.1f, 1.0f, 0.005f, 0.001f, 0.01f);
+    sun1->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 1.0f, 0.005f, 0.001f, 0.01f);
     sun1->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun1->setAngle(90.0f);
     sun1->setRotationSpeed(-25.2f);
@@ -109,7 +113,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     Sun *sun2 = new Sun(2.0f, 67.0f);
     sun2->setPosition(glm::vec3(15.0f, 0.0f, -2.5f));
     sun2->setTexturePointer(sunTexture);
-    sun2->setPointLight(1.0f, 1.0f, 1.0f, 0.1f, 1.0f, 0.005f, 0.001f, 0.01f);
+    sun2->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 1.0f, 0.005f, 0.001f, 0.01f);
     sun2->setRotation(glm::vec3(0.0f, 1.0f, 1.0f));
     sun2->setAngle(90.0f);
     sun2->setRotationSpeed(25.0f);
@@ -132,7 +136,9 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
             Camera *camera)
 {
     *camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
-    camera->setSpotLight(1.0f, 1.0f, 1.0f,
+    camera->setSpotLight(1024, 1024, 
+                         0.01f, 100.0f,
+                         1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
                          camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
                          0.0f, -1.0f, 0.0f,
@@ -150,7 +156,7 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
     Sun *sun = new Sun(5.0f, 225.0f);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setTexturePointer(sunTexture);
-    sun->setPointLight(1.0f, 1.0f, 1.0f, 8.0f, 100.0f, 0.1f, 0.1f, 0.01f);
+    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 8.0f, 100.0f, 0.1f, 0.1f, 0.01f);
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);

@@ -8,11 +8,15 @@ Sun::Sun(float radius, GLfloat mass, int stacks, int slices) : Sphere(radius, ma
     this->light = NULL;
 }
 
-void Sun::setPointLight(GLfloat red, GLfloat green, GLfloat blue, 
+void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
+    GLfloat near, GLfloat far,
+    GLfloat red, GLfloat green, GLfloat blue, 
     GLfloat ambientIntensity, GLfloat diffuseIntensity,
     GLfloat exponential, GLfloat linear, GLfloat constant)
 {
-    this->light = new PointLight(red, green, blue, 
+    this->light = new PointLight(shadowWidth, shadowHeight,
+            near, far,
+            red, green, blue, 
             ambientIntensity, diffuseIntensity,
             position.x, position.y, position.z, 
             exponential, linear, constant);

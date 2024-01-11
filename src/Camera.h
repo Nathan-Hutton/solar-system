@@ -16,7 +16,9 @@ public:
 
     void keyControl(bool* keys, GLfloat deltaTime, unsigned int *sLightCount);
     void mouseControl(GLfloat xChange, GLfloat yChange);
-    void setSpotLight(GLfloat red, GLfloat green, GLfloat blue, 
+    void setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
+                    GLfloat near, GLfloat far,
+                    GLfloat red, GLfloat green, GLfloat blue, 
                     GLfloat ambientIntensity, GLfloat diffuseIntensity, 
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat xDir, GLfloat yDir, GLfloat zDir,

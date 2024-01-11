@@ -21,6 +21,9 @@ class Shader
 
         void createFromString(const char* vertexCode, const char* fragmentCode);
         void createFromFiles(const char* vertexLocation, const char* fragmentLocation);
+        void createFromFiles(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation);
+
+        void validate();
 
         std::string readFile(const char* fileLocation);
 
@@ -41,13 +44,17 @@ class Shader
         GLuint getLinearLocation();
         GLuint getConstantLocation();
 
+        GLuint getOmniLightPosLocation();
+        GLuint getFarPlaneLocation();
+
         void setDirectionalLight(DirectionalLight *dLight);
-        void setPointLights(PointLight* pLights[], unsigned int lightCount);
-        void setSpotLights(SpotLight* sLights[], unsigned int lightCount);
+        void setPointLights(PointLight* pLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
+        void setSpotLights(SpotLight* sLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
 
         void setTexture(GLuint textureUnit);
         void setDirectionalShadowMap(GLuint textureUnit);
         void setDirectionalLightTransform(glm::mat4* lTransform);
+        void setLightMatrices(std::vector<glm::mat4> lightMatrices);
 
         void useShader();
         void clearShader();
@@ -60,9 +67,11 @@ class Shader
 
         GLuint shaderID, uniformProjection, uniformModel, uniformView, 
         uniformEyePosition, uniformSpecularIntensity, uniformShininess,
-        uniformPointLightCount, uniformSpotLightCount,
+        uniformTexture, uniformPointLightCount, uniformSpotLightCount,
         uniformDirectionalLightTransform, uniformDirectionalShadowMap,
-        uniformTexture;
+        uniformOmniLightPos, uniformFarPlane;
+
+        GLuint uniformLightMatrices[6];
 
         struct {
             GLuint uniformColor;
@@ -97,6 +106,13 @@ class Shader
             GLuint uniformEdge;
         } uniformSpotLights[MAX_SPOT_LIGHTS];
 
+        struct {
+            GLuint shadowMap;
+            GLuint farPlane;
+        } uniformOmniShadowMaps[MAX_SPOT_LIGHTS + MAX_POINT_LIGHTS];
+
         void compileShader(const char* vertexCode, const char* fragmentCode);
+        void compileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode);
         void addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
+        void compileProgram();
 };
