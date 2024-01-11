@@ -122,22 +122,19 @@ float CalcOmniShadowFactor(PointLight light, int shadowIndex)
 {
 	// Use all the commented out code instead to remove soft shadows and increase performance
 
-	//// Swap these in the solar system
-	////vec3 fragToLight = light.position - fragPos;
-	
-	//vec3 fragToLight = fragPos - light.position;
-	//float closest = texture(omniShadowMaps[shadowIndex].shadowMap, fragToLight).r;
+	//vec3 lightToFrag = fragPos - light.position;
+	//float closest = texture(omniShadowMaps[shadowIndex].shadowMap, lightToFrag).r;
 
 	//// Undo normalization done in omni_shadow_map.frag
 	//closest *= omniShadowMaps[shadowIndex].farPlane;
 
-	//float current = length(fragToLight);
+	//float current = length(lightToFrag);
 
 	//float bias = 0.05;
 	//return current - bias > closest ? 1.0 : 0.0;
 	
-	vec3 fragToLight = fragPos - light.position;
-	float currentDepth = length(fragToLight);
+	vec3 lightToFrag = fragPos - light.position;
+	float currentDepth = length(lightToFrag);
 
 	float shadow = 0.0;
 	float bias = 0.05;
@@ -151,7 +148,7 @@ float CalcOmniShadowFactor(PointLight light, int shadowIndex)
 	for (int i = 0; i < samples; i++)
 	{
 
-		float closestDepth = texture(omniShadowMaps[shadowIndex].shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+		float closestDepth = texture(omniShadowMaps[shadowIndex].shadowMap, lightToFrag + sampleOffsetDirections[i] * diskRadius).r;
 		closestDepth *= omniShadowMaps[shadowIndex].farPlane; // Undo normalization done in omni_shadow_map.frag
 		if (currentDepth - bias > closestDepth)
 			shadow += 1.0;
