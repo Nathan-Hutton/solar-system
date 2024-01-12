@@ -48,6 +48,8 @@ class Shader
         GLuint getFarPlaneLocation();
 
         void setDirectionalLight(DirectionalLight *dLight);
+        void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount);
+        void setSpotLightsWithoutShadows(SpotLight* sLights[], unsigned int lightCount);
         void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
         void setSpotLights(SpotLight* sLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
 

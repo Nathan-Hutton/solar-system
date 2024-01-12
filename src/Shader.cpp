@@ -310,6 +310,37 @@ void Shader::setDirectionalLight(DirectionalLight *dLight)
     uniformDirectionalLight.uniformDirection);
 }
 
+void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount)
+{
+    // Clamp the number of lights allowed
+    if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
+
+    // Pass the number of lights we're using
+    glUniform1i(uniformPointLightCount, lightCount);
+
+    for (size_t i = 0; i < lightCount; i++)
+    {
+        pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
+                            uniformPointLights[i].uniformColor, uniformPointLights[i].uniformPosition, 
+                            uniformPointLights[i].uniformExponential, uniformPointLights[i].uniformLinear, uniformPointLights[i].uniformConstant);
+    }
+}
+
+void Shader::setSpotLightsWithoutShadows(SpotLight* sLights[], unsigned int lightCount)
+{
+    if (lightCount > MAX_SPOT_LIGHTS) lightCount =  MAX_SPOT_LIGHTS;
+
+    glUniform1i(uniformSpotLightCount, lightCount);
+
+    for (size_t i = 0; i < lightCount; i++)
+    {
+        sLights[i]->useLight(uniformSpotLights[i].uniformAmbientIntensity, uniformSpotLights[i].uniformDiffuseIntensity,
+                            uniformSpotLights[i].uniformColor, uniformSpotLights[i].uniformPosition, uniformSpotLights[i].uniformDirection,
+                            uniformSpotLights[i].uniformExponential, uniformSpotLights[i].uniformLinear, uniformSpotLights[i].uniformConstant,
+                            uniformSpotLights[i].uniformEdge);
+    }
+}
+
 void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
 {
     // Clamp the number of lights allowed

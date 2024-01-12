@@ -42,9 +42,13 @@ Window mainWindow;
 std::vector<Sun*> stars;
 std::vector<Planet*> planets;
 std::vector<Model*> complexModels;
-std::vector<Shader*> shaderList;
+
+Shader* mainShader;
+Shader* sunShader;
 Shader* directionalShadowShader;
 Shader* omniShadowShader;
+
+bool shadowsEnabled = false;
 
 Camera camera;
 
@@ -63,22 +67,20 @@ GLfloat timeChange = 1.0f;
 
 GLfloat gravitationalForce = -100.0f;
 
-static const char* vShader = "../assets/shaders/shader.vert";
-static const char* fShader = "../assets/shaders/planetShader.frag";
+static const char* vShader = "../assets/shaders/planetShaderShadows.vert";
+static const char* fShader = "../assets/shaders/planetShaderShadows.frag";
 static const char* vShader2 = "../assets/shaders/sunShader.vert";
 static const char* fShader2 = "../assets/shaders/sunShader.frag";
 
 void createShaders()
 {
-    // Shader for the planets and moons
-    Shader *shader1 = new Shader();
-    shader1->createFromFiles(vShader, fShader);
-    shaderList.push_back(shader1);
+    // Shader for the planets, moons, and models
+    mainShader = new Shader();
+    mainShader->createFromFiles(vShader, fShader);
 
     // Shader for the suns (no lighting or shadows)
-    Shader *shader2 = new Shader();
-    shader2->createFromFiles(vShader2, fShader2);
-    shaderList.push_back(shader2);
+    sunShader = new Shader();
+    sunShader->createFromFiles(vShader2, fShader2);
 
     // Shader for the render pass that will create the shadow map
     directionalShadowShader = new Shader();
@@ -209,7 +211,7 @@ void omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void renderPass(glm::mat4 projection, glm::mat4 view)
+void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 {
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
@@ -222,7 +224,7 @@ void renderPass(glm::mat4 projection, glm::mat4 view)
 
     skybox.drawSkybox(view, projection);
 
-	shaderList[0]->useShader();
+	mainShader->useShader();
 
     // Apply projection and view matrices.
     // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
@@ -232,25 +234,22 @@ void renderPass(glm::mat4 projection, glm::mat4 view)
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-	//shaderList[0]->setDirectionalLight(&mainLight);
-	shaderList[0]->setPointLights(pointLights, pointLightCount, 3, 0);
-	shaderList[0]->setSpotLights(spotLights, spotLightCount, 3 + pointLightCount, pointLightCount);
+	//mainShader->setDirectionalLight(&mainLight);
+	mainShader->setPointLightsWithoutShadows(pointLights, pointLightCount);
+	mainShader->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
 	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
 	//glm::mat4 lightTransform = mainLight.calculateLightTransform();
-	//shaderList[0]->setDirectionalLightTransform(&lightTransform);
+	//mainShader->setDirectionalLightTransform(&lightTransform);
 
- 	// Handle/bind the shadow map texture to texture unit 1
-	//mainLight.getShadowMap()->read(GL_TEXTURE2);
-	shaderList[0]->setTexture(1);
-    shaderList[0]->setDirectionalShadowMap(2);
+	mainShader->setTexture(1);
 
 	// Handle camera flashlight
 	glm::vec3 lowerLight = camera.getPosition();
 	lowerLight.y -= 0.3f;
 	//spotLights[0]->setFlash(lowerLight, camera.getDirection());
 
-    shaderList[0]->validate();
+    mainShader->validate();
 
  	// Now we're not drawing just to the depth buffer but also the color buffer
 	renderPlanets(uniformModelPlanets);
@@ -259,12 +258,72 @@ void renderPass(glm::mat4 projection, glm::mat4 view)
     // RENDER SUNS
     // ====================================
 
-    shaderList[1]->useShader();
-	shaderList[1]->setTexture(1);
+    sunShader->useShader();
+	sunShader->setTexture(1);
     glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-    shaderList[1]->validate();
+    sunShader->validate();
+
+    renderSuns();
+}
+
+void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
+{
+    // ====================================
+    // RENDER PLANETS, MOONS, and ASTEROIDS
+    // ====================================
+
+    // Set viewport. Clear window, color, and depth buffer bit. Make the image black
+	glViewport(0, 0, 1920, 1200);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    skybox.drawSkybox(view, projection);
+
+	mainShader->useShader();
+
+    // Apply projection and view matrices.
+    // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
+    // View matrix represents the camera's position and orientation in world.
+    // The world is actually rotated around the camera with the view matrix. The camera is stationary.
+    glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
+    glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+
+	//mainShader->setDirectionalLight(&mainLight);
+	mainShader->setPointLights(pointLights, pointLightCount, 3, 0);
+	mainShader->setSpotLights(spotLights, spotLightCount, 3 + pointLightCount, pointLightCount);
+
+	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
+	//glm::mat4 lightTransform = mainLight.calculateLightTransform();
+	//mainShader->setDirectionalLightTransform(&lightTransform);
+
+ 	// Handle/bind the shadow map texture to texture unit 1
+	//mainLight.getShadowMap()->read(GL_TEXTURE2);
+	mainShader->setTexture(1);
+    mainShader->setDirectionalShadowMap(2);
+
+	// Handle camera flashlight
+	glm::vec3 lowerLight = camera.getPosition();
+	lowerLight.y -= 0.3f;
+	//spotLights[0]->setFlash(lowerLight, camera.getDirection());
+
+    mainShader->validate();
+
+ 	// Now we're not drawing just to the depth buffer but also the color buffer
+	renderPlanets(uniformModelPlanets);
+
+    // ====================================
+    // RENDER SUNS
+    // ====================================
+
+    sunShader->useShader();
+	sunShader->setTexture(1);
+    glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+    sunShader->validate();
 
     renderSuns();
 }
@@ -303,17 +362,17 @@ int main()
     // Uniform object IDs let us pass values from the CPU to the GPU.
     // We use things like glUniform1f (for one value) to set these values
     // on the GPU
-    uniformModelPlanets = shaderList[0]->getModelLocation();
-    uniformProjectionPlanets = shaderList[0]->getProjectionLocation();
-    uniformViewPlanets = shaderList[0]->getViewLocation();
-    uniformEyePositionPlanets = shaderList[0]->getEyePositionLocation();
-    uniformSpecularIntensityPlanets = shaderList[0]->getSpecularIntensityLocation();
-    uniformShininessPlanets = shaderList[0]->getShininessLocation();
+    uniformModelPlanets = mainShader->getModelLocation();
+    uniformProjectionPlanets = mainShader->getProjectionLocation();
+    uniformViewPlanets = mainShader->getViewLocation();
+    uniformEyePositionPlanets = mainShader->getEyePositionLocation();
+    uniformSpecularIntensityPlanets = mainShader->getSpecularIntensityLocation();
+    uniformShininessPlanets = mainShader->getShininessLocation();
 
     // For the sun shaders we don't do any light or shadow calculations
-    uniformModelSuns = shaderList[1]->getModelLocation();
-    uniformProjectionSuns = shaderList[1]->getProjectionLocation();
-    uniformViewSuns = shaderList[1]->getViewLocation();
+    uniformModelSuns = sunShader->getModelLocation();
+    uniformProjectionSuns = sunShader->getProjectionLocation();
+    uniformViewSuns = sunShader->getViewLocation();
 
     // The shadow map shader will record the depth values of all objects except suns
     uniformModelDirectionalShadowMap = directionalShadowShader->getModelLocation();
@@ -340,21 +399,42 @@ int main()
 
         // Get + handle user input
         glfwPollEvents();
-        camera.keyControl(mainWindow.getKeys(), deltaTime, &spotLightCount);
+        bool* keys = mainWindow.getKeys();
+        camera.keyControl(keys, deltaTime, &spotLightCount);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset());
+
+        if (keys[GLFW_KEY_L])
+        {
+            keys[GLFW_KEY_L] = false;
+            shadowsEnabled = !shadowsEnabled;
+        }
 
 		// Render the scene to a framebuffer (only depth values) which will save it to a 
         // texture which we'll use in the main render pass
         //directionalShadowMapPass(&mainLight);
 
-		// These needs to be index based loops so that we don't make a copy of the lights each time
-		for (size_t i = 0; i < pointLightCount; i++)
-			omniShadowMapPass(pointLights[i]);
-		for (size_t i = 0; i < spotLightCount; i++)
-			omniShadowMapPass(spotLights[i]);
+        if (shadowsEnabled)
+        {
+            // These needs to be index based loops so that we don't make a copy of the lights each time
+            for (size_t i = 0; i < pointLightCount; i++)
+                omniShadowMapPass(pointLights[i]);
+            for (size_t i = 0; i < spotLightCount; i++)
+                omniShadowMapPass(spotLights[i]);
 
-        renderPass(projection, camera.calculateViewMatrix());
+            renderPassWithShadows(projection, camera.calculateViewMatrix());
+        }
+        else
+        {
+            // These needs to be index based loops so that we don't make a copy of the lights each time
+            for (size_t i = 0; i < pointLightCount; i++)
+                omniShadowMapPass(pointLights[i]);
+            for (size_t i = 0; i < spotLightCount; i++)
+                omniShadowMapPass(spotLights[i]);
+
+            renderPassWithShadows(projection, camera.calculateViewMatrix());
+
+        }
 
         glUseProgram(0);
         mainWindow.swapBuffers();
