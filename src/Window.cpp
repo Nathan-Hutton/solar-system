@@ -90,6 +90,9 @@ int Window::initialize()
     // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
     glEnable(GL_DEPTH_TEST);
 
+    // Make sure that skybox passes depth test if depth is less than or equal to 1.0
+    glDepthFunc(GL_LEQUAL);
+
     // Create viewport. This sets up the portion of the window that OpenGL will draw to
     // Sets up the rectangular area of the window that OpenGL will draw to
     glViewport(0, 0, bufferWidth, bufferHeight);

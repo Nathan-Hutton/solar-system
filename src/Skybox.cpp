@@ -83,10 +83,6 @@ void Skybox::drawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
     // are stored in the 4th column of the viewMatrix, so we'll remove that column
     // by converting it to a 3x3 then a 4x4 again
     viewMatrix = glm::mat4(glm::mat3(viewMatrix));
-
-    // Disable depth since the cubemap will be very close to the camera 
-    glDepthMask(GL_FALSE);
-
     skyShader->useShader();
 
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
@@ -99,8 +95,6 @@ void Skybox::drawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
     skyShader->validate();
 
     skyMesh->renderMesh();
-
-    glDepthMask(GL_TRUE);
 }
 
 Skybox::~Skybox()

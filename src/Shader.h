@@ -27,6 +27,8 @@ class Shader
 
         std::string readFile(const char* fileLocation);
 
+        GLuint getShaderID();
+
         GLuint getProjectionLocation();
         GLuint getModelLocation();
         GLuint getViewLocation();

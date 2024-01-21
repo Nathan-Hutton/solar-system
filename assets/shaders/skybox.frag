@@ -9,4 +9,5 @@ uniform samplerCube skybox;
 void main()
 {
     color = texture(skybox, texCoords);
+    gl_FragDepth = 1.0;
 }

@@ -271,6 +271,11 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     glAttachShader(theProgram, theShader);
 }
 
+GLuint Shader::getShaderID()
+{
+    return shaderID;
+}
+
 GLuint Shader::getProjectionLocation()
 {
     return uniformProjection;

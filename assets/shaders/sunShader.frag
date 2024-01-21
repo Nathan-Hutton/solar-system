@@ -10,5 +10,6 @@ uniform sampler2D theTexture;
 
 void main()
 {
-	color = texture(theTexture, texCoord) * 1.5;
+    vec4 emissiveColor = vec4(0.8, 0.4, 0.0, 0.0);
+	color = texture(theTexture, texCoord) + emissiveColor;
 }

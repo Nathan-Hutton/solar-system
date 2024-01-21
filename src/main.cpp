@@ -29,6 +29,11 @@
 #include "Model.h"
 #include "Skybox.h"
 
+GLuint hdrFBO;
+GLuint hdrColorBuffer;
+GLuint uniformHdrBuffer;
+Mesh* hdrTexture;
+
 const float toRadians = M_PI / 180.0f;
 
 GLuint uniformModelPlanets = 0, uniformProjectionPlanets = 0, uniformViewPlanets = 0,
@@ -47,6 +52,7 @@ Shader* mainShaderWithShadows;
 Shader* mainShaderWithoutShadows;
 Shader* sunShader;
 Shader* omniShadowShader;
+Shader* hdrShader;
 
 bool shadowsEnabled = false;
 
@@ -72,6 +78,8 @@ static const char* vShaderNoShadows = "../assets/shaders/planetShaderNoShadows.v
 static const char* fShaderNoShadows = "../assets/shaders/planetShaderNoShadows.frag";
 static const char* vSunShader = "../assets/shaders/sunShader.vert";
 static const char* fSunShader = "../assets/shaders/sunShader.frag";
+static const char* vHdrShader = "../assets/shaders/hdrShader.vert";
+static const char* fHdrShader = "../assets/shaders/hdrShader.frag";
 
 void createShaders()
 {
@@ -91,6 +99,9 @@ void createShaders()
 	omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
 		"../assets/shaders/omni_shadow_map.geom",
 	  	"../assets/shaders/omni_shadow_map.frag");
+
+    hdrShader = new Shader();
+    hdrShader->createFromFiles(vHdrShader, fHdrShader);
 }
 
 void handleTimeChange(GLfloat yScrollOffset)
@@ -189,16 +200,39 @@ void omniShadowMapPass(PointLight* light)
 
 void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 {
-    // ====================================
-    // RENDER PLANETS, MOONS, and ASTEROIDS
-    // ====================================
-
-    // Set viewport. Clear window, color, and depth buffer bit. Make the image black
+    // Clear the buffer that actually renders
 	glViewport(0, 0, 1920, 1200);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    skybox.drawSkybox(view, projection);
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+    // Clear hdr buffer
+	glViewport(0, 0, 1920, 1200);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    sunShader->useShader();
+    glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+    // We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
+	sunShader->setTexture(1);
+    sunShader->validate();
+
+    renderSuns();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    hdrShader->useShader();
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+    glUniform1i(uniformHdrBuffer, 1);
+    hdrTexture->renderMesh();
+
+    // ====================================
+    // RENDER PLANETS, MOONS, and ASTEROIDS
+    // ====================================
 
 	mainShaderWithoutShadows->useShader();
 
@@ -213,11 +247,27 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
 	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
+    // We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
 	mainShaderWithoutShadows->setTexture(1);
     mainShaderWithoutShadows->validate();
 
  	// Now we're not drawing just to the depth buffer but also the color buffer
 	renderPlanets(uniformModelPlanets);
+
+    // ====================================
+    // RENDER SKYBOX
+    // ====================================
+
+    // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
+    //skybox.drawSkybox(view, projection);
+}
+
+void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
+{
+    // Set viewport. Clear window, color, and depth buffer bit. Make the image black
+	glViewport(0, 0, 1920, 1200);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // ====================================
     // RENDER SUNS
@@ -231,20 +281,10 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     sunShader->validate();
 
     renderSuns();
-}
 
-void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
-{
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
     // ====================================
-
-    // Set viewport. Clear window, color, and depth buffer bit. Make the image black
-	glViewport(0, 0, 1920, 1200);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    skybox.drawSkybox(view, projection);
 
 	mainShaderWithShadows->useShader();
 
@@ -269,17 +309,11 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
 	renderPlanets(uniformModelPlanets);
 
     // ====================================
-    // RENDER SUNS
+    // RENDER SKYBOX
     // ====================================
 
-    sunShader->useShader();
-	sunShader->setTexture(1);
-    glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-
-    sunShader->validate();
-
-    renderSuns();
+    // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
+    skybox.drawSkybox(view, projection);
 }
 
 int main()
@@ -300,7 +334,7 @@ int main()
 	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
 
 	skybox = Skybox(skyboxFaces);
-
+    
     // Setup the OpenGL program
     createShaders();
 
@@ -328,6 +362,49 @@ int main()
     uniformModelOmniShadowMap = omniShadowShader->getModelLocation();
 	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
 	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
+
+    uniformHdrBuffer = glGetUniformLocation(hdrShader->getShaderID(), "hdrBuffer");
+    hdrTexture = new Mesh();
+
+    float quadVertices[] = {
+        // Positions     // Texture Coordinates
+        1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
+        1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
+       -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
+       -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
+    };
+
+    unsigned int quadIndices[] = {
+        0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
+        1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
+    };
+    hdrTexture->createMesh(quadVertices, quadIndices, 24, 6);
+
+    // HDR
+    glGenFramebuffers(1, &hdrFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+    glGenTextures(1, &hdrColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hdrColorBuffer, 0);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("Framebuffer Error: %i\n", status);
+        return false;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Loop until window is closed
     while(!mainWindow.getShouldClose())
