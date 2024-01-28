@@ -256,9 +256,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
     hdrShader->setTexture(1);
-
-    glActiveTexture(GL_TEXTURE1);
-    glUniform1i(uniformHdrBuffer, 1);
     hdrTexture->renderMesh();
 }
 
@@ -297,6 +294,8 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
+    // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
+    // texture, and the third is the texture(s) of the objects we're rendering
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
 	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
 
@@ -325,9 +324,6 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
     hdrShader->setTexture(1);
-
-    glActiveTexture(GL_TEXTURE1);
-    glUniform1i(uniformHdrBuffer, 1);
     hdrTexture->renderMesh();
 }
 
@@ -378,9 +374,6 @@ int main()
 	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
 	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
 
-    uniformHdrBuffer = glGetUniformLocation(hdrShader->getShaderID(), "screenTexture");
-    hdrTexture = new Mesh();
-
     float quadVertices[] = {
         // Positions     // Texture Coordinates
         1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
@@ -388,11 +381,11 @@ int main()
        -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
        -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
     };
-
     unsigned int quadIndices[] = {
         0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
         1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
     };
+    hdrTexture = new Mesh();
     hdrTexture->createMesh(quadVertices, quadIndices, 16, 6, false, false);
 
     // HDR
