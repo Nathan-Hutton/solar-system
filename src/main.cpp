@@ -29,7 +29,6 @@
 #include "Model.h"
 #include "Skybox.h"
 
-unsigned int rectVAO, rectVBO;
 GLuint hdrFBO;
 GLuint hdrColorBuffer;
 GLuint uniformHdrBuffer;
@@ -205,7 +204,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
     // Clear hdr buffer
-	//glViewport(0, 0, 1920, 1200);
+	glViewport(0, 0, 1920, 1200);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -221,16 +220,16 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     renderSuns();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     hdrShader->useShader();
-    glBindVertexArray(rectVAO);
     glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    //glActiveTexture(GL_TEXTURE1);
-    //glUniform1i(uniformHdrBuffer, 0);
-    //hdrTexture->renderMesh();
+    glActiveTexture(GL_TEXTURE1);
+    glUniform1i(uniformHdrBuffer, 1);
+    hdrTexture->renderMesh();
 
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
@@ -368,38 +367,19 @@ int main()
     uniformHdrBuffer = glGetUniformLocation(hdrShader->getShaderID(), "screenTexture");
     hdrTexture = new Mesh();
 
-    //float quadVertices[] = {
-    //    // Positions     // Texture Coordinates
-    //    1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
-    //    1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
-    //   -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
-    //   -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
-    //};
-
-    //unsigned int quadIndices[] = {
-    //    0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
-    //    1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
-    //};
-    //hdrTexture->createMesh(quadVertices, quadIndices, 16, 6);
-    float rectangleVertices[] =
-    {
-        1.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f,
-
-        1.0f, 1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f
+    float quadVertices[] = {
+        // Positions     // Texture Coordinates
+        1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
+        1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
+       -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
+       -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
     };
-    glGenVertexArrays(1, &rectVAO);
-    glGenBuffers(1, &rectVBO);
-    glBindVertexArray(rectVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), &rectangleVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+    unsigned int quadIndices[] = {
+        0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
+        1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
+    };
+    hdrTexture->createMesh(quadVertices, quadIndices, 16, 6, false, false);
 
     // HDR
     glGenFramebuffers(1, &hdrFBO);

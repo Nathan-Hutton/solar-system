@@ -11,7 +11,9 @@ Mesh::Mesh()
     this->material = NULL;
 }
 
-void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices)
+void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, 
+        unsigned int numOfVertices, unsigned int numOfIndices,
+        bool hasNormals, bool threeVertices)
 {
     indexCount = numOfIndices;
 
@@ -49,14 +51,35 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     // The shader gets sent these attributes when we call glDrawElements after binding the VAO and IBO again.
 
     // Specify how to find the vertex location attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, 0);
-    glEnableVertexAttribArray(0);
-    // Specify how to find the vertex texture attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
-    glEnableVertexAttribArray(1);
-    // Specify how to find the vertex normal attribute
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 5));
-    glEnableVertexAttribArray(2);
+
+    // In the case where we're just rendering the quad for post-processing effects,
+    // we just use 2 values for each vertex since it's a 2D shape
+    int size;
+    if (threeVertices)
+        size = 3;
+    else
+        size = 2;
+
+    // Not all objects need normals. Suns and quads used for post-processing don't need them
+    if (hasNormals)
+    {
+        glVertexAttribPointer(0, size, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 5), 0);
+        glEnableVertexAttribArray(0);
+        // Specify how to find the vertex texture attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 5), (void*)(sizeof(vertices[0]) * size));
+        glEnableVertexAttribArray(1);
+        // Specify how to find the vertex normal attribute
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 5), (void*)(sizeof(vertices[0]) * 5));
+        glEnableVertexAttribArray(2);
+    }
+    else
+    {
+        glVertexAttribPointer(0, size, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 2), 0);
+        glEnableVertexAttribArray(0);
+        // Specify how to find the vertex texture attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 2), (void*)(sizeof(vertices[0]) * size));
+        glEnableVertexAttribArray(1);
+    }
 
     // Unbind everything
     glBindBuffer(GL_ARRAY_BUFFER, 0);

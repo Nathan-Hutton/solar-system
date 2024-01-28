@@ -10,7 +10,9 @@ class Mesh
     public:
         Mesh();
 
-        void createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numIndices);
+        void createMesh(GLfloat *vertices, unsigned int *indices, 
+                unsigned int numOfVertices, unsigned int numIndices,
+                bool hasNormals=true, bool threeVertices=true);
         Texture *getTexturePointer();
         void setTexturePointer(Texture *texture);
         void setMaterialPointer(Material *material);
