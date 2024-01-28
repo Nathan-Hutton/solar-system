@@ -101,7 +101,7 @@ void Texture::useTexture()
 {
     // Specify which texture unit we'll be using for texture operations.
     // We'll only have 1 active at a time.
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE2);
 
     // Bind our texture for draw operations
     glBindTexture(GL_TEXTURE_2D, textureID);

@@ -200,7 +200,6 @@ void omniShadowMapPass(PointLight* light)
 
 void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 {
-    // Clear the buffer that actually renders
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
     // Clear hdr buffer
@@ -212,7 +211,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
     // We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
-	sunShader->setTexture(1);
+	sunShader->setTexture(2);
     sunShader->validate();
 
     renderSuns();
@@ -235,7 +234,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
     //// We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
-	mainShaderWithoutShadows->setTexture(1);
+	mainShaderWithoutShadows->setTexture(2);
     mainShaderWithoutShadows->validate();
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
@@ -261,14 +260,14 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     glActiveTexture(GL_TEXTURE1);
     glUniform1i(uniformHdrBuffer, 1);
     hdrTexture->renderMesh();
-
 }
 
 void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
 {
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
     // Set viewport. Clear window, color, and depth buffer bit. Make the image black
 	glViewport(0, 0, 1920, 1200);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // ====================================
@@ -276,7 +275,7 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     sunShader->useShader();
-	sunShader->setTexture(1);
+	sunShader->setTexture(2);
     glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
@@ -298,13 +297,13 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 3, 0);
-	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 3 + pointLightCount, pointLightCount);
+	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
+	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
 
 	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
  	// Handle/bind the shadow map texture to texture unit 1
-	mainShaderWithShadows->setTexture(1);
-    mainShaderWithShadows->setDirectionalShadowMap(2);
+	mainShaderWithShadows->setTexture(2);
+    mainShaderWithShadows->setDirectionalShadowMap(3);
     mainShaderWithShadows->validate();
 
  	// Now we're not drawing just to the depth buffer but also the color buffer
@@ -316,6 +315,20 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
     skybox.drawSkybox(view, projection);
+
+    // Now that we've rendered everything to a texture, we'll render
+    // it to the screen with some post-processing effects
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    hdrShader->useShader();
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+    hdrShader->setTexture(1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glUniform1i(uniformHdrBuffer, 1);
+    hdrTexture->renderMesh();
 }
 
 int main()
