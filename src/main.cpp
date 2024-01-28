@@ -205,9 +205,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 
     // Clear hdr buffer
 	glViewport(0, 0, 1920, 1200);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
 
     sunShader->useShader();
     glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
@@ -219,48 +217,51 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 
     renderSuns();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    hdrShader->useShader();
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
-
-    glActiveTexture(GL_TEXTURE1);
-    glUniform1i(uniformHdrBuffer, 1);
-    hdrTexture->renderMesh();
-
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
     // ====================================
 
-	//mainShaderWithoutShadows->useShader();
+	mainShaderWithoutShadows->useShader();
 
     //// Apply projection and view matrices.
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    //glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
-    //glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    //glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+    glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
+    glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-	//mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-	//mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
+	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
+	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
     //// We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
-	//mainShaderWithoutShadows->setTexture(1);
-    //mainShaderWithoutShadows->validate();
+	mainShaderWithoutShadows->setTexture(1);
+    mainShaderWithoutShadows->validate();
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
-	//renderPlanets(uniformModelPlanets);
+	renderPlanets(uniformModelPlanets);
 
     // ====================================
     // RENDER SKYBOX
     // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    //skybox.drawSkybox(view, projection);
+    skybox.drawSkybox(view, projection);
+
+    // Now that we've rendered everything to a texture, we'll render
+    // it to the screen with some post-processing effects
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    hdrShader->useShader();
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+    hdrShader->setTexture(1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glUniform1i(uniformHdrBuffer, 1);
+    hdrTexture->renderMesh();
+
 }
 
 void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
