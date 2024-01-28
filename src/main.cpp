@@ -29,6 +29,7 @@
 #include "Model.h"
 #include "Skybox.h"
 
+unsigned int rectVAO, rectVBO;
 GLuint hdrFBO;
 GLuint hdrColorBuffer;
 GLuint uniformHdrBuffer;
@@ -201,16 +202,13 @@ void omniShadowMapPass(PointLight* light)
 void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 {
     // Clear the buffer that actually renders
-	glViewport(0, 0, 1920, 1200);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
     // Clear hdr buffer
-	glViewport(0, 0, 1920, 1200);
+	//glViewport(0, 0, 1920, 1200);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 
     sunShader->useShader();
     glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
@@ -225,34 +223,38 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     hdrShader->useShader();
-    glActiveTexture(GL_TEXTURE1);
+    glBindVertexArray(rectVAO);
+    glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
-    glUniform1i(uniformHdrBuffer, 1);
-    hdrTexture->renderMesh();
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    //glActiveTexture(GL_TEXTURE1);
+    //glUniform1i(uniformHdrBuffer, 0);
+    //hdrTexture->renderMesh();
 
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
     // ====================================
 
-	mainShaderWithoutShadows->useShader();
+	//mainShaderWithoutShadows->useShader();
 
-    // Apply projection and view matrices.
-    // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
-    // View matrix represents the camera's position and orientation in world.
-    // The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+    //// Apply projection and view matrices.
+    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
+    //// View matrix represents the camera's position and orientation in world.
+    //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
+    //glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
+    //glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
+    //glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
+	//mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
+	//mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
-    // We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
-	mainShaderWithoutShadows->setTexture(1);
-    mainShaderWithoutShadows->validate();
+    //// We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
+	//mainShaderWithoutShadows->setTexture(1);
+    //mainShaderWithoutShadows->validate();
 
- 	// Now we're not drawing just to the depth buffer but also the color buffer
-	renderPlanets(uniformModelPlanets);
+ 	//// Now we're not drawing just to the depth buffer but also the color buffer
+	//renderPlanets(uniformModelPlanets);
 
     // ====================================
     // RENDER SKYBOX
@@ -363,22 +365,41 @@ int main()
 	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
 	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
 
-    uniformHdrBuffer = glGetUniformLocation(hdrShader->getShaderID(), "hdrBuffer");
+    uniformHdrBuffer = glGetUniformLocation(hdrShader->getShaderID(), "screenTexture");
     hdrTexture = new Mesh();
 
-    float quadVertices[] = {
-        // Positions     // Texture Coordinates
-        1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
-        1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
-       -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
-       -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
-    };
+    //float quadVertices[] = {
+    //    // Positions     // Texture Coordinates
+    //    1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
+    //    1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
+    //   -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
+    //   -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
+    //};
 
-    unsigned int quadIndices[] = {
-        0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
-        1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
+    //unsigned int quadIndices[] = {
+    //    0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
+    //    1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
+    //};
+    //hdrTexture->createMesh(quadVertices, quadIndices, 16, 6);
+    float rectangleVertices[] =
+    {
+        1.0f, -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f,
+
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f
     };
-    hdrTexture->createMesh(quadVertices, quadIndices, 24, 6);
+    glGenVertexArrays(1, &rectVAO);
+    glGenBuffers(1, &rectVBO);
+    glBindVertexArray(rectVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), &rectangleVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
     // HDR
     glGenFramebuffers(1, &hdrFBO);
@@ -386,18 +407,23 @@ int main()
 
     glGenTextures(1, &hdrColorBuffer);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_FLOAT, NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hdrColorBuffer, 0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hdrColorBuffer, 0);
+    unsigned int RBO;
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1200);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         printf("Framebuffer Error: %i\n", status);
