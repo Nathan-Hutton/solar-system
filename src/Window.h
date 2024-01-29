@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <string>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -22,6 +23,8 @@ class Window
         GLfloat getXChange();
         GLfloat getYChange();
         GLfloat getYScrollOffset();
+
+        void setWindowTitle(std::string newTitle);
         
         void swapBuffers() { glfwSwapBuffers(mainWindow); }
 

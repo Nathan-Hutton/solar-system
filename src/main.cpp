@@ -420,12 +420,26 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Loop until window is closed
+    unsigned int counter = 0;
+    double lastUpdateTime = glfwGetTime();
     while(!mainWindow.getShouldClose())
     {
         now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
         timeStep = deltaTime * timeChange;
+        counter++;
+
+        // Update FPS counter
+        if (counter == 30)
+        {
+            double timeElapsed = now - lastUpdateTime;
+            std::string FPS = std::to_string(30.0 / timeElapsed);
+            std::string newTitle = "Solar System - " + FPS + " FPS";
+            mainWindow.setWindowTitle(newTitle);
+            lastUpdateTime = now;
+            counter = 0;
+        }
 
         // This loop ensures that we follow a curve even when the framerate sucks
         OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, planets, complexModels, timeStep);

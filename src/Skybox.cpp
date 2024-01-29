@@ -42,23 +42,23 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
 
     unsigned int skyboxIndices[] = {
         // front
-        0, 1, 2,
-        2, 1, 3,
+        2, 1, 0,
+        3, 1, 2,
         // right
-        2, 3, 5,
-        5, 3, 7,
+        5, 3, 2,
+        7, 3, 5,
         // back
-        5, 7, 4,
-        4, 7, 6,
+        4, 7, 5,
+        6, 7, 4,
         // left
-        4, 6, 0,
-        0, 6, 1,
+        0, 6, 4,
+        1, 6, 0,
         // top
-        4, 0, 5,
-        5, 0, 2,
+        5, 0, 4,
+        2, 0, 5,
         // bottom
-        1, 6, 3,
-        3, 6, 7
+        3, 6, 1,
+        7, 6, 3
     };
 
     float skyboxVertices[] = {
