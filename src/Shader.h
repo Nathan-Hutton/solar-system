@@ -49,6 +49,8 @@ class Shader
         GLuint getOmniLightPosLocation();
         GLuint getFarPlaneLocation();
 
+        GLuint getGammaLocation();
+
         void setDirectionalLight(DirectionalLight *dLight);
         void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount);
         void setSpotLightsWithoutShadows(SpotLight* sLights[], unsigned int lightCount);
@@ -73,7 +75,8 @@ class Shader
         uniformEyePosition, uniformSpecularIntensity, uniformShininess,
         uniformTexture, uniformPointLightCount, uniformSpotLightCount,
         uniformDirectionalLightTransform, uniformDirectionalShadowMap,
-        uniformOmniLightPos, uniformFarPlane;
+        uniformOmniLightPos, uniformFarPlane,
+        uniformGamma;
 
         GLuint uniformLightMatrices[6];
 

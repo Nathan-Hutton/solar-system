@@ -48,6 +48,7 @@ uniformEyePositionPlanetsNoShadows = 0, uniformSpecularIntensityPlanetsNoShadows
 GLuint uniformModelSuns = 0, uniformProjectionSuns = 0, uniformViewSuns = 0;
 GLuint uniformModelDirectionalShadowMap = 0;
 GLuint uniformModelOmniShadowMap = 0;
+GLuint uniformGamma = 0;
 
 Window mainWindow;
 std::vector<Sun*> stars;
@@ -259,6 +260,9 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     hdrShader->useShader();
+    // 2.2f is the gamma number we're using since opengl wants to complain when I define
+    // a "gamma" variable in this file
+    glUniform1f(uniformGamma, 2.2f);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
     hdrShader->setTexture(1);
@@ -394,6 +398,7 @@ int main()
 	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
 	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
 
+    uniformGamma = hdrShader->getGammaLocation();
     float quadVertices[] = {
         // Positions     // Texture Coordinates
         1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
@@ -414,7 +419,7 @@ int main()
 
     glGenTextures(1, &hdrColorBuffer);
     glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

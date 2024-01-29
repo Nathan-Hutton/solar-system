@@ -147,6 +147,7 @@ void Shader::compileProgram()
     uniformModel = glGetUniformLocation(shaderID, "model");
     uniformProjection = glGetUniformLocation(shaderID, "projection");
     uniformView = glGetUniformLocation(shaderID, "view");
+    uniformGamma = glGetUniformLocation(shaderID, "gamma");
 
     // Directional light
     uniformDirectionalLight.uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.base.ambientIntensity");
@@ -307,6 +308,10 @@ GLuint Shader::getOmniLightPosLocation()
 GLuint Shader::getFarPlaneLocation()
 {
     return uniformFarPlane;
+}
+GLuint Shader::getGammaLocation()
+{
+    return uniformGamma;
 }
 
 void Shader::setDirectionalLight(DirectionalLight *dLight)
