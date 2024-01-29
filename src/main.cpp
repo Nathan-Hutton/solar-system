@@ -39,6 +39,12 @@ const float toRadians = M_PI / 180.0f;
 GLuint uniformModelPlanets = 0, uniformProjectionPlanets = 0, uniformViewPlanets = 0,
 uniformEyePositionPlanets = 0, uniformSpecularIntensityPlanets = 0, uniformShininessPlanets = 0,
 uniformOmniLightPos = 0, uniformFarPlane = 0;
+
+GLuint uniformModelPlanetsShadows = 0, uniformProjectionPlanetsShadows = 0, uniformViewPlanetsShadows = 0,
+uniformEyePositionPlanetsShadows = 0, uniformSpecularIntensityPlanetsShadows = 0, uniformShininessPlanetsShadows = 0;
+GLuint uniformModelPlanetsNoShadows = 0, uniformProjectionPlanetsNoShadows = 0, uniformViewPlanetsNoShadows = 0,
+uniformEyePositionPlanetsNoShadows = 0, uniformSpecularIntensityPlanetsNoShadows = 0, uniformShininessPlanetsNoShadows = 0;
+
 GLuint uniformModelSuns = 0, uniformProjectionSuns = 0, uniformViewSuns = 0;
 GLuint uniformModelDirectionalShadowMap = 0;
 GLuint uniformModelOmniShadowMap = 0;
@@ -357,12 +363,26 @@ int main()
     // Uniform object IDs let us pass values from the CPU to the GPU.
     // We use things like glUniform1f (for one value) to set these values
     // on the GPU
-    uniformModelPlanets = mainShaderWithShadows->getModelLocation();
-    uniformProjectionPlanets = mainShaderWithShadows->getProjectionLocation();
-    uniformViewPlanets = mainShaderWithShadows->getViewLocation();
-    uniformEyePositionPlanets = mainShaderWithShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanets = mainShaderWithShadows->getSpecularIntensityLocation();
-    uniformShininessPlanets = mainShaderWithShadows->getShininessLocation();
+    uniformModelPlanetsShadows = mainShaderWithShadows->getModelLocation();
+    uniformProjectionPlanetsShadows = mainShaderWithShadows->getProjectionLocation();
+    uniformViewPlanetsShadows = mainShaderWithShadows->getViewLocation();
+    uniformEyePositionPlanetsShadows = mainShaderWithShadows->getEyePositionLocation();
+    uniformSpecularIntensityPlanetsShadows = mainShaderWithShadows->getSpecularIntensityLocation();
+    uniformShininessPlanetsShadows = mainShaderWithShadows->getShininessLocation();
+
+    uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
+    uniformProjectionPlanetsNoShadows = mainShaderWithoutShadows->getProjectionLocation();
+    uniformViewPlanetsNoShadows = mainShaderWithoutShadows->getViewLocation();
+    uniformEyePositionPlanetsNoShadows = mainShaderWithoutShadows->getEyePositionLocation();
+    uniformSpecularIntensityPlanetsNoShadows = mainShaderWithoutShadows->getSpecularIntensityLocation();
+    uniformShininessPlanetsNoShadows = mainShaderWithoutShadows->getShininessLocation();
+
+    uniformModelPlanets = uniformModelPlanetsNoShadows;
+    uniformProjectionPlanets = uniformProjectionPlanetsNoShadows;
+    uniformViewPlanets = uniformViewPlanetsNoShadows;
+    uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
+    uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsNoShadows;
+    uniformShininessPlanets = uniformShininessPlanetsNoShadows;
 
     // For the sun shaders we don't do any light or shadow calculations
     uniformModelSuns = sunShader->getModelLocation();
@@ -461,6 +481,25 @@ int main()
         {
             keys[GLFW_KEY_L] = false;
             shadowsEnabled = !shadowsEnabled;
+
+            if (shadowsEnabled)
+            {
+                uniformModelPlanets = uniformModelPlanetsShadows;
+                uniformProjectionPlanets = uniformProjectionPlanetsShadows;
+                uniformViewPlanets = uniformViewPlanetsShadows;
+                uniformEyePositionPlanets = uniformEyePositionPlanetsShadows;
+                uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsShadows;
+                uniformShininessPlanets = uniformShininessPlanetsShadows;
+            }
+            else
+            {
+                uniformModelPlanets = uniformModelPlanetsNoShadows;
+                uniformProjectionPlanets = uniformProjectionPlanetsNoShadows;
+                uniformViewPlanets = uniformViewPlanetsNoShadows;
+                uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
+                uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsNoShadows;
+                uniformShininessPlanets = uniformShininessPlanetsNoShadows;
+            }
         }
 
         if (shadowsEnabled)
