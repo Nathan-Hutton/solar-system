@@ -1,5 +1,10 @@
 #version 330
 
+// This lets us write to our 2 color buffers.
+// For the bloom effect, we put the blurred parts over the main color image
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 bloomColor;
+
 in vec2 texCoord;
 in vec3 normal;
 in vec3 fragPos;
@@ -140,5 +145,10 @@ void main()
 	finalColor += CalcPointLights();
     finalColor += CalcSpotLights();
 	
-	color = texture(theTexture, texCoord) * finalColor;
+	fragColor = texture(theTexture, texCoord) * finalColor;
+
+    // Consider multiplying yellow colors to make them pop more
+
+    //float brightness = dot(color.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+    bloomColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }

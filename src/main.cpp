@@ -30,9 +30,12 @@
 #include "Skybox.h"
 
 GLuint hdrFBO;
-GLuint hdrColorBuffer;
-GLuint uniformHdrBuffer;
-Mesh* hdrTexture;
+GLuint postProcessingTexture;
+GLuint bloomTexture;
+Mesh* framebufferQuad;
+
+unsigned int pingPongFBO[2];
+unsigned int pingPongBuffer[2];
 
 const float toRadians = M_PI / 180.0f;
 
@@ -48,7 +51,7 @@ uniformEyePositionPlanetsNoShadows = 0, uniformSpecularIntensityPlanetsNoShadows
 GLuint uniformModelSuns = 0, uniformProjectionSuns = 0, uniformViewSuns = 0;
 GLuint uniformModelDirectionalShadowMap = 0;
 GLuint uniformModelOmniShadowMap = 0;
-GLuint uniformGamma = 0;
+GLuint uniformBlurTexture = 0;
 
 Window mainWindow;
 std::vector<Sun*> stars;
@@ -60,6 +63,7 @@ Shader* mainShaderWithoutShadows;
 Shader* sunShader;
 Shader* omniShadowShader;
 Shader* hdrShader;
+Shader* bloomShader;
 
 bool shadowsEnabled = false;
 
@@ -87,6 +91,7 @@ static const char* vSunShader = "../assets/shaders/sunShader.vert";
 static const char* fSunShader = "../assets/shaders/sunShader.frag";
 static const char* vHdrShader = "../assets/shaders/hdrShader.vert";
 static const char* fHdrShader = "../assets/shaders/hdrShader.frag";
+static const char* fBloomShader = "../assets/shaders/bloomShader.frag";
 
 void createShaders()
 {
@@ -109,6 +114,8 @@ void createShaders()
 
     hdrShader = new Shader();
     hdrShader->createFromFiles(vHdrShader, fHdrShader);
+    bloomShader = new Shader();
+    bloomShader->createFromFiles(vHdrShader, fBloomShader);
 }
 
 void handleTimeChange(GLfloat yScrollOffset)
@@ -252,7 +259,33 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    skybox.drawSkybox(view, projection);
+    //skybox.drawSkybox(view, projection);
+
+    bool horizontal = true, first_iteration = true;
+    int amount = 10;
+    bloomShader->useShader();
+    glActiveTexture(GL_TEXTURE0);
+    bloomShader->setTexture(0);
+    // TODO: Move the first iteration out of the for loop so it doesn't have to check every time
+    for (unsigned int i = 0; i < amount; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
+        glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), horizontal);
+
+        // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
+        if (first_iteration)
+        {
+            glBindTexture(GL_TEXTURE_2D, bloomTexture);
+            first_iteration = false;
+        }
+        // Move the data between pingPong FBOs
+        else
+        {
+            glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
+        }
+        framebufferQuad->renderMesh();
+        horizontal = !horizontal;
+    }
 
     // Now that we've rendered everything to a texture, we'll render
     // it to the screen with some post-processing effects
@@ -260,13 +293,16 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     hdrShader->useShader();
-    // 2.2f is the gamma number we're using since opengl wants to complain when I define
-    // a "gamma" variable in this file
-    glUniform1f(uniformGamma, 2.2f);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+    hdrShader->setTexture(0);
+
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
-    hdrShader->setTexture(1);
-    hdrTexture->renderMesh();
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
+
+    framebufferQuad->renderMesh();
 }
 
 void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
@@ -332,9 +368,9 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
 
     hdrShader->useShader();
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
     hdrShader->setTexture(1);
-    hdrTexture->renderMesh();
+    framebufferQuad->renderMesh();
 }
 
 int main()
@@ -398,7 +434,6 @@ int main()
 	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
 	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
 
-    uniformGamma = hdrShader->getGammaLocation();
     float quadVertices[] = {
         // Positions     // Texture Coordinates
         1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
@@ -410,22 +445,34 @@ int main()
         0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
         1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
     };
-    hdrTexture = new Mesh();
-    hdrTexture->createMesh(quadVertices, quadIndices, 16, 6, false, false);
+    framebufferQuad = new Mesh();
+    framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
 
     // HDR
     glGenFramebuffers(1, &hdrFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
-    glGenTextures(1, &hdrColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, hdrColorBuffer);
+    // Make the main framebuffer texture
+    glGenTextures(1, &postProcessingTexture);
+    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hdrColorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
+
+    // Make texture for bright spots so we cacn have bloom
+    glGenTextures(1, &bloomTexture);
+    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    // 2.2f is the gamma number we're using since opengl wants to complain when I define
+    // a "gamma" variable in this file
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -440,6 +487,30 @@ int main()
     {
         printf("Framebuffer Error: %i\n", status);
         return false;
+    }
+
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
+
+    glGenFramebuffers(2, pingPongFBO);
+    glGenTextures(2, pingPongBuffer);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongBuffer[i], 0);
+
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            printf("Framebuffer Error: %i\n", status);
+            return false;
+        }
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
