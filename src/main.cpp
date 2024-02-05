@@ -259,7 +259,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    //skybox.drawSkybox(view, projection);
+    skybox.drawSkybox(view, projection);
 
     bool horizontal = true, first_iteration = true;
     int amount = 10;
