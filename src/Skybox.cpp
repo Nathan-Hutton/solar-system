@@ -77,7 +77,13 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
     skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36);
 }
 
-void Skybox::drawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void Skybox::setProjectionMatrix(glm::mat4 projection)
+{
+    skyShader->useShader();
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+}
+
+void Skybox::drawSkybox(glm::mat4 viewMatrix)
 {
     // We only want to use the rotation values. All of the transformation values
     // are stored in the 4th column of the viewMatrix, so we'll remove that column
@@ -85,7 +91,6 @@ void Skybox::drawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
     viewMatrix = glm::mat4(glm::mat3(viewMatrix));
     skyShader->useShader();
 
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
     // We can set this to GL_TEXTURE0 since it's independent of the other shaders

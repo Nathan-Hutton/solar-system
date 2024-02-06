@@ -232,7 +232,7 @@ void omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
+void renderPassWithoutShadows(glm::mat4 view)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
@@ -241,7 +241,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     sunShader->useShader();
-    glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
     renderSuns();
@@ -256,7 +255,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
@@ -271,7 +269,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    skybox.drawSkybox(view, projection);
+    skybox.drawSkybox(view);
 
     bool horizontal = true, first_iteration = true;
     int amount = 5;
@@ -315,7 +313,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     framebufferQuad->renderMesh();
 }
 
-void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
+void renderPassWithShadows(glm::mat4 view)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
@@ -328,7 +326,6 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     sunShader->useShader();
-    glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
     renderSuns();
@@ -343,7 +340,7 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
     // View matrix represents the camera's position and orientation in world.
     // The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
+    //glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
@@ -362,7 +359,7 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    skybox.drawSkybox(view, projection);
+    skybox.drawSkybox(view);
 
     bool horizontal = true, first_iteration = true;
     int amount = 5;
@@ -411,6 +408,8 @@ int main()
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
+
     SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     //SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
     //SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
@@ -424,14 +423,13 @@ int main()
 	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
 
 	skybox = Skybox(skyboxFaces);
+    skybox.setProjectionMatrix(projection);
     
     // Setup the OpenGL program
     createShaders();
 
     GLfloat now;
     GLfloat timeStep = 0.0f;
-
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
 
     // Uniform object IDs let us pass values from the CPU to the GPU.
     // We use things like glUniform1f (for one value) to set these values
@@ -443,12 +441,18 @@ int main()
     uniformSpecularIntensityPlanetsShadows = mainShaderWithShadows->getSpecularIntensityLocation();
     uniformShininessPlanetsShadows = mainShaderWithShadows->getShininessLocation();
 
+    mainShaderWithShadows->useShader();
+    glUniformMatrix4fv(uniformProjectionPlanetsShadows, 1, GL_FALSE, glm::value_ptr(projection));
+
     uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
     uniformProjectionPlanetsNoShadows = mainShaderWithoutShadows->getProjectionLocation();
     uniformViewPlanetsNoShadows = mainShaderWithoutShadows->getViewLocation();
     uniformEyePositionPlanetsNoShadows = mainShaderWithoutShadows->getEyePositionLocation();
     uniformSpecularIntensityPlanetsNoShadows = mainShaderWithoutShadows->getSpecularIntensityLocation();
     uniformShininessPlanetsNoShadows = mainShaderWithoutShadows->getShininessLocation();
+
+    mainShaderWithoutShadows->useShader();
+    glUniformMatrix4fv(uniformProjectionPlanetsNoShadows, 1, GL_FALSE, glm::value_ptr(projection));
 
     uniformModelPlanets = uniformModelPlanetsNoShadows;
     uniformProjectionPlanets = uniformProjectionPlanetsNoShadows;
@@ -461,6 +465,8 @@ int main()
     uniformModelSuns = sunShader->getModelLocation();
     uniformProjectionSuns = sunShader->getProjectionLocation();
     uniformViewSuns = sunShader->getViewLocation();
+    sunShader->useShader();
+    glUniformMatrix4fv(uniformProjectionPlanetsShadows, 1, GL_FALSE, glm::value_ptr(projection));
 
     // The shadow map shader will record the depth values of all objects except suns
     uniformModelOmniShadowMap = omniShadowShader->getModelLocation();
@@ -619,11 +625,11 @@ int main()
             for (size_t i = 0; i < spotLightCount; i++)
                 omniShadowMapPass(spotLights[i]);
 
-            renderPassWithShadows(projection, camera.calculateViewMatrix());
+            renderPassWithShadows(camera.calculateViewMatrix());
         }
         else
         {
-            renderPassWithoutShadows(projection, camera.calculateViewMatrix());
+            renderPassWithoutShadows(camera.calculateViewMatrix());
         }
 
         glUseProgram(0);
