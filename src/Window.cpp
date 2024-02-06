@@ -95,8 +95,6 @@ int Window::initialize()
     // No idea why this is CW and not CCW
     glFrontFace(GL_CW);
 
-    glfwSwapInterval(1);
-
     // Make sure that skybox passes depth test if depth is less than or equal to 1.0
     glDepthFunc(GL_LEQUAL);
 

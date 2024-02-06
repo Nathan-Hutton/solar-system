@@ -98,14 +98,26 @@ void createShaders()
     // Shader for the planets, moons, and models. Includes shadows
     mainShaderWithShadows = new Shader();
     mainShaderWithShadows->createFromFiles(vShaderShadows, fShaderShadows);
+    mainShaderWithShadows->useShader();
+	mainShaderWithShadows->setTexture(2);
+    mainShaderWithShadows->setDirectionalShadowMap(3);
+    mainShaderWithShadows->validate();
+
 
     // Shader for the planets, moons, and models. Doesn't use shadows
     mainShaderWithoutShadows = new Shader();
     mainShaderWithoutShadows->createFromFiles(vShaderNoShadows, fShaderNoShadows);
+    mainShaderWithoutShadows->useShader();
+	mainShaderWithoutShadows->setTexture(2);
+    mainShaderWithoutShadows->validate();
+
 
     // Shader for the suns (no lighting or shadows)
     sunShader = new Shader();
     sunShader->createFromFiles(vSunShader, fSunShader);
+    sunShader->useShader();
+	sunShader->setTexture(2);
+    sunShader->validate();
 
     omniShadowShader = new Shader();
 	omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
@@ -114,8 +126,12 @@ void createShaders()
 
     hdrShader = new Shader();
     hdrShader->createFromFiles(vHdrShader, fHdrShader);
+    hdrShader->useShader();
+    hdrShader->setTexture(0);
     bloomShader = new Shader();
     bloomShader->createFromFiles(vHdrShader, fBloomShader);
+    bloomShader->useShader();
+    bloomShader->setTexture(0);
 }
 
 void handleTimeChange(GLfloat yScrollOffset)
@@ -145,6 +161,7 @@ void renderPlanets(GLuint uniformModel)
     // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
     glm::mat4 model;
 
+    // They'll all use GL_TEXTURE2
     glActiveTexture(GL_TEXTURE2);
     for (Planet *satellite : planets)
     {
@@ -173,6 +190,7 @@ void renderSuns()
 {
     glm::mat4 model;
 
+    // They'll all use GL_TEXTURE2
     glActiveTexture(GL_TEXTURE2);
     for (Sun *star : stars)
     {
@@ -226,10 +244,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
-    // We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
-	sunShader->setTexture(2);
-    sunShader->validate();
-
     renderSuns();
 
     // ====================================
@@ -249,10 +263,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
 	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
-    //// We have our textures us GL_TEXTURE1 since our skybox uses GL_TEXTURE0
-	mainShaderWithoutShadows->setTexture(2);
-    mainShaderWithoutShadows->validate();
-
  	//// Now we're not drawing just to the depth buffer but also the color buffer
 	renderPlanets(uniformModelPlanets);
 
@@ -267,7 +277,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     int amount = 5;
     bloomShader->useShader();
     glActiveTexture(GL_TEXTURE0);
-    bloomShader->setTexture(0);
     // TODO: Move the first iteration out of the for loop so it doesn't have to check every time
     for (unsigned int i = 0; i < amount; i++)
     {
@@ -298,7 +307,6 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
-    hdrShader->setTexture(0);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
@@ -320,11 +328,8 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     // ====================================
 
     sunShader->useShader();
-	sunShader->setTexture(2);
     glUniformMatrix4fv(uniformProjectionSuns, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-
-    sunShader->validate();
 
     renderSuns();
 
@@ -349,10 +354,6 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
 
 	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
  	// Handle/bind the shadow map texture to texture unit 1
-	mainShaderWithShadows->setTexture(2);
-    mainShaderWithShadows->setDirectionalShadowMap(3);
-    mainShaderWithShadows->validate();
-
  	// Now we're not drawing just to the depth buffer but also the color buffer
 	renderPlanets(uniformModelPlanets);
 
@@ -363,15 +364,45 @@ void renderPassWithShadows(glm::mat4 projection, glm::mat4 view)
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
     skybox.drawSkybox(view, projection);
 
+    bool horizontal = true, first_iteration = true;
+    int amount = 5;
+    bloomShader->useShader();
+    glActiveTexture(GL_TEXTURE0);
+    // TODO: Move the first iteration out of the for loop so it doesn't have to check every time
+    for (unsigned int i = 0; i < amount; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
+        glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), horizontal);
+
+        // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
+        if (first_iteration)
+        {
+            glBindTexture(GL_TEXTURE_2D, bloomTexture);
+            first_iteration = false;
+        }
+        // Move the data between pingPong FBOs
+        else
+        {
+            glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
+        }
+        framebufferQuad->renderMesh();
+        horizontal = !horizontal;
+    }
+
     // Now that we've rendered everything to a texture, we'll render
     // it to the screen with some post-processing effects
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     hdrShader->useShader();
-    glActiveTexture(GL_TEXTURE1);
+
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
-    hdrShader->setTexture(1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
+
     framebufferQuad->renderMesh();
 }
 
