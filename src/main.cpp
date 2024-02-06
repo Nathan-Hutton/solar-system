@@ -271,27 +271,25 @@ void renderPassWithoutShadows(glm::mat4 view)
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
     skybox.drawSkybox(view);
 
-    bool horizontal = true, first_iteration = true;
-    int amount = 5;
+    bool horizontal = false;
+    int amount = 4;
     bloomShader->useShader();
     glActiveTexture(GL_TEXTURE0);
-    // TODO: Move the first iteration out of the for loop so it doesn't have to check every time
+
+    // First iteration of the bloom effect. This means we don't need if conditions in the for loop
+    glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
+    glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), !horizontal);
+    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    framebufferQuad->renderMesh();
+
     for (unsigned int i = 0; i < amount; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
         glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), horizontal);
 
         // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
-        if (first_iteration)
-        {
-            glBindTexture(GL_TEXTURE_2D, bloomTexture);
-            first_iteration = false;
-        }
         // Move the data between pingPong FBOs
-        else
-        {
-            glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-        }
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
         framebufferQuad->renderMesh();
         horizontal = !horizontal;
     }
@@ -361,27 +359,25 @@ void renderPassWithShadows(glm::mat4 view)
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
     skybox.drawSkybox(view);
 
-    bool horizontal = true, first_iteration = true;
-    int amount = 5;
+    bool horizontal = false;
+    int amount = 4;
     bloomShader->useShader();
     glActiveTexture(GL_TEXTURE0);
-    // TODO: Move the first iteration out of the for loop so it doesn't have to check every time
+
+    // First iteration of the bloom effect. This means we don't need if conditions in the for loop
+    glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
+    glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), !horizontal);
+    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    framebufferQuad->renderMesh();
+
     for (unsigned int i = 0; i < amount; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
         glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), horizontal);
 
         // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
-        if (first_iteration)
-        {
-            glBindTexture(GL_TEXTURE_2D, bloomTexture);
-            first_iteration = false;
-        }
         // Move the data between pingPong FBOs
-        else
-        {
-            glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-        }
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
         framebufferQuad->renderMesh();
         horizontal = !horizontal;
     }
