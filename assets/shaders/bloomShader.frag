@@ -22,8 +22,8 @@ void main()
     {
         for (int i = 1; i < 5; ++i)
         {
-            result += texture(theTexture, texCoords + vec2(tex_offset.x * i * 1.2, 0.0)).rgb * weight[i];
-            result += texture(theTexture, texCoords - vec2(tex_offset.x * i * 1.2, 0.0)).rgb * weight[i];
+            result += texture(theTexture, texCoords + vec2(tex_offset.x * i * 2.0, 0.0)).rgb * weight[i];
+            result += texture(theTexture, texCoords - vec2(tex_offset.x * i * 2.0, 0.0)).rgb * weight[i];
         }
     }
     else

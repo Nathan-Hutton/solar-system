@@ -145,6 +145,7 @@ void renderPlanets(GLuint uniformModel)
     // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
     glm::mat4 model;
 
+    glActiveTexture(GL_TEXTURE2);
     for (Planet *satellite : planets)
     {
         model = glm::mat4(1.0f);
@@ -172,6 +173,7 @@ void renderSuns()
 {
     glm::mat4 model;
 
+    glActiveTexture(GL_TEXTURE2);
     for (Sun *star : stars)
     {
         model = glm::mat4(1.0f);
@@ -262,7 +264,7 @@ void renderPassWithoutShadows(glm::mat4 projection, glm::mat4 view)
     skybox.drawSkybox(view, projection);
 
     bool horizontal = true, first_iteration = true;
-    int amount = 10;
+    int amount = 5;
     bloomShader->useShader();
     glActiveTexture(GL_TEXTURE0);
     bloomShader->setTexture(0);
