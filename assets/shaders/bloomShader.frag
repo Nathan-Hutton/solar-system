@@ -13,6 +13,7 @@ uniform bool horizontal;
 // These values align with values on the gaussian (bell) curve
 float weight[5] = float[] (0.227027f, 0.1945946f, 0.1216216f, 0.054054f, 0.016216f);
 
+// TODO: consider if it's better to just have 2 shaders instead of an if-else.
 void main()
 {
     vec2 tex_offset = 1.0f / textureSize(theTexture, 0); // Get the size of a texel (unit of a texture map)
@@ -21,16 +22,16 @@ void main()
     {
         for (int i = 1; i < 5; ++i)
         {
-            result += texture(theTexture, texCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-            result += texture(theTexture, texCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result += texture(theTexture, texCoords + vec2(tex_offset.x * i * 1.2, 0.0)).rgb * weight[i];
+            result += texture(theTexture, texCoords - vec2(tex_offset.x * i * 1.2, 0.0)).rgb * weight[i];
         }
     }
     else
     {
         for (int i = 1; i < 5; ++i)
         {
-            result += texture(theTexture, texCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-            result += texture(theTexture, texCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+            result += texture(theTexture, texCoords + vec2(0.0, tex_offset.y * i * 1.5)).rgb * weight[i];
+            result += texture(theTexture, texCoords - vec2(0.0, tex_offset.y * i * 1.5)).rgb * weight[i];
         }
     }
     fragColor = vec4(result, 1.0f);
