@@ -1,4 +1,4 @@
-#version 330
+#version 460
 
 // Fragment shader isn't really needed since
 // depth buffer is written to automatically

@@ -1,4 +1,4 @@
-#version 330
+#version 460
 
 layout (triangles) in;
 // triangle_strip means that adding a fourth point will use points 2 and 3 to make the next triangle

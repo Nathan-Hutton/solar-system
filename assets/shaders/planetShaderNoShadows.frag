@@ -1,4 +1,4 @@
-#version 330
+#version 460
 
 // This lets us write to our 2 color buffers.
 // For the bloom effect, we put the blurred parts over the main color image
