@@ -128,6 +128,8 @@ void createShaders()
     hdrShader->createFromFiles(vHdrShader, fHdrShader);
     hdrShader->useShader();
     hdrShader->setTexture(0);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
+
     bloomShader = new Shader();
     bloomShader->createFromFiles(vHdrShader, fBloomShader);
     bloomShader->useShader();
@@ -237,11 +239,10 @@ void renderPassWithoutShadows(glm::mat4 view)
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
     // Clear hdr buffer
-	glViewport(0, 0, 1920, 1200);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     sunShader->useShader();
-    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
 
     renderSuns();
 
@@ -256,7 +257,7 @@ void renderPassWithoutShadows(glm::mat4 view)
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+    glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
 	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
@@ -306,7 +307,6 @@ void renderPassWithoutShadows(glm::mat4 view)
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
 
     framebufferQuad->renderMesh();
 }
@@ -324,8 +324,7 @@ void renderPassWithShadows(glm::mat4 view)
     // ====================================
 
     sunShader->useShader();
-    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-
+    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
     renderSuns();
 
     // ====================================
@@ -338,9 +337,9 @@ void renderPassWithShadows(glm::mat4 view)
     // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
     // View matrix represents the camera's position and orientation in world.
     // The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    //glUniformMatrix4fv(uniformProjectionPlanets, 1, GL_FALSE, glm::value_ptr(projection));
+    // We give this shader the camera position for specular lighting
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3f(uniformEyePositionPlanets, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+    glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
@@ -394,7 +393,6 @@ void renderPassWithShadows(glm::mat4 view)
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
 
     framebufferQuad->renderMesh();
 }
@@ -486,6 +484,7 @@ int main()
     // HDR
     glGenFramebuffers(1, &hdrFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+	glViewport(0, 0, 1920, 1200);
 
     // Make the main framebuffer texture
     glGenTextures(1, &postProcessingTexture);
