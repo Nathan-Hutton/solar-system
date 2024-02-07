@@ -25,7 +25,6 @@ Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject
 void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)
 {
     this->radius = radius;
-    int haha = 0;
     for (int i = 0; i <= stacks; ++i) {
         float V = i / static_cast<float>(stacks);
         float phi = V * M_PI;
@@ -51,7 +50,6 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
             vertices.push_back(normal.x);
             vertices.push_back(normal.y);
             vertices.push_back(normal.z);
-            haha++;
         }
     }
 

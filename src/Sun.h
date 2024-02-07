@@ -8,6 +8,7 @@ class Sun: public Sphere
     public:
         Sun();
         Sun(float radius, GLfloat mass, int stacks=20, int slices=20);
+        void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices) override;
         void setPointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
                     GLfloat red, GLfloat green, GLfloat blue, 

@@ -9,7 +9,7 @@ class Sphere : public SpaceObject
         Sphere();
         Sphere(float radius, GLfloat mass, int stacks=20, int slices=20);
 
-        void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices);
+        virtual void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices);
         void renderMesh();
         void setMeshPointer(Mesh* sphereMesh);
         Mesh* getMeshPointer();
