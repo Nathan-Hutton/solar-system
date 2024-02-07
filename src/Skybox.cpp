@@ -62,19 +62,19 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
     };
 
     float skyboxVertices[] = {
-        -1.0f, 1.0f, -1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-        -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, -1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, -1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, -1.0f,		0.0f, 0.0f,
+        -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
+        1.0f, 1.0f, -1.0f,		0.0f, 0.0f,
+        1.0f, -1.0f, -1.0f,		0.0f, 0.0f,
 
-        -1.0f, 1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-        -1.0f, -1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f
+        -1.0f, 1.0f, 1.0f,		0.0f, 0.0f,
+        1.0f, 1.0f, 1.0f,		0.0f, 0.0f,
+        -1.0f, -1.0f, 1.0f,		0.0f, 0.0f,
+        1.0f, -1.0f, 1.0f,		0.0f, 0.0f
     };
 
     skyMesh = new Mesh();
-    skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36);
+    skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36, false);
 }
 
 void Skybox::setProjectionMatrix(glm::mat4 projection)
