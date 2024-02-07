@@ -259,9 +259,6 @@ void renderPassWithoutShadows(glm::mat4 view)
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
-	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
-
  	//// Now we're not drawing just to the depth buffer but also the color buffer
 	renderPlanets(uniformModelPlanets);
 
@@ -340,11 +337,6 @@ void renderPassWithShadows(glm::mat4 view)
     // We give this shader the camera position for specular lighting
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
-
-    // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
-    // texture, and the third is the texture(s) of the objects we're rendering
-	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
-	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
 
 	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
  	// Handle/bind the shadow map texture to texture unit 1
@@ -437,6 +429,10 @@ int main()
 
     mainShaderWithShadows->useShader();
     glUniformMatrix4fv(uniformProjectionPlanetsShadows, 1, GL_FALSE, glm::value_ptr(projection));
+    // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
+    // texture, and the third is the texture(s) of the objects we're rendering
+	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
+	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
 
     uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
     uniformProjectionPlanetsNoShadows = mainShaderWithoutShadows->getProjectionLocation();
@@ -447,6 +443,9 @@ int main()
 
     mainShaderWithoutShadows->useShader();
     glUniformMatrix4fv(uniformProjectionPlanetsNoShadows, 1, GL_FALSE, glm::value_ptr(projection));
+	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
+	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
+
 
     uniformModelPlanets = uniformModelPlanetsNoShadows;
     uniformProjectionPlanets = uniformProjectionPlanetsNoShadows;

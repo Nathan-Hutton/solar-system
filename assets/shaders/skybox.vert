@@ -11,5 +11,6 @@ uniform mat4 view;
 void main()
 {
     texCoords = pos;
-    gl_Position = projection * view * vec4(pos, 1.0);
+    // The xyww sets the z value to w which is the value of the far plane
+    gl_Position = (projection * view * vec4(pos, 1.0)).xyww;
 }

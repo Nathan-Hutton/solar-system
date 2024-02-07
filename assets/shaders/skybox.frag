@@ -11,5 +11,4 @@ void main()
 {
     fragColor = texture(skybox, texCoords);
     bloomColor = vec4(0.0, 0.0, 0.0, 1.0);
-    gl_FragDepth = 1.0;
 }
