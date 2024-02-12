@@ -58,8 +58,7 @@ std::vector<Sun*> stars;
 std::vector<Planet*> planets;
 std::vector<Model*> complexModels;
 
-Shader* mainShaderWithShadows;
-Shader* mainShaderWithoutShadows;
+Shader* mainShader;
 Shader* sunShader;
 Shader* omniShadowShader;
 Shader* hdrShader;
@@ -93,25 +92,8 @@ static const char* vHdrShader = "../assets/shaders/hdrShader.vert";
 static const char* fHdrShader = "../assets/shaders/hdrShader.frag";
 static const char* fBloomShader = "../assets/shaders/bloomShader.frag";
 
-void createShaders()
+void createSecondaryShaders()
 {
-    // Shader for the planets, moons, and models. Includes shadows
-    mainShaderWithShadows = new Shader();
-    mainShaderWithShadows->createFromFiles(vShaderShadows, fShaderShadows);
-    mainShaderWithShadows->useShader();
-	mainShaderWithShadows->setTexture(2);
-    mainShaderWithShadows->setDirectionalShadowMap(3);
-    mainShaderWithShadows->validate();
-
-
-    // Shader for the planets, moons, and models. Doesn't use shadows
-    mainShaderWithoutShadows = new Shader();
-    mainShaderWithoutShadows->createFromFiles(vShaderNoShadows, fShaderNoShadows);
-    mainShaderWithoutShadows->useShader();
-	mainShaderWithoutShadows->setTexture(2);
-    mainShaderWithoutShadows->validate();
-
-
     // Shader for the suns (no lighting or shadows)
     sunShader = new Shader();
     sunShader->createFromFiles(vSunShader, fSunShader);
@@ -234,85 +216,11 @@ void omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void renderPassWithoutShadows(glm::mat4 view)
+void renderPass(glm::mat4 view)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
     // Clear hdr buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    sunShader->useShader();
-    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
-
-    renderSuns();
-
-    // ====================================
-    // RENDER PLANETS, MOONS, and ASTEROIDS
-    // ====================================
-
-	mainShaderWithoutShadows->useShader();
-
-    //// Apply projection and view matrices.
-    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
-    //// View matrix represents the camera's position and orientation in world.
-    //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
-
- 	//// Now we're not drawing just to the depth buffer but also the color buffer
-	renderPlanets(uniformModelPlanets);
-
-    // ====================================
-    // RENDER SKYBOX
-    // ====================================
-
-    // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    skybox.drawSkybox(view);
-
-    bool horizontal = false;
-    int amount = 4;
-    bloomShader->useShader();
-    glActiveTexture(GL_TEXTURE0);
-
-    // First iteration of the bloom effect. This means we don't need if conditions in the for loop
-    glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
-    glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), !horizontal);
-    glBindTexture(GL_TEXTURE_2D, bloomTexture);
-    framebufferQuad->renderMesh();
-
-    for (unsigned int i = 0; i < amount; i++)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
-        glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), horizontal);
-
-        // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
-        // Move the data between pingPong FBOs
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-        framebufferQuad->renderMesh();
-        horizontal = !horizontal;
-    }
-
-    // Now that we've rendered everything to a texture, we'll render
-    // it to the screen with some post-processing effects
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    hdrShader->useShader();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-
-    framebufferQuad->renderMesh();
-}
-
-void renderPassWithShadows(glm::mat4 view)
-{
-    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-
-    // Set viewport. Clear window, color, and depth buffer bit. Make the image black
 	glViewport(0, 0, 1920, 1200);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -328,19 +236,16 @@ void renderPassWithShadows(glm::mat4 view)
     // RENDER PLANETS, MOONS, and ASTEROIDS
     // ====================================
 
-	mainShaderWithShadows->useShader();
+	mainShader->useShader();
 
-    // Apply projection and view matrices.
-    // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
-    // View matrix represents the camera's position and orientation in world.
-    // The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    // We give this shader the camera position for specular lighting
+    //// Apply projection and view matrices.
+    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
+    //// View matrix represents the camera's position and orientation in world.
+    //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
-	// We need to be able to see whatever fragment we're trying to render from the perspective of the light
- 	// Handle/bind the shadow map texture to texture unit 1
- 	// Now we're not drawing just to the depth buffer but also the color buffer
+ 	//// Now we're not drawing just to the depth buffer but also the color buffer
 	renderPlanets(uniformModelPlanets);
 
     // ====================================
@@ -412,7 +317,27 @@ int main()
     skybox.setProjectionMatrix(projection);
     
     // Setup the OpenGL program
-    createShaders();
+    createSecondaryShaders();
+
+    // Shader for the planets, moons, and models. Includes shadows
+    Shader* mainShaderWithShadows = new Shader();
+    mainShaderWithShadows->createFromFiles(vShaderShadows, fShaderShadows);
+    mainShaderWithShadows->useShader();
+	mainShaderWithShadows->setTexture(2);
+    mainShaderWithShadows->setDirectionalShadowMap(3);
+    mainShaderWithShadows->validate();
+    
+    // Shader for the planets, moons, and models. Doesn't use shadows
+    Shader* mainShaderWithoutShadows = new Shader();
+    mainShaderWithoutShadows->createFromFiles(vShaderNoShadows, fShaderNoShadows);
+    mainShaderWithoutShadows->useShader();
+	mainShaderWithoutShadows->setTexture(2);
+    mainShaderWithoutShadows->validate();
+
+    // This is so we can disable shadows
+    // By default, shadows will be turned off
+    mainShader = mainShaderWithoutShadows;
+    Shader* mainShaders[2] = {mainShaderWithoutShadows, mainShaderWithShadows};
 
     GLfloat now;
     GLfloat timeStep = 0.0f;
@@ -590,6 +515,7 @@ int main()
         {
             keys[GLFW_KEY_L] = false;
             shadowsEnabled = !shadowsEnabled;
+            mainShader = mainShaders[shadowsEnabled];
 
             if (shadowsEnabled)
             {
@@ -618,13 +544,9 @@ int main()
                 omniShadowMapPass(pointLights[i]);
             for (size_t i = 0; i < spotLightCount; i++)
                 omniShadowMapPass(spotLights[i]);
+        }
 
-            renderPassWithShadows(camera.calculateViewMatrix());
-        }
-        else
-        {
-            renderPassWithoutShadows(camera.calculateViewMatrix());
-        }
+        renderPass(camera.calculateViewMatrix());
 
         glUseProgram(0);
         mainWindow.swapBuffers();
