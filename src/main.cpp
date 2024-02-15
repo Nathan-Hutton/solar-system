@@ -43,12 +43,7 @@ GLuint uniformModelPlanets = 0, uniformProjectionPlanets = 0, uniformViewPlanets
 uniformEyePositionPlanets = 0, uniformSpecularIntensityPlanets = 0, uniformShininessPlanets = 0,
 uniformOmniLightPos = 0, uniformFarPlane = 0;
 
-GLuint uniformModelPlanetsShadows = 0, uniformProjectionPlanetsShadows = 0, uniformViewPlanetsShadows = 0,
-uniformEyePositionPlanetsShadows = 0, uniformSpecularIntensityPlanetsShadows = 0, uniformShininessPlanetsShadows = 0;
-GLuint uniformModelPlanetsNoShadows = 0, uniformProjectionPlanetsNoShadows = 0, uniformViewPlanetsNoShadows = 0,
-uniformEyePositionPlanetsNoShadows = 0, uniformSpecularIntensityPlanetsNoShadows = 0, uniformShininessPlanetsNoShadows = 0;
-
-GLuint uniformModelSuns = 0, uniformProjectionSuns = 0, uniformViewSuns = 0;
+GLuint uniformModelSuns = 0, uniformViewSuns = 0;
 GLuint uniformModelDirectionalShadowMap = 0;
 GLuint uniformModelOmniShadowMap = 0;
 GLuint uniformBlurTexture = 0;
@@ -201,8 +196,7 @@ void omniShadowMapPass(PointLight* light)
 
     // Get the uniformModel and lightTransform for the shader
 
-	glm::vec3 position = light->getPosition();
-	glUniform3f(uniformOmniLightPos, position.x, position.y, position.z);
+	glUniformMatrix3fv(uniformOmniLightPos, 1, GL_FALSE, glm::value_ptr(light->getPosition()));
 	glUniform1f(uniformFarPlane, light->getFarPlane());
 	omniShadowShader->setLightMatrices(light->calculateLightTransform());
 
@@ -296,14 +290,31 @@ void renderPass(glm::mat4 view)
 
 int main()
 {
+    // Prompt user to select scene
+    int userInput;
+    std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: figure eight\n> ";
+    std::cin >> userInput;
+
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
 
-    SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
-    //SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
-    //SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+    // Build scene based on user input
+    switch (userInput)
+    {
+        case (1):
+            SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+            break;
+        case (2):
+            SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+            break;
+        case (3):
+            SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+            break;
+        default:
+            break;
+    }
     
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
@@ -337,7 +348,6 @@ int main()
     // This is so we can disable shadows
     // By default, shadows will be turned off
     mainShader = mainShaderWithoutShadows;
-    Shader* mainShaders[2] = {mainShaderWithoutShadows, mainShaderWithShadows};
 
     GLfloat now;
     GLfloat timeStep = 0.0f;
@@ -345,35 +355,32 @@ int main()
     // Uniform object IDs let us pass values from the CPU to the GPU.
     // We use things like glUniform1f (for one value) to set these values
     // on the GPU
-    uniformModelPlanetsShadows = mainShaderWithShadows->getModelLocation();
-    uniformProjectionPlanetsShadows = mainShaderWithShadows->getProjectionLocation();
-    uniformViewPlanetsShadows = mainShaderWithShadows->getViewLocation();
-    uniformEyePositionPlanetsShadows = mainShaderWithShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanetsShadows = mainShaderWithShadows->getSpecularIntensityLocation();
-    uniformShininessPlanetsShadows = mainShaderWithShadows->getShininessLocation();
+    GLuint uniformModelPlanetsShadows = mainShaderWithShadows->getModelLocation();
+    GLuint uniformViewPlanetsShadows = mainShaderWithShadows->getViewLocation();
+    GLuint uniformEyePositionPlanetsShadows = mainShaderWithShadows->getEyePositionLocation();
+    GLuint uniformSpecularIntensityPlanetsShadows = mainShaderWithShadows->getSpecularIntensityLocation();
+    GLuint uniformShininessPlanetsShadows = mainShaderWithShadows->getShininessLocation();
 
     mainShaderWithShadows->useShader();
-    glUniformMatrix4fv(uniformProjectionPlanetsShadows, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
 	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
 
-    uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
-    uniformProjectionPlanetsNoShadows = mainShaderWithoutShadows->getProjectionLocation();
-    uniformViewPlanetsNoShadows = mainShaderWithoutShadows->getViewLocation();
-    uniformEyePositionPlanetsNoShadows = mainShaderWithoutShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanetsNoShadows = mainShaderWithoutShadows->getSpecularIntensityLocation();
-    uniformShininessPlanetsNoShadows = mainShaderWithoutShadows->getShininessLocation();
+    GLuint uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
+    GLuint uniformViewPlanetsNoShadows = mainShaderWithoutShadows->getViewLocation();
+    GLuint uniformEyePositionPlanetsNoShadows = mainShaderWithoutShadows->getEyePositionLocation();
+    GLuint uniformSpecularIntensityPlanetsNoShadows = mainShaderWithoutShadows->getSpecularIntensityLocation();
+    GLuint uniformShininessPlanetsNoShadows = mainShaderWithoutShadows->getShininessLocation();
 
     mainShaderWithoutShadows->useShader();
-    glUniformMatrix4fv(uniformProjectionPlanetsNoShadows, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
 	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
 
     uniformModelPlanets = uniformModelPlanetsNoShadows;
-    uniformProjectionPlanets = uniformProjectionPlanetsNoShadows;
     uniformViewPlanets = uniformViewPlanetsNoShadows;
     uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
     uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsNoShadows;
@@ -381,10 +388,9 @@ int main()
 
     // For the sun shaders we don't do any light or shadow calculations
     uniformModelSuns = sunShader->getModelLocation();
-    uniformProjectionSuns = sunShader->getProjectionLocation();
     uniformViewSuns = sunShader->getViewLocation();
     sunShader->useShader();
-    glUniformMatrix4fv(uniformProjectionPlanetsShadows, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
 
     // The shadow map shader will record the depth values of all objects except suns
     uniformModelOmniShadowMap = omniShadowShader->getModelLocation();
@@ -515,12 +521,12 @@ int main()
         {
             keys[GLFW_KEY_L] = false;
             shadowsEnabled = !shadowsEnabled;
-            mainShader = mainShaders[shadowsEnabled];
 
             if (shadowsEnabled)
             {
+                mainShader = mainShaderWithShadows;
+
                 uniformModelPlanets = uniformModelPlanetsShadows;
-                uniformProjectionPlanets = uniformProjectionPlanetsShadows;
                 uniformViewPlanets = uniformViewPlanetsShadows;
                 uniformEyePositionPlanets = uniformEyePositionPlanetsShadows;
                 uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsShadows;
@@ -528,8 +534,9 @@ int main()
             }
             else
             {
+                mainShader = mainShaderWithoutShadows;
+
                 uniformModelPlanets = uniformModelPlanetsNoShadows;
-                uniformProjectionPlanets = uniformProjectionPlanetsNoShadows;
                 uniformViewPlanets = uniformViewPlanetsNoShadows;
                 uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
                 uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsNoShadows;
