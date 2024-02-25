@@ -11,7 +11,7 @@ uniform sampler2D theTexture;
 
 void main()
 {
-	fragColor = (texture(theTexture, texCoord) * 20);
+	fragColor = (texture(theTexture, texCoord) * 2);
 
     // Consider multiplying yellow colors to make them pop more
 

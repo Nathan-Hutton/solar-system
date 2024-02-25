@@ -249,6 +249,9 @@ void renderPass(glm::mat4 view)
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
     skybox.drawSkybox(view);
 
+    // ====================================
+    // BLOOM EFFECT
+    // ====================================
     bool horizontal = false;
     int amount = 4;
     bloomShader->useShader();
@@ -272,8 +275,9 @@ void renderPass(glm::mat4 view)
         horizontal = !horizontal;
     }
 
-    // Now that we've rendered everything to a texture, we'll render
-    // it to the screen with some post-processing effects
+    // ====================================
+    // RENDER TO SCREEN
+    // ====================================
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
