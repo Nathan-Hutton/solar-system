@@ -32,6 +32,7 @@
 GLuint hdrFBO;
 GLuint postProcessingTexture;
 GLuint bloomTexture;
+GLuint binaryTexture;
 Mesh* framebufferQuad;
 
 unsigned int pingPongFBO[2];
@@ -104,8 +105,9 @@ void createSecondaryShaders()
     hdrShader = new Shader();
     hdrShader->createFromFiles(vHdrShader, fHdrShader);
     hdrShader->useShader();
-    hdrShader->setTexture(0);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 0);
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "shouldGammaCorrectTexture"), 2);
 
     bloomShader = new Shader();
     bloomShader->createFromFiles(vHdrShader, fBloomShader);
@@ -217,6 +219,8 @@ void renderPass(glm::mat4 view)
     // Clear hdr buffer
 	glViewport(0, 0, 1920, 1200);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GLfloat binaryClearColor[4] = {0.5, 0.0f, 0.0f, 0.0f};
+    glClearBufferfv(GL_COLOR, 2, binaryClearColor);
 
     // ====================================
     // RENDER SUNS
@@ -288,6 +292,9 @@ void renderPass(glm::mat4 view)
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, binaryTexture);
 
     framebufferQuad->renderMesh();
 }
@@ -434,13 +441,21 @@ int main()
     glGenTextures(1, &bloomTexture);
     glBindTexture(GL_TEXTURE_2D, bloomTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    // 2.2f is the gamma number we're using since opengl wants to complain when I define
-    // a "gamma" variable in this file
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
+
+    // Make the binary texture which will store whether or not we apply gamma correction to a pixel
+    glGenTextures(1, &binaryTexture);
+    glBindTexture(GL_TEXTURE_2D, binaryTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1200, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, binaryTexture, 0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -457,8 +472,8 @@ int main()
         return false;
     }
 
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments);
+    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(3, attachments);
 
     glGenFramebuffers(2, pingPongFBO);
     glGenTextures(2, pingPongBuffer);
