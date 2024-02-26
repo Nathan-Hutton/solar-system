@@ -90,11 +90,6 @@ int Window::initialize()
     // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    // No idea why this is CW and not CCW
-    glFrontFace(GL_CW);
-
     // Make sure that skybox passes depth test if depth is less than or equal to 1.0
     glDepthFunc(GL_LEQUAL);
 
