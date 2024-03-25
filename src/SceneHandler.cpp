@@ -156,7 +156,7 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
     Sun *sun = new Sun(5.0f, 225.0f);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     sun->setTexturePointer(sunTexture);
-    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 5.0f, 5.0f, 5.0f, 30.0f, 100.0f, 0.1f, 0.1f, 0.01f);
+    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 5.0f, 5.0f, 5.0f, 10.0f, 100.0f, 0.1f, 0.1f, 0.01f);
     sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
