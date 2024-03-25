@@ -22,16 +22,16 @@ void main()
     {
         for (int i = 1; i < 5; ++i)
         {
-            result += texture(theTexture, texCoords + vec2(tex_offset.x * i * 2.0, 0.0)).rgb * weight[i];
-            result += texture(theTexture, texCoords - vec2(tex_offset.x * i * 2.0, 0.0)).rgb * weight[i];
+            result += texture(theTexture, texCoords + vec2(tex_offset.x * i * 2.5, 0.0)).rgb * weight[i];
+            result += texture(theTexture, texCoords - vec2(tex_offset.x * i * 2.5, 0.0)).rgb * weight[i];
         }
     }
     else
     {
         for (int i = 1; i < 5; ++i)
         {
-            result += texture(theTexture, texCoords + vec2(0.0, tex_offset.y * i * 1.5)).rgb * weight[i];
-            result += texture(theTexture, texCoords - vec2(0.0, tex_offset.y * i * 1.5)).rgb * weight[i];
+            result += texture(theTexture, texCoords + vec2(0.0, tex_offset.y * i * 2.5)).rgb * weight[i];
+            result += texture(theTexture, texCoords - vec2(0.0, tex_offset.y * i * 2.5)).rgb * weight[i];
         }
     }
     fragColor = vec4(result, 1.0f);
