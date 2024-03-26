@@ -18,7 +18,7 @@ Shader::Shader()
     uniformShininess = 0;
     
     uniformPointLightCount = 0;
-    uniformSpotLightCount = 0;
+    uniformFlashLightOn = 0;
 }
 
 void Shader::createFromString(const char* vertexCode, const char* fragmentCode)
@@ -183,32 +183,18 @@ void Shader::compileProgram()
     }
     
     // Spot lights
-    uniformSpotLightCount = glGetUniformLocation(shaderID, "spotLightCount");
-    for (size_t i = 0; i < MAX_SPOT_LIGHTS; i++)
-    {
-        char locBuff[100] = {'\0'};
+    uniformFlashLightOn = glGetUniformLocation(shaderID, "flashLightOn");
+    uniformSpotLight.uniformColor = glGetUniformLocation(shaderID, "spotLight.base.base.color");
+    uniformSpotLight.uniformAmbientIntensity = glGetUniformLocation(shaderID, "spotLight.base.base.ambientIntensity");
+    uniformSpotLight.uniformDiffuseIntensity = glGetUniformLocation(shaderID, "spotLight.base.base.diffuseIntensity");
 
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.base.color", i);
-        uniformSpotLights[i].uniformColor = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.base.ambientIntensity", i);
-        uniformSpotLights[i].uniformAmbientIntensity = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.base.diffuseIntensity", i);
-        uniformSpotLights[i].uniformDiffuseIntensity = glGetUniformLocation(shaderID, locBuff);
+    uniformSpotLight.uniformPosition = glGetUniformLocation(shaderID, "spotLight.base.position");
+    uniformSpotLight.uniformExponential = glGetUniformLocation(shaderID, "spotLight.base.exponential");
+    uniformSpotLight.uniformLinear = glGetUniformLocation(shaderID, "spotLight.base.linear");
+    uniformSpotLight.uniformConstant = glGetUniformLocation(shaderID, "spotLight.base.constant");
 
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.position", i);
-        uniformSpotLights[i].uniformPosition = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.exponential", i);
-        uniformSpotLights[i].uniformExponential = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.linear", i);
-        uniformSpotLights[i].uniformLinear = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].base.constant", i);
-        uniformSpotLights[i].uniformConstant = glGetUniformLocation(shaderID, locBuff);
-
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].direction", i);
-        uniformSpotLights[i].uniformDirection = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "spotLights[%ld].edge", i);
-        uniformSpotLights[i].uniformEdge = glGetUniformLocation(shaderID, locBuff);
-    }
+    uniformSpotLight.uniformDirection = glGetUniformLocation(shaderID, "spotLight.direction");
+    uniformSpotLight.uniformEdge = glGetUniformLocation(shaderID, "spotLight.edge");
 
     uniformTexture = glGetUniformLocation(shaderID, "theTexture");
 
@@ -230,7 +216,7 @@ void Shader::compileProgram()
     }
 
     // This gets values for the main shade.frag
-    for (size_t i = 0; i < MAX_POINT_LIGHTS + MAX_SPOT_LIGHTS; i++)
+    for (size_t i = 0; i < MAX_POINT_LIGHTS + 1; i++)
     {
         char locBuff[100] = {'\0'};
         snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%ld].shadowMap", i);
@@ -331,21 +317,6 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
     }
 }
 
-void Shader::setSpotLightsWithoutShadows(SpotLight* sLights[], unsigned int lightCount)
-{
-    if (lightCount > MAX_SPOT_LIGHTS) lightCount =  MAX_SPOT_LIGHTS;
-
-    glUniform1i(uniformSpotLightCount, lightCount);
-
-    for (size_t i = 0; i < lightCount; i++)
-    {
-        sLights[i]->useLight(uniformSpotLights[i].uniformAmbientIntensity, uniformSpotLights[i].uniformDiffuseIntensity,
-                            uniformSpotLights[i].uniformColor, uniformSpotLights[i].uniformPosition, uniformSpotLights[i].uniformDirection,
-                            uniformSpotLights[i].uniformExponential, uniformSpotLights[i].uniformLinear, uniformSpotLights[i].uniformConstant,
-                            uniformSpotLights[i].uniformEdge);
-    }
-}
-
 void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
 {
     // Clamp the number of lights allowed
@@ -369,25 +340,27 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
     }
 }
 
-void Shader::setSpotLights(SpotLight* sLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
+void Shader::setSpotLight(SpotLight* sLight, bool flashLightOn, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
 {
-    if (lightCount > MAX_SPOT_LIGHTS) lightCount =  MAX_SPOT_LIGHTS;
+    glUniform1i(uniformFlashLightOn, flashLightOn);
 
-    glUniform1i(uniformSpotLightCount, lightCount);
+    // No need to set all of these values if the spotlight isn't even on
+    if (!flashLightOn)
+        return;
 
-    for (size_t i = 0; i < lightCount; i++)
-    {
-        sLights[i]->useLight(uniformSpotLights[i].uniformAmbientIntensity, uniformSpotLights[i].uniformDiffuseIntensity,
-                            uniformSpotLights[i].uniformColor, uniformSpotLights[i].uniformPosition, uniformSpotLights[i].uniformDirection,
-                            uniformSpotLights[i].uniformExponential, uniformSpotLights[i].uniformLinear, uniformSpotLights[i].uniformConstant,
-                            uniformSpotLights[i].uniformEdge);
+    sLight->useLight(uniformSpotLight.uniformAmbientIntensity, uniformSpotLight.uniformDiffuseIntensity,
+                        uniformSpotLight.uniformColor, uniformSpotLight.uniformPosition, uniformSpotLight.uniformDirection,
+                        uniformSpotLight.uniformExponential, uniformSpotLight.uniformLinear, uniformSpotLight.uniformConstant,
+                        uniformSpotLight.uniformEdge);
 
-        // We need the GL_TEXTURE0 since it needs to be an enum type
-        sLights[i]->getShadowMap()->read(GL_TEXTURE0 + textureUnit + i);
-        // The offset is to take into account that the shadowmaps are all 1 array in the shader
-        glUniform1i(uniformOmniShadowMaps[i + offset].shadowMap, textureUnit + i);
-        glUniform1f(uniformOmniShadowMaps[i + offset].farPlane, sLights[i]->getFarPlane());
-    }
+    if (!shadowsEnabled)
+        return;
+
+    // We need the GL_TEXTURE0 since it needs to be an enum type
+    sLight->getShadowMap()->read(GL_TEXTURE0 + textureUnit);
+    // The offset is to take into account that the shadowmaps are all 1 array in the shader
+    glUniform1i(uniformOmniShadowMaps[offset].shadowMap, textureUnit);
+    glUniform1f(uniformOmniShadowMaps[offset].farPlane, sLight->getFarPlane());
 }
 
 void Shader::setTexture(GLuint textureUnit)

@@ -13,7 +13,6 @@ in vec3 fragPos;
 out vec4 color;
 
 const int MAX_POINT_LIGHTS = 3;
-const int MAX_SPOT_LIGHTS = 3;
 
 struct Light
 {
@@ -51,11 +50,11 @@ struct Material
 };
 
 uniform int pointLightCount;
-uniform int spotLightCount;
+uniform bool flashLightOn;
 
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
-uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
+uniform SpotLight spotLight;
 
 uniform sampler2D theTexture;
 uniform Material material;
@@ -122,20 +121,7 @@ vec4 CalcPointLights()
 {
 	vec4 totalColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	for(int i = 0; i < pointLightCount; i++)
-	{
 		totalColor += CalcPointLight(pointLights[i]);
-	}
-	
-	return totalColor;
-}
-
-vec4 CalcSpotLights()
-{
-	vec4 totalColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-	for(int i = 0; i < spotLightCount; i++)
-	{
-		totalColor += CalcSpotLight(spotLights[i]);
-	}
 	
 	return totalColor;
 }
@@ -144,7 +130,8 @@ void main()
 {
 	vec4 finalColor = CalcDirectionalLight();
 	finalColor += CalcPointLights();
-    finalColor += CalcSpotLights();
+    if (flashLightOn)
+        finalColor += CalcSpotLight(spotLight);
 	
 	fragColor = texture(theTexture, texCoord) * finalColor;
 

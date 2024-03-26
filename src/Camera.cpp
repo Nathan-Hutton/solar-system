@@ -20,7 +20,6 @@ Camera::Camera()
     moveSpeed = 5.0f;
     turnSpeed = 1.0f;
 
-    spotLightOn = true;
 
     spotLight = NULL;
 }
@@ -42,12 +41,10 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     moveSpeed = startMoveSpeed;
     turnSpeed = startTurnSpeed;
 
-    spotLightOn = false;
-
     spotLight = NULL;
 }
 
-void Camera::keyControl(bool* keys, GLfloat deltaTime, unsigned int *sLightCount)
+void Camera::keyControl(bool* keys, GLfloat deltaTime, bool *flashLightOn)
 {
     GLfloat velocity = moveSpeed * deltaTime;
 
@@ -80,12 +77,7 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime, unsigned int *sLightCount
     keys[GLFW_KEY_F] = false;
 
     // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
-    if (spotLightOn)
-        (*sLightCount)--;
-    else
-        (*sLightCount)++;
-
-    spotLightOn = !spotLightOn;
+    *flashLightOn = !(*flashLightOn);
 }
 
 void Camera::mouseControl(GLfloat xChange, GLfloat yChange)

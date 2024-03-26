@@ -51,9 +51,8 @@ class Shader
 
         void setDirectionalLight(DirectionalLight *dLight);
         void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount);
-        void setSpotLightsWithoutShadows(SpotLight* sLights[], unsigned int lightCount);
         void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
-        void setSpotLights(SpotLight* sLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
+        void setSpotLight(SpotLight* sLight, bool flashLightOn, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
 
         void setTexture(GLuint textureUnit);
         void setDirectionalShadowMap(GLuint textureUnit);
@@ -67,11 +66,10 @@ class Shader
 
     private:
         int pointLightCount;
-        int spotLightCount;
 
         GLuint shaderID, uniformProjection, uniformModel, uniformView, 
         uniformEyePosition, uniformSpecularIntensity, uniformShininess,
-        uniformTexture, uniformPointLightCount, uniformSpotLightCount,
+        uniformTexture, uniformPointLightCount, uniformFlashLightOn,
         uniformDirectionalLightTransform, uniformDirectionalShadowMap,
         uniformOmniLightPos, uniformFarPlane;
 
@@ -108,12 +106,12 @@ class Shader
 
             GLuint uniformDirection;
             GLuint uniformEdge;
-        } uniformSpotLights[MAX_SPOT_LIGHTS];
+        } uniformSpotLight;
 
         struct {
             GLuint shadowMap;
             GLuint farPlane;
-        } uniformOmniShadowMaps[MAX_SPOT_LIGHTS + MAX_POINT_LIGHTS];
+        } uniformOmniShadowMaps[1 + MAX_POINT_LIGHTS];
 
         void compileShader(const char* vertexCode, const char* fragmentCode);
         void compileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode);

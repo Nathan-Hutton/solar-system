@@ -65,10 +65,9 @@ bool shadowsEnabled = false;
 Camera camera;
 
 unsigned int pointLightCount = 0;
-unsigned int spotLightCount = 0;
+bool flashLightOn = false;
 
 PointLight* pointLights[MAX_POINT_LIGHTS];
-SpotLight* spotLights[MAX_SPOT_LIGHTS];
 
 Skybox skybox;
 
@@ -235,6 +234,7 @@ void renderPass(glm::mat4 view)
     // ====================================
 
 	mainShader->useShader();
+    mainShader->setSpotLight(camera.getSpotLight(), flashLightOn, shadowsEnabled, 4+pointLightCount, pointLightCount);
 
     //// Apply projection and view matrices.
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
@@ -315,13 +315,13 @@ int main()
     switch (userInput)
     {
         case (1):
-            SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+            SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, &camera);
             break;
         case (2):
-            SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+            SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, &camera);
             break;
         case (3):
-            SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, spotLights, &spotLightCount, &camera);
+            SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, &camera);
             break;
         default:
             break;
@@ -377,7 +377,6 @@ int main()
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
-	mainShaderWithShadows->setSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
 
     GLuint uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
     GLuint uniformViewPlanetsNoShadows = mainShaderWithoutShadows->getViewLocation();
@@ -388,7 +387,6 @@ int main()
     mainShaderWithoutShadows->useShader();
     glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-	mainShaderWithoutShadows->setSpotLightsWithoutShadows(spotLights, spotLightCount);
 
 
     uniformModelPlanets = uniformModelPlanetsNoShadows;
@@ -532,7 +530,7 @@ int main()
         // Get + handle user input
         glfwPollEvents();
         bool* keys = mainWindow.getKeys();
-        camera.keyControl(keys, deltaTime, &spotLightCount);
+        camera.keyControl(keys, deltaTime, &flashLightOn);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset());
 
@@ -544,7 +542,6 @@ int main()
             if (shadowsEnabled)
             {
                 mainShader = mainShaderWithShadows;
-
                 uniformModelPlanets = uniformModelPlanetsShadows;
                 uniformViewPlanets = uniformViewPlanetsShadows;
                 uniformEyePositionPlanets = uniformEyePositionPlanetsShadows;
@@ -554,7 +551,6 @@ int main()
             else
             {
                 mainShader = mainShaderWithoutShadows;
-
                 uniformModelPlanets = uniformModelPlanetsNoShadows;
                 uniformViewPlanets = uniformViewPlanetsNoShadows;
                 uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
@@ -568,8 +564,7 @@ int main()
             // These needs to be index based loops so that we don't make a copy of the lights each time
             for (size_t i = 0; i < pointLightCount; i++)
                 omniShadowMapPass(pointLights[i]);
-            for (size_t i = 0; i < spotLightCount; i++)
-                omniShadowMapPass(spotLights[i]);
+            omniShadowMapPass(camera.getSpotLight());
         }
 
         renderPass(camera.calculateViewMatrix());
