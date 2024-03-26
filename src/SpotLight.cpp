@@ -48,6 +48,12 @@ void SpotLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensit
     glUniform1f(edgeLocation, procEdge);
 }
 
+void SpotLight::setPosAndDir(GLuint positionLocation, GLuint directionLocation)
+{
+    glUniform3f(positionLocation, position.x, position.y, position.z);
+    glUniform3f(directionLocation, direction.x, direction.y, direction.z);
+}
+
 glm::vec3 SpotLight::getPosition()
 {
     return position;

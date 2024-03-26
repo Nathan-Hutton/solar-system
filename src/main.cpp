@@ -234,7 +234,7 @@ void renderPass(glm::mat4 view)
     // ====================================
 
 	mainShader->useShader();
-    mainShader->setSpotLight(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
+    mainShader->setSpotLightDirAndPos(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
 
     //// Apply projection and view matrices.
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
@@ -373,6 +373,7 @@ int main()
     GLuint uniformShininessPlanetsShadows = mainShaderWithShadows->getShininessLocation();
 
     mainShaderWithShadows->useShader();
+    mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
@@ -385,6 +386,7 @@ int main()
     GLuint uniformShininessPlanetsNoShadows = mainShaderWithoutShadows->getShininessLocation();
 
     mainShaderWithoutShadows->useShader();
+    mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
 

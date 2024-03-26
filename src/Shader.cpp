@@ -340,14 +340,10 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
     }
 }
 
+// We'll only call this once since nothing but the position and shadow map will change
 void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
 {
     glUniform1i(uniformFlashLightOn, sLight->isOn());
-
-    // No need to set all of these values if the spotlight isn't even on
-    if (!sLight->isOn())
-        return;
-
     sLight->useLight(uniformSpotLight.uniformAmbientIntensity, uniformSpotLight.uniformDiffuseIntensity,
                         uniformSpotLight.uniformColor, uniformSpotLight.uniformPosition, uniformSpotLight.uniformDirection,
                         uniformSpotLight.uniformExponential, uniformSpotLight.uniformLinear, uniformSpotLight.uniformConstant,
@@ -361,6 +357,24 @@ void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int t
     // The offset is to take into account that the shadowmaps are all 1 array in the shader
     glUniform1i(uniformOmniShadowMaps[offset].shadowMap, textureUnit);
     glUniform1f(uniformOmniShadowMaps[offset].farPlane, sLight->getFarPlane());
+}
+
+// Called every frame
+void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
+{
+    glUniform1i(uniformFlashLightOn, sLight->isOn());
+
+    // No need to set all of these values if the spotlight isn't even on
+    if (!sLight->isOn())
+        return;
+
+    sLight->setPosAndDir(uniformSpotLight.uniformPosition, uniformSpotLight.uniformDirection);
+
+    if (!shadowsEnabled)
+        return;
+
+    // The offset is to take into account that the shadowmaps are all 1 array in the shader
+    glUniform1i(uniformOmniShadowMaps[offset].shadowMap, textureUnit);
 }
 
 void Shader::setTexture(GLuint textureUnit)
