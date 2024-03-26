@@ -340,12 +340,12 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
     }
 }
 
-void Shader::setSpotLight(SpotLight* sLight, bool flashLightOn, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
+void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
 {
-    glUniform1i(uniformFlashLightOn, flashLightOn);
+    glUniform1i(uniformFlashLightOn, sLight->isOn());
 
     // No need to set all of these values if the spotlight isn't even on
-    if (!flashLightOn)
+    if (!sLight->isOn())
         return;
 
     sLight->useLight(uniformSpotLight.uniformAmbientIntensity, uniformSpotLight.uniformDiffuseIntensity,

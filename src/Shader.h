@@ -52,7 +52,7 @@ class Shader
         void setDirectionalLight(DirectionalLight *dLight);
         void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount);
         void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
-        void setSpotLight(SpotLight* sLight, bool flashLightOn, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
+        void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
 
         void setTexture(GLuint textureUnit);
         void setDirectionalShadowMap(GLuint textureUnit);

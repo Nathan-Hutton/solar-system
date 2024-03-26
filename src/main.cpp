@@ -234,7 +234,7 @@ void renderPass(glm::mat4 view)
     // ====================================
 
 	mainShader->useShader();
-    mainShader->setSpotLight(camera.getSpotLight(), flashLightOn, shadowsEnabled, 4+pointLightCount, pointLightCount);
+    mainShader->setSpotLight(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
 
     //// Apply projection and view matrices.
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
@@ -530,7 +530,7 @@ int main()
         // Get + handle user input
         glfwPollEvents();
         bool* keys = mainWindow.getKeys();
-        camera.keyControl(keys, deltaTime, &flashLightOn);
+        camera.keyControl(keys, deltaTime);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset());
 

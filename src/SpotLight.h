@@ -23,10 +23,13 @@ class SpotLight : public PointLight {
         glm::vec3 getDirection();
 
         void setFlash(glm::vec3 pos, glm::vec3 dir);
+        bool isOn();
+        void toggle();
 
         ~SpotLight();
 
     private:
         glm::vec3 direction;
         GLfloat edge, procEdge;
+        bool on;
 };
