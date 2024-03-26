@@ -1,11 +1,15 @@
 #version 460
 
+// This lets us write to our 2 color buffers.
+// For the bloom effect, we put the blurred parts over the main color image
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 bloomColor;
+layout (location = 2) out float shouldGammaCorrect;
+
 in vec2 texCoord;
 in vec3 normal;
 in vec3 fragPos;
 in vec4 directionalLightSpacePos;
-
-out vec4 color;
 
 const int MAX_POINT_LIGHTS = 3;
 
@@ -179,6 +183,7 @@ vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 		}
 	}
 
+
 	return ambientColor + (1.0f - shadowFactor) * (diffuseColor + specularColor);
 }
 
@@ -231,6 +236,9 @@ void main()
 	finalColor += CalcPointLights();
     if (flashLightOn)
         finalColor += CalcSpotLight(spotLight, pointLightCount);
+
+	fragColor = texture(theTexture, texCoord) * finalColor;
 	
-	color = texture(theTexture, texCoord) * finalColor;
+    bloomColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    shouldGammaCorrect = 0.0;
 }

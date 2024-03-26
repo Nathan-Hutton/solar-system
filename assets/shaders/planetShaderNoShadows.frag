@@ -135,8 +135,6 @@ void main()
 	
 	fragColor = texture(theTexture, texCoord) * finalColor;
 
-    // Consider multiplying yellow colors to make them pop more
-
     //float brightness = dot(color.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
     bloomColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
     shouldGammaCorrect = 0.0;
