@@ -37,7 +37,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     stars.push_back(sun);
     pLights[(*pLightCount)++] = sun->getPointLight();
 
-    Planet *planet = new Planet(1.0f, 4.0f);
+    Planet *planet = new Planet(1.0f, 4.0f, 15, 15);
     planet->setTexturePointer(earthTexture);
     planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(0.0f, -15.0f, -2.5f));
@@ -46,7 +46,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
 
-    Planet *planet1 = new Planet(1.0f, 4.0f);
+    Planet *planet1 = new Planet(1.0f, 4.0f, 15, 15);
     planet1->setTexturePointer(marsTexture);
     planet1->setMaterialPointer(material);
     planet1->setPosition(glm::vec3(45.0f, 0.0f, -2.5f));
@@ -55,7 +55,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     planet1->setRotationSpeed(-100.0f);
     satellites.push_back(planet1);
 
-    Planet *moon = new Planet(0.5f, 1.25f);
+    Planet *moon = new Planet(0.5f, 1.25f, 15, 15);
     moon->setTexturePointer(moonTexture);
     moon->setMaterialPointer(material);
     moon->setPosition(glm::vec3(42.0f, 0.0f, -2.5f));
@@ -116,7 +116,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     stars.push_back(sun2);
     pLights[(*pLightCount)++] = sun2->getPointLight();
 
-    Planet *planet = new Planet(1.0f, 4.0f);
+    Planet *planet = new Planet(1.0f, 4.0f, 15, 15);
     planet->setTexturePointer(earthTexture);
     planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
@@ -157,7 +157,7 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
     stars.push_back(sun);
     pLights[(*pLightCount)++] = sun->getPointLight();
 
-    Planet *planet = new Planet(1.0f, 4.0f);
+    Planet *planet = new Planet(1.0f, 4.0f, 15, 15);
     planet->setTexturePointer(earthTexture);
     planet->setMaterialPointer(material);
     planet->setPosition(glm::vec3(25.5f, 0.0f, -2.5f));
