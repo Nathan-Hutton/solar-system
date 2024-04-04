@@ -102,7 +102,7 @@ void Mesh::setMaterialPointer(Material *material)
     this->material = material;
 }
 
-void Mesh::renderMesh()
+void Mesh::render()
 {
     // Bind the VAO and IBO
     glBindVertexArray(VAO);

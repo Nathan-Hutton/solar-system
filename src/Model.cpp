@@ -15,16 +15,6 @@ Model::Model(GLfloat mass) : SpaceObject(mass)
     this->scaleFactorVector = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
-void Model::setMaterialPointer(Material *material)
-{
-    this->material = material;
-}
-
-Material* Model::getMaterialPointer()
-{
-    return material;
-}
-
 void Model::setScaleFactor(GLfloat sFactor)
 {
     this->scaleFactor = sFactor;
@@ -56,7 +46,7 @@ void Model::loadModel(const std::string& fileName) {
     loadMaterials(scene);
 }
 
-void Model::renderModel()
+void Model::render()
 {
     for (size_t i = 0; i < meshList.size(); i++)
     {
@@ -67,8 +57,15 @@ void Model::renderModel()
         if (materialIndex < textureList.size() && textureList[materialIndex])
             textureList[materialIndex]->useTexture();
 
-        meshList[i]->renderMesh();
+        meshList[i]->render();
     }
+}
+
+void Model::setWorldProperties(glm::mat4* model)
+{
+    *model = glm::translate(*model, position);
+    *model = glm::rotate(*model, glm::radians(angle), rotation);
+    *model = glm::scale(*model, scaleFactorVector);
 }
 
 void Model::clearModel()

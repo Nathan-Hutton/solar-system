@@ -21,6 +21,7 @@
 #include "Camera.h"
 
 namespace SceneFunctions {
+    void setOldPositions(std::vector<Planet*>& satellites, std::vector<Model*>& models);
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);

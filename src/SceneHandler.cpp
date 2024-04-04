@@ -2,6 +2,11 @@
 
 static const float toRadians = M_PI / 180.0f;
 
+void SceneFunctions::setOldPositions(std::vector<Planet*>& satellites, std::vector<Model*>& models)
+{
+
+}
+
 void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)

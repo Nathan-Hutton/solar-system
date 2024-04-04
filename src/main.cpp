@@ -128,7 +128,7 @@ void handleTimeChange(GLfloat yScrollOffset)
         timeChange = 0.0f;
 }
 
-void renderPlanets(GLuint uniformModel)
+void renderSatellites(GLuint uniformModel)
 {
     // Apply rotations, transformations, and render objects
     // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -146,23 +146,19 @@ void renderPlanets(GLuint uniformModel)
     for (Planet *satellite : satellites)
     {
         model = glm::mat4(1.0f);
-        model = glm::translate(model, satellite->getPosition());
-        model = glm::rotate(model, satellite->getAngle() * toRadians, satellite->getRotation());
+        satellite->setWorldProperties(&model);
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
-        satellite->getTexturePointer()->useTexture();
-        satellite->renderMesh();
+        satellite->render();
     }
 
     for (Model *complexModel : models)
     {
         model = glm::mat4(1.0f);
-        model = glm::translate(model, complexModel->getPosition());
-        model = glm::rotate(model, complexModel->getAngle() * toRadians, complexModel->getRotation());
-        model = glm::scale(model, complexModel->getScaleFactorVector());
+        complexModel->setWorldProperties(&model);
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         complexModel->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
-        complexModel->renderModel();
+        complexModel->render();
     }
 }
 
@@ -175,11 +171,10 @@ void renderSuns()
     for (Sun *star : stars)
     {
         model = glm::mat4(1.0f);
-        model = glm::translate(model, star->getPosition());
-        model = glm::rotate(model, star->getAngle() * toRadians, star->getRotation());
+        star->setWorldProperties(&model);
         glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
         star->getTexturePointer()->useTexture();
-        star->renderMesh();
+        star->render();
     }
 }
 
@@ -204,7 +199,7 @@ void omniShadowMapPass(PointLight* light)
 	omniShadowShader->validate();
 
 	// Draw just to the depth buffer
-	renderPlanets(uniformModelOmniShadowMap);
+	renderSatellites(uniformModelOmniShadowMap);
 
     // Bind the default framebuffer
     // If we called swapbuffers without doing this the image wouldn't change
@@ -244,7 +239,7 @@ void renderPass(glm::mat4 view)
     glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
-	renderPlanets(uniformModelPlanets);
+	renderSatellites(uniformModelPlanets);
 
     // ====================================
     // RENDER SKYBOX
@@ -265,7 +260,7 @@ void renderPass(glm::mat4 view)
     glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
     glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), !horizontal);
     glBindTexture(GL_TEXTURE_2D, bloomTexture);
-    framebufferQuad->renderMesh();
+    framebufferQuad->render();
 
     for (unsigned int i = 0; i < amount; i++)
     {
@@ -275,7 +270,7 @@ void renderPass(glm::mat4 view)
         // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
         // Move the data between pingPong FBOs
         glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-        framebufferQuad->renderMesh();
+        framebufferQuad->render();
         horizontal = !horizontal;
     }
 
@@ -296,7 +291,7 @@ void renderPass(glm::mat4 view)
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, binaryTexture);
 
-    framebufferQuad->renderMesh();
+    framebufferQuad->render();
 }
 
 int main()

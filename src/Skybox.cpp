@@ -99,7 +99,7 @@ void Skybox::drawSkybox(glm::mat4 viewMatrix)
 
     skyShader->validate();
 
-    skyMesh->renderMesh();
+    skyMesh->render();
 }
 
 Skybox::~Skybox()

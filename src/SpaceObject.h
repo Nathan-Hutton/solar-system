@@ -2,10 +2,13 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <cmath>
 
 #include "Mesh.h"
 #include "Texture.h"
+#include "Material.h"
 
 class SpaceObject
 {
@@ -26,6 +29,10 @@ class SpaceObject
         void setAngle(GLfloat angle);
         GLfloat getRotationSpeed();
         void setRotationSpeed(GLfloat speed);
+        void setMaterialPointer(Material* material);
+        Material* getMaterialPointer();
+        virtual void render() = 0;
+        virtual void setWorldProperties(glm::mat4* model) = 0;
 
         // This is a shitty solution for not letting the objects' force get too strong
         // since we have no collisions yet. Look at the getForce method for more info
@@ -41,6 +48,7 @@ class SpaceObject
         glm::vec3 rotation;
         GLfloat angle;
         GLfloat rotationSpeed;
+        Material *material;
 
         GLfloat greatestDistanceBetweenVertices;
 };

@@ -16,7 +16,7 @@ class Mesh
         Texture *getTexturePointer();
         void setTexturePointer(Texture *texture);
         void setMaterialPointer(Material *material);
-        void renderMesh();
+        void render();
         void clearMesh();
 
         ~Mesh();

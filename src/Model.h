@@ -19,14 +19,13 @@ class Model : public SpaceObject
         Model();
         Model(GLfloat mass);
 
-        void setMaterialPointer(Material* materialPointer);
-        Material* getMaterialPointer();
         void setScaleFactor(GLfloat sFactor);
         GLfloat getScaleFactor();
         glm::vec3 getScaleFactorVector();
 
         void loadModel(const std::string& fileName);
-        void renderModel();
+        void render() override;
+        void setWorldProperties(glm::mat4* model) override;
         void clearModel();
 
         ~Model();

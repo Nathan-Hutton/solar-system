@@ -94,5 +94,15 @@ GLfloat SpaceObject::getGreatestDistanceBetweenVertices()
     return greatestDistanceBetweenVertices;
 }
 
+void SpaceObject::setMaterialPointer(Material *material)
+{
+    this->material = material;
+}
+
+Material* SpaceObject::getMaterialPointer()
+{
+    return material;
+}
+
 SpaceObject::~SpaceObject()
 {}

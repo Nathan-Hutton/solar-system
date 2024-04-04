@@ -64,9 +64,16 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
     }
 }
 
-void Sphere::renderMesh()
+void Sphere::render()
 {
-    sphereMesh->renderMesh();
+    texture->useTexture();
+    sphereMesh->render();
+}
+
+void Sphere::setWorldProperties(glm::mat4* model)
+{
+    *model = glm::translate(*model, position);
+    *model = glm::rotate(*model, glm::radians(angle), rotation);
 }
 
 void Sphere::setMeshPointer(Mesh *sphereMesh)
