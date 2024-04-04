@@ -34,13 +34,6 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars
     }
 }
 
-// TODO: Use the functions in OrbitalPhsyics to make the oldPositions for all objects at once instead of
-// one at a time
-// REMEMBER
-// REMEBER
-// REMEMBER
-// REMEMBER
-
 void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites, GLfloat gravitationalForce, GLfloat timeStep)
 {
     std::vector<glm::vec3> newSatellitePositions;
@@ -58,7 +51,6 @@ void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<Sun*>& stars, std
             force += getForce(satellites[i], star, gravitationalForce);
 
         // Add up forces for other satellites
-        // For a less chaotic solar system, comment this loop out
         for (int j = 0; j < satellites.size(); j++) 
         {
             if (i == j) continue;
@@ -94,7 +86,6 @@ void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<Sun*>& stars, st
             force += getForce(satellites[i], star, gravitationalForce);
             
         // Add up forces for other satellites
-        // For a less chaotic solar system, comment this loop out
         for (int j = 0; j < satellites.size(); j++) 
         {
             if (i == j) continue;

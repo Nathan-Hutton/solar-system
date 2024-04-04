@@ -316,6 +316,8 @@ int main()
         default:
             break;
     }
+    if (verlet)
+        SceneFunctions::setOldPositions(satellites, stars, gForce);
     
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
