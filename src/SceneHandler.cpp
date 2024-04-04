@@ -2,12 +2,7 @@
 
 static const float toRadians = M_PI / 180.0f;
 
-void SceneFunctions::setOldPositions(std::vector<Planet*>& satellites, std::vector<Model*>& models)
-{
-
-}
-
-void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
+void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {
@@ -101,10 +96,10 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     asteroid->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     asteroid->setRotationSpeed(200.0f);
     asteroid->setScaleFactor(0.5f);
-    models.push_back(asteroid);
+    satellites.push_back(asteroid);
 }
 
-void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
+void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {
@@ -161,7 +156,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     satellites.push_back(planet);
 }
 
-void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
+void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {

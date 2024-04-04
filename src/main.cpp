@@ -51,8 +51,7 @@ GLuint uniformBlurTexture = 0;
 
 Window mainWindow;
 std::vector<Sun*> stars;
-std::vector<Planet*> satellites;
-std::vector<Model*> models;
+std::vector<SpaceObject*> satellites;
 
 Shader* mainShader;
 Shader* sunShader;
@@ -143,22 +142,13 @@ void renderSatellites(GLuint uniformModel)
 
     // They'll all use GL_TEXTURE2
     glActiveTexture(GL_TEXTURE2);
-    for (Planet *satellite : satellites)
+    for (SpaceObject *satellite : satellites)
     {
         model = glm::mat4(1.0f);
         satellite->setWorldProperties(&model);
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
         satellite->render();
-    }
-
-    for (Model *complexModel : models)
-    {
-        model = glm::mat4(1.0f);
-        complexModel->setWorldProperties(&model);
-        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        complexModel->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
-        complexModel->render();
     }
 }
 
@@ -315,13 +305,13 @@ int main()
     switch (selectedScene)
     {
         case (1):
-            SceneFunctions::createObjects1Sun1Planet(stars, satellites, models, pointLights, &pointLightCount, &camera, verlet);
+            SceneFunctions::createObjects1Sun1Planet(stars, satellites, pointLights, &pointLightCount, &camera, verlet);
             break;
         case (2):
-            SceneFunctions::createObjectsDefault(stars, satellites, models, pointLights, &pointLightCount, &camera, verlet);
+            SceneFunctions::createObjectsDefault(stars, satellites, pointLights, &pointLightCount, &camera, verlet);
             break;
         case (3):
-            SceneFunctions::createObjectsFigureEight(stars, satellites, models, pointLights, &pointLightCount, &camera, verlet);
+            SceneFunctions::createObjectsFigureEight(stars, satellites, pointLights, &pointLightCount, &camera, verlet);
             break;
         default:
             break;
@@ -525,21 +515,21 @@ int main()
         {
             while (now - lastVerletUpdate >= 0.005f)
             {
-                OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, models, 0.005f);
-                OrbitalPhysicsFunctions::updatePositionsVerlet(stars, satellites, models, gForce, 0.005f);
+                OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, 0.005f);
+                OrbitalPhysicsFunctions::updatePositionsVerlet(stars, satellites, gForce, 0.005f);
                 lastVerletUpdate += 0.005f;
             }
         }
         else
         {
             // This loop ensures that we follow a curve even when the framerate sucks
-            OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, models, timeStep);
+            OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, timeStep);
             while (timeStep > 0.005f)
             {
-                OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, models, gForce, 0.005f);
+                OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, gForce, 0.005f);
                 timeStep -= 0.005f;
             }
-            OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, models, gForce, timeStep);
+            OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, gForce, timeStep);
         }
 
         // Get + handle user input

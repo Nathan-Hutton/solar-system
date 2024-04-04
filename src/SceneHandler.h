@@ -21,14 +21,14 @@
 #include "Camera.h"
 
 namespace SceneFunctions {
-    void setOldPositions(std::vector<Planet*>& satellites, std::vector<Model*>& models);
-    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
+    void setOldPositions(std::vector<SpaceObject*>& satellites);
+    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
-    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
+    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
-    void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
+    void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
 }
