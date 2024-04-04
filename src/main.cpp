@@ -51,8 +51,8 @@ GLuint uniformBlurTexture = 0;
 
 Window mainWindow;
 std::vector<Sun*> stars;
-std::vector<Planet*> planets;
-std::vector<Model*> complexModels;
+std::vector<Planet*> satellites;
+std::vector<Model*> models;
 
 Shader* mainShader;
 Shader* sunShader;
@@ -75,7 +75,7 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 GLfloat timeChange = 1.0f;
 
-GLfloat gravitationalForce = -100.0f;
+GLfloat gForce = -100.0f;
 
 static const char* vShaderShadows = "../assets/shaders/planetShaderShadows.vert";
 static const char* fShaderShadows = "../assets/shaders/planetShaderShadows.frag";
@@ -143,7 +143,7 @@ void renderPlanets(GLuint uniformModel)
 
     // They'll all use GL_TEXTURE2
     glActiveTexture(GL_TEXTURE2);
-    for (Planet *satellite : planets)
+    for (Planet *satellite : satellites)
     {
         model = glm::mat4(1.0f);
         model = glm::translate(model, satellite->getPosition());
@@ -154,7 +154,7 @@ void renderPlanets(GLuint uniformModel)
         satellite->renderMesh();
     }
 
-    for (Model *complexModel : complexModels)
+    for (Model *complexModel : models)
     {
         model = glm::mat4(1.0f);
         model = glm::translate(model, complexModel->getPosition());
@@ -301,10 +301,15 @@ void renderPass(glm::mat4 view)
 
 int main()
 {
+    // Promp user to select a numerical integration scheme
+    bool verlet;
+    std::cout << "0: Euler method\n1: Verlet method \n>";
+    std::cin >> verlet;
+
     // Prompt user to select scene
-    int userInput;
-    std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: figure eight\n> ";
-    std::cin >> userInput;
+    int selectedScene;
+    std::cout << "\n1: 1 planet 1 sun\n2: Lots of objects\n3: figure eight\n> ";
+    std::cin >> selectedScene;
 
     mainWindow = Window(1920, 1200);
     mainWindow.initialize();
@@ -312,16 +317,16 @@ int main()
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
 
     // Build scene based on user input
-    switch (userInput)
+    switch (selectedScene)
     {
         case (1):
-            SceneFunctions::createObjects1Sun1Planet(stars, planets, complexModels, pointLights, &pointLightCount, &camera);
+            SceneFunctions::createObjects1Sun1Planet(stars, satellites, models, pointLights, &pointLightCount, &camera, verlet);
             break;
         case (2):
-            SceneFunctions::createObjectsDefault(stars, planets, complexModels, pointLights, &pointLightCount, &camera);
+            SceneFunctions::createObjectsDefault(stars, satellites, models, pointLights, &pointLightCount, &camera, verlet);
             break;
         case (3):
-            SceneFunctions::createObjectsFigureEight(stars, planets, complexModels, pointLights, &pointLightCount, &camera);
+            SceneFunctions::createObjectsFigureEight(stars, satellites, models, pointLights, &pointLightCount, &camera, verlet);
             break;
         default:
             break;
@@ -341,7 +346,7 @@ int main()
     // Setup the OpenGL program
     createSecondaryShaders();
 
-    // Shader for the planets, moons, and models. Includes shadows
+    // Shader for the satellites, moons, and models. Includes shadows
     Shader* mainShaderWithShadows = new Shader();
     mainShaderWithShadows->createFromFiles(vShaderShadows, fShaderShadows);
     mainShaderWithShadows->useShader();
@@ -349,7 +354,7 @@ int main()
     mainShaderWithShadows->setDirectionalShadowMap(3);
     mainShaderWithShadows->validate();
     
-    // Shader for the planets, moons, and models. Doesn't use shadows
+    // Shader for the satellites, moons, and models. Doesn't use shadows
     Shader* mainShaderWithoutShadows = new Shader();
     mainShaderWithoutShadows->createFromFiles(vShaderNoShadows, fShaderNoShadows);
     mainShaderWithoutShadows->useShader();
@@ -361,6 +366,7 @@ int main()
     mainShader = mainShaderWithoutShadows;
 
     GLfloat now;
+    GLfloat lastVerletUpdate = 0.0f;
     GLfloat timeStep = 0.0f;
 
     // Uniform object IDs let us pass values from the CPU to the GPU.
@@ -520,14 +526,26 @@ int main()
             counter = 0;
         }
 
-        // This loop ensures that we follow a curve even when the framerate sucks
-        OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, planets, complexModels, timeStep);
-        while (timeStep > 0.005f)
+        if (verlet)
         {
-            OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, complexModels, gravitationalForce, 0.005f);
-            timeStep -= 0.005f;
+            while (now - lastVerletUpdate >= 0.005f)
+            {
+                OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, models, 0.005f);
+                OrbitalPhysicsFunctions::updatePositionsVerlet(stars, satellites, models, gForce, 0.005f);
+                lastVerletUpdate += 0.005f;
+            }
         }
-        OrbitalPhysicsFunctions::updateSatellitePositions(stars, planets, complexModels, gravitationalForce, timeStep);
+        else
+        {
+            // This loop ensures that we follow a curve even when the framerate sucks
+            OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, models, timeStep);
+            while (timeStep > 0.005f)
+            {
+                OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, models, gForce, 0.005f);
+                timeStep -= 0.005f;
+            }
+            OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, models, gForce, timeStep);
+        }
 
         // Get + handle user input
         glfwPollEvents();

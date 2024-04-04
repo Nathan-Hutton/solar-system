@@ -13,20 +13,6 @@ glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *o
     return ((gravitationalForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * directionVector;
 }
 
-glm::vec3 OrbitalPhysicsFunctions::getAcceleration(GLfloat mass, glm::vec3 force)
-{
-    return force / mass;
-}
-
-glm::vec3 OrbitalPhysicsFunctions::getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat timeStep)
-{
-    return oldVelocity + acceleration * timeStep;
-}
-
-glm::vec3 OrbitalPhysicsFunctions::getNewPosition(glm::vec3 oldPosition, glm::vec3 velocity, GLfloat timeStep)
-{
-    return oldPosition + velocity * timeStep;
-}
 void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
@@ -56,10 +42,20 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars
     }
 }
 
-void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat gravitationalForce, GLfloat timeStep)
+// TODO: Use the functions in OrbitalPhsyics to make the oldPositions for all objects at once instead of
+// one at a time
+// REMEMBER
+// REMEBER
+// REMEMBER
+// REMEMBER
+
+void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat gravitationalForce, GLfloat timeStep)
 {
     std::vector<glm::vec3> newSatellitePositions;
     std::vector<glm::vec3> newModelPositions;
+    glm::vec3 acceleration;
+    glm::vec3 velocity;
+    glm::vec3 position;
     
     // Apply forces to all planets and moons
     for (int i = 0; i < satellites.size(); i++) 
@@ -81,11 +77,11 @@ void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars,
             force += getForce(satellites[i], satellites[j], gravitationalForce);
         }
 
-        glm::vec3 acceleration = getAcceleration(satellites[i]->getMass(), force);
-        glm::vec3 newVelocity = getNewVelocity(satellites[i]->getVelocity(), acceleration, timeStep);
-        glm::vec3 newPosition = getNewPosition(satellites[i]->getPosition(), newVelocity, timeStep);
-        satellites[i]->setVelocity(newVelocity);
-        newSatellitePositions.push_back(newPosition);
+        acceleration = force / satellites[i]->getMass();
+        velocity = satellites[i]->getVelocity() + acceleration * timeStep;
+        position = satellites[i]->getPosition() + velocity * timeStep;
+        satellites[i]->setVelocity(velocity);
+        newSatellitePositions.push_back(position);
     }
 
     // Apply forces to all models (.obj files)
@@ -108,11 +104,82 @@ void OrbitalPhysicsFunctions::updateSatellitePositions(std::vector<Sun*>& stars,
             force += getForce(models[i], models[j], gravitationalForce);
         }
 
-        glm::vec3 acceleration = getAcceleration(models[i]->getMass(), force);
-        glm::vec3 newVelocity = getNewVelocity(models[i]->getVelocity(), acceleration, timeStep);
-        glm::vec3 newPosition = getNewPosition(models[i]->getPosition(), newVelocity, timeStep);
-        models[i]->setVelocity(newVelocity);
-        newModelPositions.push_back(newPosition);
+        acceleration = force / models[i]->getMass();
+        velocity = models[i]->getVelocity() + acceleration * timeStep;
+        position = models[i]->getPosition() + velocity * timeStep;
+        models[i]->setVelocity(velocity);
+        newModelPositions.push_back(position);
+    }
+
+    // Update positions at the end of the loop so that no objects move before we get all of our data
+    for (int i = 0; i < satellites.size(); i++)
+        satellites[i]->setPosition(newSatellitePositions[i]);
+    
+    // Update positions at the end of the loop so that no objects move before we get all of our data
+    for (int i = 0; i < models.size(); i++)
+        models[i]->setPosition(newModelPositions[i]);
+}
+
+void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat gravitationalForce, GLfloat timeStep)
+{
+    std::vector<glm::vec3> newSatellitePositions;
+    std::vector<glm::vec3> newModelPositions;
+    glm::vec3 acceleration;
+    glm::vec3 velocity;
+    glm::vec3 position;
+    
+    // Apply forces to all planets and moons
+    for (int i = 0; i < satellites.size(); i++) 
+    {
+        glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
+        
+        // Add up forces from stars
+        for (Sun *star : stars)
+            force += getForce(satellites[i], star, gravitationalForce);
+
+        for (Model *model : models)
+            force += getForce(satellites[i], model, gravitationalForce);
+            
+        // Add up forces for other satellites
+        // For a less chaotic solar system, comment this loop out
+        for (int j = 0; j < satellites.size(); j++) 
+        {
+            if (i == j) continue;
+            force += getForce(satellites[i], satellites[j], gravitationalForce);
+        }
+
+        acceleration = force / satellites[i]->getMass();
+        position = 2.0f * satellites[i]->getPosition() - satellites[i]->getOldPosition() + acceleration * pow(timeStep, 2.0f);
+        satellites[i]->setOldPosition(satellites[i]->getPosition());
+        satellites[i]->setVelocity(velocity);
+        newSatellitePositions.push_back(position);
+    }
+
+    // Apply forces to all models (.obj files)
+    for (int i = 0; i < models.size(); i++) 
+    {
+        glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
+        
+        // Add up forces from stars
+        for (Sun *star : stars)
+            force += getForce(models[i], star, gravitationalForce);
+
+        for (Planet *satellite : satellites)
+            force += getForce(models[i], satellite, gravitationalForce);
+            
+        // Add up forces for other satellites
+        // For a less chaotic solar system, comment this loop out
+        for (int j = 0; j < models.size(); j++) 
+        {
+            if (i == j) continue;
+            force += getForce(models[i], models[j], gravitationalForce);
+        }
+
+        acceleration = force / models[i]->getMass();
+        position = 2.0f * models[i]->getPosition() - models[i]->getOldPosition() + acceleration * pow(timeStep, 2.0f);
+        models[i]->setOldPosition(models[i]->getPosition());
+        models[i]->setVelocity(velocity);
+        newModelPositions.push_back(position);
     }
 
     // Update positions at the end of the loop so that no objects move before we get all of our data

@@ -29,6 +29,16 @@ GLfloat SpaceObject::getMass()
     return mass;
 }
 
+glm::vec3 SpaceObject::getOldPosition() const
+{
+    return oldPosition;
+}
+
+void SpaceObject::setOldPosition(glm::vec3 oldPos)
+{
+    this->oldPosition = oldPos;
+}
+
 glm::vec3 SpaceObject::getPosition() const
 {
     return position;

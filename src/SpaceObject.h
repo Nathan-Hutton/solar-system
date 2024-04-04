@@ -14,6 +14,8 @@ class SpaceObject
         SpaceObject(GLfloat mass);
 
         GLfloat getMass();
+        glm::vec3 getOldPosition() const;
+        void setOldPosition(glm::vec3 oldPos);
         glm::vec3 getPosition() const;
         void setPosition(glm::vec3 position);
         glm::vec3 getVelocity() const;
@@ -33,6 +35,7 @@ class SpaceObject
 
     protected:
         GLfloat mass;
+        glm::vec3 oldPosition;
         glm::vec3 position;
         glm::vec3 velocity;
         glm::vec3 rotation;

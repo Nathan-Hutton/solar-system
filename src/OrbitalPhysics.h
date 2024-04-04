@@ -18,7 +18,8 @@ namespace OrbitalPhysicsFunctions {
     glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force);
     glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat timeStep);
     glm::vec3 getNewPosition(glm::vec3 oldPosition, glm::vec3 velocity, GLfloat timeStep);
-    void updateSatellitePositions(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat graviationalForce, GLfloat timeStep);
+    void updatePositionsEuler(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat gForce, GLfloat timeStep);
+    void updatePositionsVerlet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat gForce, GLfloat timeStep);
     void updateCelestialBodyAngles(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models, GLfloat timeStep);
 }
 

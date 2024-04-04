@@ -23,13 +23,13 @@
 namespace SceneFunctions {
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
+            Camera *camera, bool verlet);
     void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
+            Camera *camera, bool verlet);
     void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<Planet*>& satellites, std::vector<Model*>& models,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
+            Camera *camera, bool verlet);
 }
 
 #endif
