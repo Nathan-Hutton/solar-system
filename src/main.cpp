@@ -40,7 +40,7 @@ unsigned int pingPongBuffer[2];
 
 const float toRadians = M_PI / 180.0f;
 
-GLuint uniformModelPlanets = 0, uniformProjectionPlanets = 0, uniformViewPlanets = 0,
+GLuint uniformModelPlanets = 0, uniformViewPlanets = 0,
 uniformEyePositionPlanets = 0, uniformSpecularIntensityPlanets = 0, uniformShininessPlanets = 0,
 uniformOmniLightPos = 0, uniformFarPlane = 0;
 
