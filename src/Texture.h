@@ -13,7 +13,6 @@ class Texture
         const char* getFileLocation();
 
         bool loadTexture();
-        bool loadTextureA();
         void useTexture();
         void clearTexture();
 
@@ -21,7 +20,7 @@ class Texture
 
     private:
         GLuint textureID;
-        int width, height, bitDepth;
+        int width, height;
 
         const char* fileLocation;
 };
