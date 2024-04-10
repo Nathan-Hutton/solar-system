@@ -81,11 +81,6 @@ void Sphere::setMeshPointer(Mesh *sphereMesh)
     this->sphereMesh = sphereMesh;
 }
 
-Mesh* Sphere::getMeshPointer()
-{
-    return sphereMesh;
-}
-
 Texture* Sphere::getTexturePointer()
 {
     return texture;
@@ -94,7 +89,6 @@ Texture* Sphere::getTexturePointer()
 void Sphere::setTexturePointer(Texture *texture)
 {
     this->texture = texture;
-    this->sphereMesh->setTexturePointer(texture);
 }
 
 Sphere::~Sphere()

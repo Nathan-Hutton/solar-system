@@ -196,9 +196,6 @@ void Model::loadMaterials(const aiScene *scene)
             textureList[i]->loadTexture();
         }
     }
-
-    for (size_t i = 0; i < meshToTex.size(); i++)
-        meshList[i]->setTexturePointer(textureList[meshToTex[i]]);
 }
 
 Model::~Model()

@@ -7,7 +7,6 @@ Mesh::Mesh()
     VBO = 0;
     IBO = 0;
     indexCount = 0;
-    this->texture = NULL;
     this->material = NULL;
 }
 
@@ -85,21 +84,6 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-}
-
-Texture *Mesh::getTexturePointer()
-{
-    return texture;
-}
-
-void Mesh::setTexturePointer(Texture *texture)
-{
-    this->texture = texture;
-}
-
-void Mesh::setMaterialPointer(Material *material)
-{
-    this->material = material;
 }
 
 void Mesh::render()
