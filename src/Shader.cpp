@@ -21,31 +21,24 @@ Shader::Shader()
     uniformFlashLightOn = 0;
 }
 
-void Shader::createFromString(const char* vertexCode, const char* fragmentCode)
+void Shader::createFromFiles(const char* file1, const char* file2, const char* file3)
 {
-    compileShader(vertexCode, fragmentCode);
-}
-
-void Shader::createFromFiles(const char* vertexLocation, const char* fragmentLocation)
-{
-    std::string vertexString = readFile(vertexLocation);
-    std::string fragmentString = readFile(fragmentLocation);
+    if (file3 != nullptr)
+    {
+        std::string vertexString = readFile(file1);
+        std::string geometryString = readFile(file2);
+        std::string fragmentString = readFile(file3);
+        const char* vertexCode = vertexString.c_str();
+        const char* geometryCode = geometryString.c_str();
+        const char* fragmentCode = fragmentString.c_str();
+        compileShader(vertexCode, geometryCode, fragmentCode);
+        return;
+    }
+    std::string vertexString = readFile(file1);
+    std::string fragmentString = readFile(file2);
     const char* vertexCode = vertexString.c_str();
     const char* fragmentCode = fragmentString.c_str();
-
     compileShader(vertexCode, fragmentCode);
-}
-
-void Shader::createFromFiles(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation)
-{
-    std::string vertexString = readFile(vertexLocation);
-    std::string geometryString = readFile(geometryLocation);
-    std::string fragmentString = readFile(fragmentLocation);
-    const char* vertexCode = vertexString.c_str();
-    const char* geometryCode = geometryString.c_str();
-    const char* fragmentCode = fragmentString.c_str();
-
-    compileShader(vertexCode, geometryCode, fragmentCode);
 }
 
 std::string Shader::readFile(const char* fileLocation)

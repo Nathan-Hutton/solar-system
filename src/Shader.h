@@ -19,9 +19,7 @@ class Shader
     public:
         Shader();
 
-        void createFromString(const char* vertexCode, const char* fragmentCode);
-        void createFromFiles(const char* vertexLocation, const char* fragmentLocation);
-        void createFromFiles(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation);
+        void createFromFiles(const char* file1, const char* file2, const char* file3 = nullptr);
 
         void validate();
 
