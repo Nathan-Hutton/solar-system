@@ -44,7 +44,7 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     spotLight = NULL;
 }
 
-void Camera::keyControl(bool* keys, GLfloat deltaTime)
+void Camera::keyControl(bool* keys, GLfloat deltaTime, bool* shadowsEnabled)
 {
     GLfloat velocity = moveSpeed * deltaTime;
 
@@ -69,6 +69,22 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime)
     if (keys[GLFW_KEY_Q])
         roll -= velocity * 15;
 
+    handleFlashlightKey(keys);
+
+    // Check for flashlight toggle
+    if (!keys[GLFW_KEY_L])
+        return;
+
+    // Setting this to false means we won't trigger it multiple times when we press it once
+    keys[GLFW_KEY_L] = false;
+
+    // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
+    *shadowsEnabled = !(*shadowsEnabled);
+    toggleShadows();
+}
+
+void Camera::handleFlashlightKey(bool* keys)
+{
     // Check for flashlight toggle
     if (!keys[GLFW_KEY_F])
         return;

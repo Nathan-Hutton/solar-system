@@ -1,6 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
+#include "ShaderHelperFunctions.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -54,6 +55,8 @@ std::vector<Sun*> stars;
 std::vector<SpaceObject*> satellites;
 
 Shader* mainShader;
+Shader* mainShaderWithoutShadows;
+Shader* mainShaderWithShadows;
 Shader* sunShader;
 Shader* omniShadowShader;
 Shader* hdrShader;
@@ -73,8 +76,6 @@ Skybox skybox;
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 GLfloat timeChange = 1.0f;
-
-GLfloat gForce = -100.0f;
 
 static const char* vShaderShadows = "../assets/shaders/planetShaderShadows.vert";
 static const char* fShaderShadows = "../assets/shaders/planetShaderShadows.frag";
@@ -125,6 +126,28 @@ void handleTimeChange(GLfloat yScrollOffset)
     }
     if (timeChange < 0.0f)
         timeChange = 0.0f;
+}
+
+void toggleShadows()
+{
+    if (shadowsEnabled)
+    {
+        mainShader = mainShaderWithShadows;
+        uniformModelPlanets = mainShaderWithShadows->getModelLocation();
+        uniformViewPlanets = mainShaderWithShadows->getViewLocation();
+        uniformEyePositionPlanets = mainShaderWithShadows->getEyePositionLocation();
+        uniformSpecularIntensityPlanets = mainShaderWithShadows->getSpecularIntensityLocation();
+        uniformShininessPlanets = mainShaderWithShadows->getShininessLocation();
+    }
+    else
+    {
+        mainShader = mainShaderWithoutShadows;
+        uniformModelPlanets = mainShaderWithoutShadows->getModelLocation();
+        uniformViewPlanets = mainShaderWithoutShadows->getViewLocation();
+        uniformEyePositionPlanets = mainShaderWithoutShadows->getEyePositionLocation();
+        uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
+        uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
+    }
 }
 
 void renderSatellites(GLuint uniformModel)
@@ -317,7 +340,7 @@ int main()
             break;
     }
     if (verlet)
-        SceneFunctions::setOldPositions(satellites, stars, gForce);
+        SceneFunctions::setOldPositions(satellites, stars);
     
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
@@ -334,7 +357,7 @@ int main()
     createSecondaryShaders();
 
     // Shader for the satellites, moons, and models. Includes shadows
-    Shader* mainShaderWithShadows = new Shader();
+    mainShaderWithShadows = new Shader();
     mainShaderWithShadows->createFromFiles(vShaderShadows, fShaderShadows);
     mainShaderWithShadows->useShader();
 	mainShaderWithShadows->setTexture(2);
@@ -342,7 +365,7 @@ int main()
     mainShaderWithShadows->validate();
     
     // Shader for the satellites, moons, and models. Doesn't use shadows
-    Shader* mainShaderWithoutShadows = new Shader();
+    mainShaderWithoutShadows = new Shader();
     mainShaderWithoutShadows->createFromFiles(vShaderNoShadows, fShaderNoShadows);
     mainShaderWithoutShadows->useShader();
 	mainShaderWithoutShadows->setTexture(2);
@@ -353,17 +376,8 @@ int main()
     mainShader = mainShaderWithoutShadows;
 
     GLfloat now;
-    GLfloat lastVerletUpdate = 0.0f;
+    GLfloat timeSinceLastVerlet = 0.0f;
     GLfloat timeStep = 0.0f;
-
-    // Uniform object IDs let us pass values from the CPU to the GPU.
-    // We use things like glUniform1f (for one value) to set these values
-    // on the GPU
-    GLuint uniformModelPlanetsShadows = mainShaderWithShadows->getModelLocation();
-    GLuint uniformViewPlanetsShadows = mainShaderWithShadows->getViewLocation();
-    GLuint uniformEyePositionPlanetsShadows = mainShaderWithShadows->getEyePositionLocation();
-    GLuint uniformSpecularIntensityPlanetsShadows = mainShaderWithShadows->getSpecularIntensityLocation();
-    GLuint uniformShininessPlanetsShadows = mainShaderWithShadows->getShininessLocation();
 
     mainShaderWithShadows->useShader();
     mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
@@ -372,23 +386,19 @@ int main()
     // texture, and the third is the texture(s) of the objects we're rendering
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
 
-    GLuint uniformModelPlanetsNoShadows = mainShaderWithoutShadows->getModelLocation();
-    GLuint uniformViewPlanetsNoShadows = mainShaderWithoutShadows->getViewLocation();
-    GLuint uniformEyePositionPlanetsNoShadows = mainShaderWithoutShadows->getEyePositionLocation();
-    GLuint uniformSpecularIntensityPlanetsNoShadows = mainShaderWithoutShadows->getSpecularIntensityLocation();
-    GLuint uniformShininessPlanetsNoShadows = mainShaderWithoutShadows->getShininessLocation();
-
     mainShaderWithoutShadows->useShader();
     mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
 
-
-    uniformModelPlanets = uniformModelPlanetsNoShadows;
-    uniformViewPlanets = uniformViewPlanetsNoShadows;
-    uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
-    uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsNoShadows;
-    uniformShininessPlanets = uniformShininessPlanetsNoShadows;
+    // Uniform object IDs let us pass values from the CPU to the GPU.
+    // We use things like glUniform1f (for one value) to set these values
+    // on the GPU
+    uniformModelPlanets = mainShaderWithoutShadows->getModelLocation();
+    uniformViewPlanets = mainShaderWithoutShadows->getViewLocation();
+    uniformEyePositionPlanets = mainShaderWithoutShadows->getEyePositionLocation();
+    uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
+    uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
 
     // For the sun shaders we don't do any light or shadow calculations
     uniformModelSuns = sunShader->getModelLocation();
@@ -414,7 +424,6 @@ int main()
     };
     framebufferQuad = new Mesh();
     framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
-
     // HDR
     glGenFramebuffers(1, &hdrFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
@@ -513,58 +522,24 @@ int main()
             counter = 0;
         }
 
+        // Update our object's positions based on our chosen numerical scheme
         if (verlet)
         {
-            while (now - lastVerletUpdate >= 0.005f)
-            {
-                OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, 0.005f);
-                OrbitalPhysicsFunctions::updatePositionsVerlet(stars, satellites, gForce, 0.005f);
-                lastVerletUpdate += 0.005f;
-            }
+            OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, timeStep);
+            OrbitalPhysicsFunctions::updatePositionsVerlet(stars, satellites, &timeSinceLastVerlet);
         }
         else
         {
-            // This loop ensures that we follow a curve even when the framerate sucks
             OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, timeStep);
-            while (timeStep > 0.005f)
-            {
-                OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, gForce, 0.005f);
-                timeStep -= 0.005f;
-            }
-            OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, gForce, timeStep);
+            OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, timeStep);
         }
 
         // Get + handle user input
         glfwPollEvents();
         bool* keys = mainWindow.getKeys();
-        camera.keyControl(keys, deltaTime);
+        camera.keyControl(keys, deltaTime, &shadowsEnabled);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset());
-
-        if (keys[GLFW_KEY_L])
-        {
-            keys[GLFW_KEY_L] = false;
-            shadowsEnabled = !shadowsEnabled;
-
-            if (shadowsEnabled)
-            {
-                mainShader = mainShaderWithShadows;
-                uniformModelPlanets = uniformModelPlanetsShadows;
-                uniformViewPlanets = uniformViewPlanetsShadows;
-                uniformEyePositionPlanets = uniformEyePositionPlanetsShadows;
-                uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsShadows;
-                uniformShininessPlanets = uniformShininessPlanetsShadows;
-            }
-            else
-            {
-                mainShader = mainShaderWithoutShadows;
-                uniformModelPlanets = uniformModelPlanetsNoShadows;
-                uniformViewPlanets = uniformViewPlanetsNoShadows;
-                uniformEyePositionPlanets = uniformEyePositionPlanetsNoShadows;
-                uniformSpecularIntensityPlanets = uniformSpecularIntensityPlanetsNoShadows;
-                uniformShininessPlanets = uniformShininessPlanetsNoShadows;
-            }
-        }
 
         if (shadowsEnabled)
         {

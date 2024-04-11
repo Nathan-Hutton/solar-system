@@ -3,7 +3,7 @@
 static const float toRadians = M_PI / 180.0f;
 
 // This method will set old positions for all satellites in case we're using Verlet numerical integration
-void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars, GLfloat gForce)
+void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars)
 {
     glm::vec3 acceleration;
     glm::vec3 velocity;
@@ -16,13 +16,13 @@ void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std:
         
         // Add up forces from stars
         for (Sun *star : stars)
-            force += OrbitalPhysicsFunctions::getForce(satellites[i], star, gForce);
+            force += OrbitalPhysicsFunctions::getForce(satellites[i], star);
             
         // Add up forces for other satellites
         for (int j = 0; j < satellites.size(); j++) 
         {
             if (i == j) continue;
-            force += OrbitalPhysicsFunctions::getForce(satellites[i], satellites[j], gForce);
+            force += OrbitalPhysicsFunctions::getForce(satellites[i], satellites[j]);
         }
 
         acceleration = force / satellites[i]->getMass();

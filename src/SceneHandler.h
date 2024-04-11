@@ -22,7 +22,7 @@
 #include "OrbitalPhysics.h"
 
 namespace SceneFunctions {
-    void setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars, GLfloat gForce);
+    void setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars);
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
