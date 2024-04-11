@@ -22,7 +22,6 @@
 #include "Camera.h"
 #include "Sun.h"
 #include "Planet.h"
-#include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "SceneHandler.h"
@@ -105,7 +104,6 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     mainShaderWithShadows->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
     mainShaderWithShadows->useShader();
 	mainShaderWithShadows->setTexture(2);
-    mainShaderWithShadows->setDirectionalShadowMap(3);
     mainShaderWithShadows->validate();
     mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));

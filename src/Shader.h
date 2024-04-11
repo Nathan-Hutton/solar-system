@@ -10,7 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "CommonValues.h"
-#include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 
@@ -53,8 +52,6 @@ class Shader
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
 
         void setTexture(GLuint textureUnit);
-        void setDirectionalShadowMap(GLuint textureUnit);
-        void setDirectionalLightTransform(glm::mat4* lTransform);
         void setLightMatrices(std::vector<glm::mat4> lightMatrices);
 
         void useShader();
@@ -68,18 +65,9 @@ class Shader
         GLuint shaderID, uniformProjection, uniformModel, uniformView, 
         uniformEyePosition, uniformSpecularIntensity, uniformShininess,
         uniformTexture, uniformPointLightCount, uniformFlashLightOn,
-        uniformDirectionalLightTransform, uniformDirectionalShadowMap,
         uniformOmniLightPos, uniformFarPlane;
 
         GLuint uniformLightMatrices[6];
-
-        struct {
-            GLuint uniformColor;
-            GLuint uniformAmbientIntensity;
-            GLuint uniformDiffuseIntensity;
-
-            GLuint uniformDirection;
-        } uniformDirectionalLight;
 
         struct {
             GLuint uniformColor;

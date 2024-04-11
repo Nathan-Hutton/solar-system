@@ -180,9 +180,6 @@ void Shader::compileProgram()
 
     uniformTexture = glGetUniformLocation(shaderID, "theTexture");
 
-    // This texture is in the main shader.frag
-    uniformDirectionalShadowMap = glGetUniformLocation(shaderID, "directionalShadowMap");
-
     // Point light shadow maps. Values in the omni_shadow_map shaders
     uniformOmniLightPos = glGetUniformLocation(shaderID, "lightPos");
     uniformFarPlane = glGetUniformLocation(shaderID, "farPlane");
@@ -354,13 +351,6 @@ void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsig
 void Shader::setTexture(GLuint textureUnit)
 {
     glUniform1i(uniformTexture, textureUnit);
-}
-
-void Shader::setDirectionalShadowMap(GLuint textureUnit)
-{
-    // Tell the shader which texture unit to use. textureUnit is the texture unit where
-    // the texture is bound
-    glUniform1i(uniformDirectionalShadowMap, textureUnit);
 }
 
 void Shader::setLightMatrices(std::vector<glm::mat4> lightMatrices)

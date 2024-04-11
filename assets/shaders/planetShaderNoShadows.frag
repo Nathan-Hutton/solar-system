@@ -21,12 +21,6 @@ struct Light
 	float diffuseIntensity;
 };
 
-struct DirectionalLight 
-{
-	Light base;
-	vec3 direction;
-};
-
 struct PointLight
 {
 	Light base;
@@ -52,7 +46,6 @@ struct Material
 uniform int pointLightCount;
 uniform bool flashLightOn;
 
-uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLight;
 
@@ -84,11 +77,6 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 	}
 
 	return (ambientColor + diffuseColor + specularColor);
-}
-
-vec4 CalcDirectionalLight()
-{
-	return CalcLightByDirection(directionalLight.base, directionalLight.direction);
 }
 
 vec4 CalcPointLight(PointLight pLight)
@@ -128,8 +116,7 @@ vec4 CalcPointLights()
 
 void main()
 {
-	vec4 finalColor = CalcDirectionalLight();
-	finalColor += CalcPointLights();
+	vec4 finalColor = CalcPointLights();
     if (flashLightOn)
         finalColor += CalcSpotLight(spotLight);
 	
