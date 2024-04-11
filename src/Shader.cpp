@@ -8,11 +8,6 @@ Shader::Shader()
 
     pointLightCount = 0;
 
-    uniformDirectionalLight.uniformAmbientIntensity = 0;
-    uniformDirectionalLight.uniformColor = 0;
-    uniformDirectionalLight.uniformDiffuseIntensity = 0;
-    uniformDirectionalLight.uniformDirection = 0;
-
     uniformEyePosition = 0;
     uniformSpecularIntensity = 0;
     uniformShininess = 0;
@@ -141,12 +136,6 @@ void Shader::compileProgram()
     uniformProjection = glGetUniformLocation(shaderID, "projection");
     uniformView = glGetUniformLocation(shaderID, "view");
 
-    // Directional light
-    uniformDirectionalLight.uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.base.ambientIntensity");
-    uniformDirectionalLight.uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.base.diffuseIntensity");
-    uniformDirectionalLight.uniformColor = glGetUniformLocation(shaderID, "directionalLight.base.color");
-    uniformDirectionalLight.uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
-    
     // Specular
     uniformEyePosition = glGetUniformLocation(shaderID, "eyePosition");
     uniformSpecularIntensity = glGetUniformLocation(shaderID, "material.specularIntensity");
@@ -191,8 +180,6 @@ void Shader::compileProgram()
 
     uniformTexture = glGetUniformLocation(shaderID, "theTexture");
 
-    // Directional light shadow maps. This value is in the directional_shadow_map shaders
-    uniformDirectionalLightTransform = glGetUniformLocation(shaderID, "directionalLightTransform");
     // This texture is in the main shader.frag
     uniformDirectionalShadowMap = glGetUniformLocation(shaderID, "directionalShadowMap");
 
@@ -288,12 +275,6 @@ GLuint Shader::getFarPlaneLocation()
     return uniformFarPlane;
 }
 
-void Shader::setDirectionalLight(DirectionalLight *dLight)
-{
-    dLight->useLight(uniformDirectionalLight.uniformAmbientIntensity, uniformDirectionalLight.uniformColor, uniformDirectionalLight.uniformDiffuseIntensity,
-    uniformDirectionalLight.uniformDirection);
-}
-
 void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount)
 {
     // Clamp the number of lights allowed
@@ -380,11 +361,6 @@ void Shader::setDirectionalShadowMap(GLuint textureUnit)
     // Tell the shader which texture unit to use. textureUnit is the texture unit where
     // the texture is bound
     glUniform1i(uniformDirectionalShadowMap, textureUnit);
-}
-
-void Shader::setDirectionalLightTransform(glm::mat4 *lTransform)
-{
-    glUniformMatrix4fv(uniformDirectionalLightTransform, 1, GL_FALSE, glm::value_ptr(*lTransform));
 }
 
 void Shader::setLightMatrices(std::vector<glm::mat4> lightMatrices)
