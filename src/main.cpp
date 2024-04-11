@@ -1,5 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
+#include <cstdlib>
 #include <iostream>
 #include "ShaderHelperFunctions.h"
 
@@ -132,9 +133,96 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     uniformShininessPlanets = mainShaderWithShadows->getShininessLocation();
 }
 
-void setupUniformVariables()
+void setupPostProcessingObjects()
 {
+    float quadVertices[] = {
+        // Positions     // Texture Coordinates
+        1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
+        1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
+       -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
+       -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
+    };
+    unsigned int quadIndices[] = {
+        0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
+        1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
+    };
+    framebufferQuad = new Mesh();
+    framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
+    // HDR
+    glGenFramebuffers(1, &hdrFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+	glViewport(0, 0, 1920, 1200);
 
+    // Make the main framebuffer texture
+    glGenTextures(1, &postProcessingTexture);
+    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
+
+    // Make texture for bright spots so we cacn have bloom
+    glGenTextures(1, &bloomTexture);
+    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
+
+    // Make the binary texture which will store whether or not we apply gamma correction to a pixel
+    glGenTextures(1, &binaryTexture);
+    glBindTexture(GL_TEXTURE_2D, binaryTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1200, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, binaryTexture, 0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    unsigned int RBO;
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1200);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("Framebuffer Error: %i\n", status);
+        std::exit(0);
+    }
+
+    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(3, attachments);
+
+    glGenFramebuffers(2, pingPongFBO);
+    glGenTextures(2, pingPongBuffer);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongBuffer[i], 0);
+
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            printf("Framebuffer Error: %i\n", status);
+            std::exit(0);
+        }
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
@@ -367,95 +455,7 @@ int main()
     
     // Setup the OpenGL program
     createShaders(pointLights, projection);
-
-    float quadVertices[] = {
-        // Positions     // Texture Coordinates
-        1.0f,  1.0f,    1.0f, 1.0f,  // Top Right
-        1.0f, -1.0f,    1.0f, 0.0f,  // Bottom Right
-       -1.0f, -1.0f,    0.0f, 0.0f,  // Bottom Left
-       -1.0f,  1.0f,    0.0f, 1.0f   // Top Left 
-    };
-    unsigned int quadIndices[] = {
-        0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
-        1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
-    };
-    framebufferQuad = new Mesh();
-    framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
-    // HDR
-    glGenFramebuffers(1, &hdrFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-	glViewport(0, 0, 1920, 1200);
-
-    // Make the main framebuffer texture
-    glGenTextures(1, &postProcessingTexture);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
-
-    // Make texture for bright spots so we cacn have bloom
-    glGenTextures(1, &bloomTexture);
-    glBindTexture(GL_TEXTURE_2D, bloomTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
-
-    // Make the binary texture which will store whether or not we apply gamma correction to a pixel
-    glGenTextures(1, &binaryTexture);
-    glBindTexture(GL_TEXTURE_2D, binaryTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1200, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, binaryTexture, 0);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    unsigned int RBO;
-    glGenRenderbuffers(1, &RBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1200);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        printf("Framebuffer Error: %i\n", status);
-        return false;
-    }
-
-    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(3, attachments);
-
-    glGenFramebuffers(2, pingPongFBO);
-    glGenTextures(2, pingPongBuffer);
-    for (unsigned int i = 0; i < 2; i++)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[i]);
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongBuffer[i], 0);
-
-        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (status != GL_FRAMEBUFFER_COMPLETE)
-        {
-            printf("Framebuffer Error: %i\n", status);
-            return false;
-        }
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    setupPostProcessingObjects();
 
     // Loop until window is closed
     GLfloat now;
