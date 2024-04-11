@@ -31,6 +31,19 @@ void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std:
     }
 }
 
+void SceneFunctions::setupSkybox(Skybox* skybox, glm::mat4 projection)
+{
+	std::vector<std::string> skyboxFaces;
+	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/leftImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/upImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/downImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
+	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
+	*skybox = Skybox(skyboxFaces);
+    skybox->setProjectionMatrix(projection);
+}
+
 void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)

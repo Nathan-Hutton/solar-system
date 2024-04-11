@@ -20,9 +20,11 @@
 #include "Material.h"
 #include "Camera.h"
 #include "OrbitalPhysics.h"
+#include "Skybox.h"
 
 namespace SceneFunctions {
     void setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars);
+    void setupSkybox(Skybox* skybox, glm::mat4 projection);
     void createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);

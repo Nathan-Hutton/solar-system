@@ -339,19 +339,9 @@ int main()
         default:
             break;
     }
+    SceneFunctions::setupSkybox(&skybox, projection);
     if (verlet)
         SceneFunctions::setOldPositions(satellites, stars);
-    
-	std::vector<std::string> skyboxFaces;
-	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/leftImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/upImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/downImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
-
-	skybox = Skybox(skyboxFaces);
-    skybox.setProjectionMatrix(projection);
     
     // Setup the OpenGL program
     createSecondaryShaders();
