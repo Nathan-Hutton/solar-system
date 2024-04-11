@@ -39,18 +39,14 @@ Mesh* framebufferQuad;
 unsigned int pingPongFBO[2];
 unsigned int pingPongBuffer[2];
 
-const float toRadians = M_PI / 180.0f;
-
 GLuint uniformModelPlanets = 0, uniformViewPlanets = 0,
 uniformEyePositionPlanets = 0, uniformSpecularIntensityPlanets = 0, uniformShininessPlanets = 0,
 uniformOmniLightPos = 0, uniformFarPlane = 0;
 
 GLuint uniformModelSuns = 0, uniformViewSuns = 0;
-GLuint uniformModelDirectionalShadowMap = 0;
 GLuint uniformModelOmniShadowMap = 0;
-GLuint uniformBlurTexture = 0;
+GLuint uniformHorizontal = 0;
 
-Window mainWindow;
 std::vector<Sun*> stars;
 std::vector<SpaceObject*> satellites;
 
@@ -62,70 +58,97 @@ Shader* omniShadowShader;
 Shader* hdrShader;
 Shader* bloomShader;
 
-bool shadowsEnabled = false;
-
+Skybox skybox;
 Camera camera;
 
+bool shadowsEnabled = false;
 unsigned int pointLightCount = 0;
-bool flashLightOn = false;
 
-PointLight* pointLights[MAX_POINT_LIGHTS];
-
-Skybox skybox;
-
-GLfloat deltaTime = 0.0f;
-GLfloat lastTime = 0.0f;
-GLfloat timeChange = 1.0f;
-
-static const char* vShaderShadows = "../assets/shaders/planetShaderShadows.vert";
-static const char* fShaderShadows = "../assets/shaders/planetShaderShadows.frag";
-static const char* vShaderNoShadows = "../assets/shaders/planetShaderNoShadows.vert";
-static const char* fShaderNoShadows = "../assets/shaders/planetShaderNoShadows.frag";
-static const char* vSunShader = "../assets/shaders/sunShader.vert";
-static const char* fSunShader = "../assets/shaders/sunShader.frag";
-static const char* vHdrShader = "../assets/shaders/hdrShader.vert";
-static const char* fHdrShader = "../assets/shaders/hdrShader.frag";
-static const char* fBloomShader = "../assets/shaders/bloomShader.frag";
-
-void createSecondaryShaders()
+void createShaders(PointLight* pointLights[], glm::mat4 projection)
 {
     // Shader for the suns (no lighting or shadows)
     sunShader = new Shader();
-    sunShader->createFromFiles(vSunShader, fSunShader);
+    sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
     sunShader->useShader();
+    glUniformMatrix4fv(sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
 	sunShader->setTexture(2);
     sunShader->validate();
+    // For the sun shaders we don't do any light or shadow calculations
+    uniformModelSuns = sunShader->getModelLocation();
+    uniformViewSuns = sunShader->getViewLocation();
 
     omniShadowShader = new Shader();
 	omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
 		"../assets/shaders/omni_shadow_map.geom",
 	  	"../assets/shaders/omni_shadow_map.frag");
+    // The shadow map shader will record the depth values of all objects except suns
+    uniformModelOmniShadowMap = omniShadowShader->getModelLocation();
+	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
+	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
 
     hdrShader = new Shader();
-    hdrShader->createFromFiles(vHdrShader, fHdrShader);
+    hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
     hdrShader->useShader();
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 0);
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "shouldGammaCorrectTexture"), 2);
 
     bloomShader = new Shader();
-    bloomShader->createFromFiles(vHdrShader, fBloomShader);
+    bloomShader->createFromFiles("../assets/shaders/hdrShader.vert",  "../assets/shaders/bloomShader.frag");
     bloomShader->useShader();
     bloomShader->setTexture(0);
+    uniformHorizontal = glGetUniformLocation(bloomShader->getShaderID(), "horizontal");
+    
+    // Shader for the satellites, moons, and models. Includes shadows
+    mainShaderWithShadows = new Shader();
+    mainShaderWithShadows->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
+    mainShaderWithShadows->useShader();
+	mainShaderWithShadows->setTexture(2);
+    mainShaderWithShadows->setDirectionalShadowMap(3);
+    mainShaderWithShadows->validate();
+    mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
+    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
+    // texture, and the third is the texture(s) of the objects we're rendering
+	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
+    
+    // Shader for the satellites, moons, and models. Doesn't use shadows
+    mainShaderWithoutShadows = new Shader();
+    mainShaderWithoutShadows->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
+    mainShaderWithoutShadows->useShader();
+	mainShaderWithoutShadows->setTexture(2);
+    mainShaderWithoutShadows->validate();
+    mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
+    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
+
+    // This is so we can disable shadows
+    // By default, shadows will be turned off
+    mainShader = mainShaderWithoutShadows;
+    uniformModelPlanets = mainShaderWithShadows->getModelLocation();
+    uniformViewPlanets = mainShaderWithShadows->getViewLocation();
+    uniformEyePositionPlanets = mainShaderWithShadows->getEyePositionLocation();
+    uniformSpecularIntensityPlanets = mainShaderWithShadows->getSpecularIntensityLocation();
+    uniformShininessPlanets = mainShaderWithShadows->getShininessLocation();
 }
 
-void handleTimeChange(GLfloat yScrollOffset)
+void setupUniformVariables()
+{
+
+}
+
+void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 {
     if (yScrollOffset == 0.0f) return;
 
-    timeChange += (yScrollOffset * 0.1f);
-    if (timeChange > 3.0f)
+    *timeChange += (yScrollOffset * 0.1f);
+    if (*timeChange > 3.0f)
     {
-        timeChange = 3.0f;
+        *timeChange = 3.0f;
         return;
     }
-    if (timeChange < 0.0f)
-        timeChange = 0.0f;
+    if (*timeChange < 0.0f)
+        *timeChange = 0.0f;
 }
 
 void toggleShadows()
@@ -271,14 +294,14 @@ void renderPass(glm::mat4 view)
 
     // First iteration of the bloom effect. This means we don't need if conditions in the for loop
     glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
-    glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), !horizontal);
+    glUniform1i(uniformHorizontal, !horizontal);
     glBindTexture(GL_TEXTURE_2D, bloomTexture);
     framebufferQuad->render();
 
     for (unsigned int i = 0; i < amount; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
-        glUniform1i(glGetUniformLocation(bloomShader->getShaderID(), "horizontal"), horizontal);
+        glUniform1i(uniformHorizontal, horizontal);
 
         // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
         // Move the data between pingPong FBOs
@@ -319,10 +342,11 @@ int main()
     std::cout << "\n1: 1 planet 1 sun\n2: Lots of objects\n3: figure eight\n> ";
     std::cin >> selectedScene;
 
-    mainWindow = Window(1920, 1200);
+    Window mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
+    PointLight* pointLights[MAX_POINT_LIGHTS];
 
     // Build scene based on user input
     switch (selectedScene)
@@ -340,66 +364,9 @@ int main()
             break;
     }
     SceneFunctions::setupSkybox(&skybox, projection);
-    if (verlet)
-        SceneFunctions::setOldPositions(satellites, stars);
     
     // Setup the OpenGL program
-    createSecondaryShaders();
-
-    // Shader for the satellites, moons, and models. Includes shadows
-    mainShaderWithShadows = new Shader();
-    mainShaderWithShadows->createFromFiles(vShaderShadows, fShaderShadows);
-    mainShaderWithShadows->useShader();
-	mainShaderWithShadows->setTexture(2);
-    mainShaderWithShadows->setDirectionalShadowMap(3);
-    mainShaderWithShadows->validate();
-    
-    // Shader for the satellites, moons, and models. Doesn't use shadows
-    mainShaderWithoutShadows = new Shader();
-    mainShaderWithoutShadows->createFromFiles(vShaderNoShadows, fShaderNoShadows);
-    mainShaderWithoutShadows->useShader();
-	mainShaderWithoutShadows->setTexture(2);
-    mainShaderWithoutShadows->validate();
-
-    // This is so we can disable shadows
-    // By default, shadows will be turned off
-    mainShader = mainShaderWithoutShadows;
-
-    GLfloat now;
-    GLfloat timeSinceLastVerlet = 0.0f;
-    GLfloat timeStep = 0.0f;
-
-    mainShaderWithShadows->useShader();
-    mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
-    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
-    // texture, and the third is the texture(s) of the objects we're rendering
-	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
-
-    mainShaderWithoutShadows->useShader();
-    mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
-    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-
-    // Uniform object IDs let us pass values from the CPU to the GPU.
-    // We use things like glUniform1f (for one value) to set these values
-    // on the GPU
-    uniformModelPlanets = mainShaderWithoutShadows->getModelLocation();
-    uniformViewPlanets = mainShaderWithoutShadows->getViewLocation();
-    uniformEyePositionPlanets = mainShaderWithoutShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
-    uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
-
-    // For the sun shaders we don't do any light or shadow calculations
-    uniformModelSuns = sunShader->getModelLocation();
-    uniformViewSuns = sunShader->getViewLocation();
-    sunShader->useShader();
-    glUniformMatrix4fv(sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
-
-    // The shadow map shader will record the depth values of all objects except suns
-    uniformModelOmniShadowMap = omniShadowShader->getModelLocation();
-	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
-	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
+    createShaders(pointLights, projection);
 
     float quadVertices[] = {
         // Positions     // Texture Coordinates
@@ -491,24 +458,30 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Loop until window is closed
+    GLfloat now;
     unsigned int counter = 0;
-    double lastUpdateTime = glfwGetTime();
+    double lastFPSUpdateTime = glfwGetTime();
+    GLfloat lastFrame = 0.0f;
+    GLfloat deltaTime = 0.0f;
+    GLfloat timeChange = 1.0f;
+    GLfloat timeStep = 0.0f;
+    GLfloat timeSinceLastVerlet = 0.0f;
     while(!mainWindow.getShouldClose())
     {
         now = glfwGetTime();
-        deltaTime = now - lastTime;
-        lastTime = now;
+        deltaTime = now - lastFrame;
+        lastFrame = now;
         timeStep = deltaTime * timeChange;
         counter++;
 
         // Update FPS counter
         if (counter == 30)
         {
-            double timeElapsed = now - lastUpdateTime;
+            double timeElapsed = now - lastFPSUpdateTime;
             std::string FPS = std::to_string(30.0 / timeElapsed);
             std::string newTitle = "Solar System - " + FPS + " FPS";
             mainWindow.setWindowTitle(newTitle);
-            lastUpdateTime = now;
+            lastFPSUpdateTime = now;
             counter = 0;
         }
 
@@ -529,7 +502,7 @@ int main()
         bool* keys = mainWindow.getKeys();
         camera.keyControl(keys, deltaTime, &shadowsEnabled);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-        handleTimeChange(mainWindow.getYScrollOffset());
+        handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
 
         if (shadowsEnabled)
         {

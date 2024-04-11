@@ -115,6 +115,9 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
     asteroid->setRotationSpeed(200.0f);
     asteroid->setScaleFactor(0.5f);
     satellites.push_back(asteroid);
+
+    if (verlet)
+        setOldPositions(satellites, stars);
 }
 
 void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
@@ -166,6 +169,9 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
     planet->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
+
+    if (verlet)
+        setOldPositions(satellites, stars);
 }
 
 void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
@@ -207,4 +213,7 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vec
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
+
+    if (verlet)
+        setOldPositions(satellites, stars);
 }
