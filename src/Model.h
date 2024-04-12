@@ -26,12 +26,14 @@ class Model : public SpaceObject
         void loadModel(const std::string& fileName);
         void render() override;
         void setWorldProperties(glm::mat4* model) override;
+        void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         void clearModel();
 
         ~Model();
 
     private:
         Material *material;
+        GLuint specularIntensityLocation, shininessLocation;
         // Since this isn't a sphere where we just set the radius, we may want to use a glm::scale
         GLfloat scaleFactor;
         glm::vec3 scaleFactorVector;

@@ -198,5 +198,11 @@ void Model::loadMaterials(const aiScene *scene)
     }
 }
 
+void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess)
+{
+    specularIntensityLocation = uniformSpecularIntensity;
+    shininessLocation = uniformShininess;
+}
+
 Model::~Model()
 {}

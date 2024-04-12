@@ -47,7 +47,7 @@ GLuint uniformModelSuns = 0, uniformViewSuns = 0;
 GLuint uniformModelOmniShadowMap = 0;
 GLuint uniformHorizontal = 0;
 
-std::vector<Sun*> stars;
+std::vector<SpaceObject*> stars;
 std::vector<SpaceObject*> satellites;
 
 Shader* mainShader;
@@ -257,9 +257,12 @@ void toggleShadows()
         uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
         uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
     }
+
+    for (SpaceObject *satellite : satellites)
+        satellite->setUniformVariables(uniformSpecularIntensityPlanets, uniformShininessPlanets);
 }
 
-void renderSatellites(GLuint uniformModel)
+void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
 {
     // Apply rotations, transformations, and render objects
     // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -274,29 +277,12 @@ void renderSatellites(GLuint uniformModel)
 
     // They'll all use GL_TEXTURE2
     glActiveTexture(GL_TEXTURE2);
-    for (SpaceObject *satellite : satellites)
+    for (SpaceObject *object : objects)
     {
         model = glm::mat4(1.0f);
-        satellite->setWorldProperties(&model);
+        object->setWorldProperties(&model);
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        satellite->getMaterialPointer()->useMaterial(uniformSpecularIntensityPlanets, uniformShininessPlanets);
-        satellite->render();
-    }
-}
-
-void renderSuns()
-{
-    glm::mat4 model;
-
-    // They'll all use GL_TEXTURE2
-    glActiveTexture(GL_TEXTURE2);
-    for (Sun *star : stars)
-    {
-        model = glm::mat4(1.0f);
-        star->setWorldProperties(&model);
-        glUniformMatrix4fv(uniformModelSuns, 1, GL_FALSE, glm::value_ptr(model));
-        star->getTexturePointer()->useTexture();
-        star->render();
+        object->render();
     }
 }
 
@@ -321,7 +307,7 @@ void omniShadowMapPass(PointLight* light)
 	omniShadowShader->validate();
 
 	// Draw just to the depth buffer
-	renderSatellites(uniformModelOmniShadowMap);
+	renderObjects(satellites, uniformModelOmniShadowMap);
 
     // Bind the default framebuffer
     // If we called swapbuffers without doing this the image wouldn't change
@@ -344,7 +330,7 @@ void renderPass(glm::mat4 view)
 
     sunShader->useShader();
     glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
-    renderSuns();
+    renderObjects(stars, uniformModelSuns);
 
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
@@ -353,15 +339,14 @@ void renderPass(glm::mat4 view)
 	mainShader->useShader();
     mainShader->setSpotLightDirAndPos(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
 
-    //// Apply projection and view matrices.
-    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
+    //// Apply view matrix.
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
     glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
     glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
-	renderSatellites(uniformModelPlanets);
+	renderObjects(satellites, uniformModelPlanets);
 
     // ====================================
     // RENDER SKYBOX
@@ -373,6 +358,7 @@ void renderPass(glm::mat4 view)
     // ====================================
     // BLOOM EFFECT
     // ====================================
+
     bool horizontal = false;
     int amount = 4;
     bloomShader->useShader();
@@ -399,6 +385,7 @@ void renderPass(glm::mat4 view)
     // ====================================
     // RENDER TO SCREEN
     // ====================================
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -431,6 +418,7 @@ int main()
     Window mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
+    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
     PointLight* pointLights[MAX_POINT_LIGHTS];
 

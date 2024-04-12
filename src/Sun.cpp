@@ -56,6 +56,12 @@ void Sun::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>
     }
 }
 
+void Sun::render()
+{
+    texture->useTexture();
+    sphereMesh->render();
+}
+
 void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat near, GLfloat far,
     GLfloat red, GLfloat green, GLfloat blue, 
@@ -69,6 +75,8 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
             position.x, position.y, position.z, 
             exponential, linear, constant);
 }
+
+void Sun::setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess){}
 
 PointLight* Sun::getPointLight()
 {

@@ -16,7 +16,7 @@ glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *o
     return ((gForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * directionVector;
 }
 
-void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
+void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
     for (SpaceObject *sphere : satellites) 
@@ -27,7 +27,7 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars
         if (sphere->getAngle() <= -360)
             sphere->setAngle(sphere->getAngle() + 360);
     }
-    for (Sphere *star : stars) 
+    for (SpaceObject *star : stars) 
     {
         star->setAngle(star->getAngle() + star->getRotationSpeed() * timeStep);
         if (star->getAngle() >= 360)
@@ -37,7 +37,7 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<Sun*>& stars
     }
 }
 
-void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
+void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
 {
     float tStep;
     if (timeStep > MAX_TIME_STEP)
@@ -56,7 +56,7 @@ void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<Sun*>& stars, std
         glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
         
         // Add up forces from stars
-        for (Sun *star : stars)
+        for (SpaceObject *star : stars)
             force += getForce(satellites[i], star);
 
         // Add up forces for other satellites
@@ -81,7 +81,7 @@ void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<Sun*>& stars, std
         updatePositionsEuler(stars, satellites, timeStep - MAX_TIME_STEP);
 }
 
-void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites, GLfloat* timeSinceLastUpdate)
+void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat* timeSinceLastUpdate)
 {
     // Only do these calculations it's been a whole 0.005f seconds since the last time we ran this
     if (glfwGetTime() - *timeSinceLastUpdate < MAX_TIME_STEP)
@@ -100,7 +100,7 @@ void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<Sun*>& stars, st
         glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
         
         // Add up forces from stars
-        for (Sun *star : stars)
+        for (SpaceObject *star : stars)
             force += getForce(satellites[i], star);
             
         // Add up forces for other satellites

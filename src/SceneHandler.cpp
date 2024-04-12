@@ -3,7 +3,7 @@
 static const float toRadians = M_PI / 180.0f;
 
 // This method will set old positions for all satellites in case we're using Verlet numerical integration
-void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars)
+void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars)
 {
     glm::vec3 acceleration;
     glm::vec3 velocity;
@@ -15,7 +15,7 @@ void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std:
         glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
         
         // Add up forces from stars
-        for (Sun *star : stars)
+        for (SpaceObject *star : stars)
             force += OrbitalPhysicsFunctions::getForce(satellites[i], star);
             
         // Add up forces for other satellites
@@ -44,7 +44,7 @@ void SceneFunctions::setupSkybox(Skybox* skybox, glm::mat4 projection)
     skybox->setProjectionMatrix(projection);
 }
 
-void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
+void SceneFunctions::createObjectsDefault(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {
@@ -120,7 +120,7 @@ void SceneFunctions::createObjectsDefault(std::vector<Sun*>& stars, std::vector<
         setOldPositions(satellites, stars);
 }
 
-void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
+void SceneFunctions::createObjectsFigureEight(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {
@@ -174,7 +174,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<Sun*>& stars, std::vec
         setOldPositions(satellites, stars);
 }
 
-void SceneFunctions::createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
+void SceneFunctions::createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {

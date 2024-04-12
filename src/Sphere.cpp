@@ -64,12 +64,6 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
     }
 }
 
-void Sphere::render()
-{
-    texture->useTexture();
-    sphereMesh->render();
-}
-
 void Sphere::setWorldProperties(glm::mat4* model)
 {
     *model = glm::translate(*model, position);

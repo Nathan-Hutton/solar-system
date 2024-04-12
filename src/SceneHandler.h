@@ -23,15 +23,15 @@
 #include "Skybox.h"
 
 namespace SceneFunctions {
-    void setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<Sun*>& stars);
+    void setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars);
     void setupSkybox(Skybox* skybox, glm::mat4 projection);
-    void createObjectsDefault(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
+    void createObjectsDefault(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
-    void createObjectsFigureEight(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
+    void createObjectsFigureEight(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
-    void createObjects1Sun1Planet(std::vector<Sun*>& stars, std::vector<SpaceObject*>& satellites,
+    void createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
 }
