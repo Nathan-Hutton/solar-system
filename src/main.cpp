@@ -221,6 +221,17 @@ void setupPostProcessingObjects()
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    hdrShader->useShader();
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffer[1]);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, binaryTexture);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 3);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 4);
+    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "shouldGammaCorrectTexture"), 5);
 }
 
 void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
@@ -388,18 +399,7 @@ void renderPass(glm::mat4 view)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     hdrShader->useShader();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, binaryTexture);
-
     framebufferQuad->render();
 }
 
