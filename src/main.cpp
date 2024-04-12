@@ -124,11 +124,11 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     // This is so we can disable shadows
     // By default, shadows will be turned off
     mainShader = mainShaderWithoutShadows;
-    uniformModelPlanets = mainShaderWithShadows->getModelLocation();
-    uniformViewPlanets = mainShaderWithShadows->getViewLocation();
-    uniformEyePositionPlanets = mainShaderWithShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanets = mainShaderWithShadows->getSpecularIntensityLocation();
-    uniformShininessPlanets = mainShaderWithShadows->getShininessLocation();
+    uniformModelPlanets = mainShaderWithoutShadows->getModelLocation();
+    uniformViewPlanets = mainShaderWithoutShadows->getViewLocation();
+    uniformEyePositionPlanets = mainShaderWithoutShadows->getEyePositionLocation();
+    uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
+    uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
 }
 
 void setupPostProcessingObjects()
