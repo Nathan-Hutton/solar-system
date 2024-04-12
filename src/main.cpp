@@ -30,7 +30,7 @@
 #include "Model.h"
 #include "Skybox.h"
 
-GLuint hdrFBO;
+GLuint postProcessingFBO;
 GLuint postProcessingTexture;
 GLuint bloomTexture;
 GLuint binaryTexture;
@@ -147,8 +147,8 @@ void setupPostProcessingObjects()
     framebufferQuad = new Mesh();
     framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
     // HDR
-    glGenFramebuffers(1, &hdrFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+    glGenFramebuffers(1, &postProcessingFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingFBO);
 	glViewport(0, 0, 1920, 1200);
 
     // Make the main framebuffer texture
@@ -316,7 +316,7 @@ void omniShadowMapPass(PointLight* light)
 
 void renderPass(glm::mat4 view)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingFBO);
 
     // Clear hdr buffer
 	glViewport(0, 0, 1920, 1200);

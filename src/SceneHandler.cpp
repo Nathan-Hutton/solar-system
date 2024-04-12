@@ -1,7 +1,5 @@
 #include "SceneHandler.h"
 
-static const float toRadians = M_PI / 180.0f;
-
 // This method will set old positions for all satellites in case we're using Verlet numerical integration
 void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars)
 {
