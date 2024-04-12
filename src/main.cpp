@@ -437,11 +437,12 @@ int main()
         default:
             break;
     }
+
     SceneFunctions::setupSkybox(&skybox, projection);
-    
-    // Setup the OpenGL program
     createShaders(pointLights, projection);
     setupPostProcessingObjects();
+    for (SpaceObject *satellite : satellites)
+        satellite->setUniformVariables(uniformSpecularIntensityPlanets, uniformShininessPlanets);
 
     // Loop until window is closed
     GLfloat now;
