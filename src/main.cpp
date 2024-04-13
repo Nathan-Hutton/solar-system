@@ -34,7 +34,7 @@ GLuint halfFBO;
 GLuint halfTexture;
 GLuint postProcessingFBO;
 GLuint postProcessingTexture;
-GLuint bloomTexture;
+GLuint textureToBlur;
 GLuint binaryTexture;
 Mesh* framebufferQuad;
 
@@ -170,14 +170,14 @@ void setupPostProcessingObjects()
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
 
     // Make texture for bright spots so we cacn have bloom
-    glGenTextures(1, &bloomTexture);
-    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    glGenTextures(1, &textureToBlur);
+    glBindTexture(GL_TEXTURE_2D, textureToBlur);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textureToBlur, 0);
 
     // Make the binary texture which will store whether or not we apply gamma correction to a pixel
     glGenTextures(1, &binaryTexture);
@@ -207,13 +207,14 @@ void setupPostProcessingObjects()
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);
 
+    // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
     glGenFramebuffers(2, pingPongFBO);
     glGenTextures(2, pingPongBuffer);
     for (unsigned int i = 0; i < 2; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[i]);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffer[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 960, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -395,26 +396,24 @@ void renderPass(glm::mat4 view)
     // BLOOM EFFECT
     // ====================================
 
-    // Half the bloom texture before the pingPongFBOs can actually start bluring it
+    // Half the bloom texture size before the pingPongFBOs can actually start bluring it
 	glViewport(0, 0, 960, 600);
     halfShader->useShader();
     glActiveTexture(GL_TEXTURE0);
     glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
-    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    glBindTexture(GL_TEXTURE_2D, textureToBlur);
     framebufferQuad->render();
 
-    glBindTexture(GL_TEXTURE_2D, halfTexture);
-    bool horizontal = false;
-    int amount = 4;
-    bloomShader->useShader();
-
+    // Ping-pong bloom effect. Performs horiztonal and vertical bluring.
     // First iteration of the bloom effect. This means we don't need if conditions in the for loop
+    bool horizontal = false;
+    bloomShader->useShader();
     glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
     glUniform1i(uniformHorizontal, !horizontal);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    glBindTexture(GL_TEXTURE_2D, halfTexture);
     framebufferQuad->render();
 
+    int amount = 4;
     for (unsigned int i = 0; i < amount; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
@@ -426,11 +425,14 @@ void renderPass(glm::mat4 view)
         framebufferQuad->render();
         horizontal = !horizontal;
     }
+	glViewport(0, 0, 1920, 1200);
 
     // ====================================
     // RENDER TO SCREEN
     // ====================================
-
+    
+    // The HDR shader uses the texture of the entire scene + the bloom texture to render to the screen.
+    // (and also the shouldGammaCorrect binary texture, but that's complicated)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     hdrShader->useShader();
