@@ -91,7 +91,6 @@ void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<SpaceObject*>& s
 
     std::vector<glm::vec3> newSatellitePositions;
     glm::vec3 acceleration;
-    glm::vec3 velocity;
     glm::vec3 position;
     
     // Apply forces to all planets and moons
@@ -113,7 +112,6 @@ void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<SpaceObject*>& s
         acceleration = force / satellites[i]->getMass();
         position = 2.0f * satellites[i]->getPosition() - satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f);
         satellites[i]->setOldPosition(satellites[i]->getPosition());
-        satellites[i]->setVelocity(velocity);
         newSatellitePositions.push_back(position);
     }
 

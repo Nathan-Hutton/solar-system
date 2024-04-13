@@ -95,7 +95,7 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
 
     bloomShader = new Shader();
-    bloomShader->createFromFiles("../assets/shaders/hdrShader.vert",  "../assets/shaders/bloomShader.frag");
+    bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
     bloomShader->useShader();
     bloomShader->setTexture(0);
     uniformHorizontal = glGetUniformLocation(bloomShader->getShaderID(), "horizontal");
