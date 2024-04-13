@@ -4,7 +4,6 @@
 // For the bloom effect, we put the blurred parts over the main color image
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 bloomColor;
-layout (location = 2) out float shouldGammaCorrect;
 
 in vec2 texCoord;
 in vec3 normal;
@@ -182,7 +181,5 @@ void main()
         finalColor += CalcSpotLight(spotLight, pointLightCount);
 
 	fragColor = texture(theTexture, texCoord) * finalColor;
-	
     bloomColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    shouldGammaCorrect = 0.0;
 }
