@@ -65,7 +65,7 @@ void SceneFunctions::createObjectsDefault(std::vector<SpaceObject*>& stars, std:
     Texture *moonTexture = new Texture((char*)("../assets/textures/moon.png"));
     moonTexture->loadTexture();
 
-    Material *material = new Material(16.0f, 8);
+    Material *material = new Material(0.0f, 0);
 
     Sun *sun = new Sun(7.0f, 429.3f);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
@@ -137,7 +137,7 @@ void SceneFunctions::createObjectsFigureEight(std::vector<SpaceObject*>& stars, 
     Texture *earthTexture = new Texture((char*)("../assets/textures/earth.png"));
     earthTexture->loadTexture();
 
-    Material *material = new Material(16.0f, 8);
+    Material *material = new Material(0.0f, 0);
 
     Sun *sun1 = new Sun(2.0f, 67.0f);
     sun1->setPosition(glm::vec3(-15.0f, 0.0f, -2.5f));
@@ -191,7 +191,7 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, 
     Texture *earthTexture = new Texture((char*)("../assets/textures/earth.png"));
     earthTexture->loadTexture();
 
-    Material *material = new Material(16.0f, 8);
+    Material *material = new Material(0.0f, 0);
 
     Sun *sun = new Sun(5.0f, 225.0f);
     sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
