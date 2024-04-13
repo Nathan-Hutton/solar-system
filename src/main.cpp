@@ -30,6 +30,8 @@
 #include "Model.h"
 #include "Skybox.h"
 
+GLuint halfFBO;
+GLuint halfTexture;
 GLuint postProcessingFBO;
 GLuint postProcessingTexture;
 GLuint bloomTexture;
@@ -57,6 +59,7 @@ Shader* sunShader;
 Shader* omniShadowShader;
 Shader* hdrShader;
 Shader* bloomShader;
+Shader* halfShader;
 
 Skybox skybox;
 Camera camera;
@@ -110,6 +113,11 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
+
+    halfShader = new Shader();
+    halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
+    halfShader->useShader();
+    halfShader->setTexture(0);
     
     // Shader for the satellites, moons, and models. Doesn't use shadows
     mainShaderWithoutShadows = new Shader();
@@ -232,6 +240,23 @@ void setupPostProcessingObjects()
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 3);
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 4);
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "shouldGammaCorrectTexture"), 5);
+
+    glGenFramebuffers(1, &halfFBO);
+    glGenTextures(1, &halfTexture);
+    glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
+    glBindTexture(GL_TEXTURE_2D, halfTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 960, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, halfTexture, 0);
+    status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("Framebuffer Error: %i\n", status);
+        std::exit(0);
+    }
 }
 
 void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
@@ -370,14 +395,23 @@ void renderPass(glm::mat4 view)
     // BLOOM EFFECT
     // ====================================
 
+    // Half the bloom texture before the pingPongFBOs can actually start bluring it
+	glViewport(0, 0, 960, 600);
+    halfShader->useShader();
+    glActiveTexture(GL_TEXTURE0);
+    glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
+    glBindTexture(GL_TEXTURE_2D, bloomTexture);
+    framebufferQuad->render();
+
+    glBindTexture(GL_TEXTURE_2D, halfTexture);
     bool horizontal = false;
     int amount = 4;
     bloomShader->useShader();
-    glActiveTexture(GL_TEXTURE0);
 
     // First iteration of the bloom effect. This means we don't need if conditions in the for loop
     glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
     glUniform1i(uniformHorizontal, !horizontal);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, bloomTexture);
     framebufferQuad->render();
 
