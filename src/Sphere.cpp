@@ -20,6 +20,7 @@ Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject
     std::vector<GLuint> indices;
     generateSphereData(vertices, indices, radius, stacks, slices);
     this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size());
+    this->greatestDistanceBetweenVertices = radius * 2;
 }
 
 void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)
