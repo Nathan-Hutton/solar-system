@@ -325,7 +325,7 @@ void omniShadowMapPass(PointLight* light)
 
     // Get the uniformModel and lightTransform for the shader
 
-	glUniformMatrix3fv(uniformOmniLightPos, 1, GL_FALSE, glm::value_ptr(light->getPosition()));
+	glUniform3fv(uniformOmniLightPos, 1, glm::value_ptr(light->getPosition()));
 	glUniform1f(uniformFarPlane, light->getFarPlane());
 	omniShadowShader->setLightMatrices(light->calculateLightTransform());
 
