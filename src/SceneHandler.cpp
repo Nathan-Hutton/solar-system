@@ -46,7 +46,7 @@ void SceneFunctions::createObjectsDefault(std::vector<SpaceObject*>& stars, std:
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet)
 {
-    *camera = Camera(glm::vec3(0.0f, 0.0f, 110.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.3f);
+    *camera = Camera(glm::vec3(0.0f, 0.0f, 110.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 20.0f, 0.3f);
     camera->setSpotLight(1024, 1024, 
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
@@ -234,6 +234,8 @@ void SceneFunctions::createObjectsFancy(std::vector<SpaceObject*>& stars, std::v
     neptuneTexture->loadTexture();
     Texture *venusTexture = new Texture((char*)("../assets/textures/venus.jpg"));
     venusTexture->loadTexture();
+    Texture *cloudsTexture = new Texture((char*)("../assets/textures/clouds.jpg"));
+    cloudsTexture->loadTexture();
 
     Material *material = new Material(0.0f, 0);
 
@@ -294,7 +296,7 @@ void SceneFunctions::createObjectsFancy(std::vector<SpaceObject*>& stars, std::v
     satellites.push_back(venus);
 
     Planet *venusMoon = new Planet(0.5f, 1.25f, 15, 15);
-    venusMoon->setTexturePointer(moonTexture);
+    venusMoon->setTexturePointer(cloudsTexture);
     venusMoon->setMaterialPointer(material);
     venusMoon->setPosition(glm::vec3(-65.5f, -3.0f, -22.5f));
     venusMoon->setVelocity(glm::vec3(-4.0f, 25.0f, 8.0f));
