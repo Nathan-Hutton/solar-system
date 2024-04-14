@@ -432,14 +432,14 @@ int main()
 
     // Prompt user to select scene
     int selectedScene;
-    std::cout << "\n1: 1 planet 1 sun\n2: Lots of objects\n3: figure eight\n> ";
+    std::cout << "\n1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
     std::cin >> selectedScene;
 
     Window mainWindow = Window(1920, 1200);
     mainWindow.initialize();
 
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 200.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f);
     PointLight* pointLights[MAX_POINT_LIGHTS];
 
     // Build scene based on user input
@@ -453,6 +453,9 @@ int main()
             break;
         case (3):
             SceneFunctions::createObjectsFigureEight(stars, satellites, pointLights, &pointLightCount, &camera, verlet);
+            break;
+        case (4):
+            SceneFunctions::createObjectsFancy(stars, satellites, pointLights, &pointLightCount, &camera, verlet);
             break;
         default:
             break;

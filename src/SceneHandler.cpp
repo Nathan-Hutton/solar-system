@@ -56,13 +56,13 @@ void SceneFunctions::createObjectsDefault(std::vector<SpaceObject*>& stars, std:
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.png"));
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.jpg"));
     sunTexture->loadTexture();
-    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.png"));
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
     earthTexture->loadTexture();
-    Texture *marsTexture = new Texture((char*)("../assets/textures/mars.png"));
+    Texture *marsTexture = new Texture((char*)("../assets/textures/mars.jpg"));
     marsTexture->loadTexture();
-    Texture *moonTexture = new Texture((char*)("../assets/textures/moon.png"));
+    Texture *moonTexture = new Texture((char*)("../assets/textures/moon.jpg"));
     moonTexture->loadTexture();
 
     Material *material = new Material(0.0f, 0);
@@ -132,9 +132,9 @@ void SceneFunctions::createObjectsFigureEight(std::vector<SpaceObject*>& stars, 
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.png"));
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.jpg"));
     sunTexture->loadTexture();
-    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.png"));
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
     earthTexture->loadTexture();
 
     Material *material = new Material(0.0f, 0);
@@ -186,9 +186,9 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, 
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.png"));
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun.jpg"));
     sunTexture->loadTexture();
-    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.png"));
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
     earthTexture->loadTexture();
 
     Material *material = new Material(0.0f, 0);
@@ -211,6 +211,85 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, 
     planet->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
+
+    if (verlet)
+        setOldPositions(satellites, stars);
+}
+
+void SceneFunctions::createObjectsFancy(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
+            PointLight* pLights[], unsigned int *pLightCount,
+            Camera *camera, bool verlet)
+{
+    Texture *sunTexture = new Texture((char*)("../assets/textures/sun2.jpg"));
+    sunTexture->loadTexture();
+    Texture *earthTexture = new Texture((char*)("../assets/textures/earth.jpg"));
+    earthTexture->loadTexture();
+    Texture *marsTexture = new Texture((char*)("../assets/textures/mars.jpg"));
+    marsTexture->loadTexture();
+    Texture *moonTexture = new Texture((char*)("../assets/textures/moon.jpg"));
+    moonTexture->loadTexture();
+    Texture *jupiterTexture = new Texture((char*)("../assets/textures/jupiter.jpg"));
+    jupiterTexture->loadTexture();
+    Texture *neptuneTexture = new Texture((char*)("../assets/textures/neptune.jpg"));
+    neptuneTexture->loadTexture();
+
+    Material *material = new Material(0.0f, 0);
+
+    *camera = Camera(glm::vec3(0.0f, 0.0f, 150.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 30.0f, 0.3f);
+    camera->setSpotLight(1024, 1024, 
+                         0.01f, 100.0f,
+                         1.0f, 1.0f, 1.0f,
+                         0.0f, 10.0f,
+                         camera->getPosition().x, camera->getPosition().y, camera->getPosition().z,
+                         0.0f, -1.0f, 0.0f,
+                         0.1f, 0.1f, 0.5f,
+                         20.0f);
+
+    Sun *sun = new Sun(15.0f, 425.0f);
+    sun->setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
+    sun->setTexturePointer(sunTexture);
+    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.2f, 15.0f, 0.0f, 0.001f, 1.0f);
+    sun->setRotation(glm::vec3(1.0f, 1.0f, 0.0f));
+    sun->setAngle(90.0f);
+    sun->setRotationSpeed(-25.0f);
+    stars.push_back(sun);
+    pLights[(*pLightCount)++] = sun->getPointLight();
+
+    Planet *jupiter = new Planet(4.0f, 4.0f, 15, 15);
+    jupiter->setTexturePointer(jupiterTexture);
+    jupiter->setMaterialPointer(material);
+    jupiter->setPosition(glm::vec3(0.5f, -20.0f, 65.0f));
+    jupiter->setVelocity(glm::vec3(0.0f, 22.0f, 0.0f));
+    jupiter->setRotation(glm::vec3(0.0f, 1.0f, 0.0f));
+    jupiter->setRotationSpeed(30.0f);
+    satellites.push_back(jupiter);
+
+    Planet *neptune = new Planet(1.0f, 4.0f, 15, 15);
+    neptune->setTexturePointer(neptuneTexture);
+    neptune->setMaterialPointer(material);
+    neptune->setPosition(glm::vec3(55.5f, 0.0f, -2.5f));
+    neptune->setVelocity(glm::vec3(0.0f, 27.0f, 0.0f));
+    neptune->setRotation(glm::vec3(0.0f, 1.0f, 0.0f));
+    neptune->setRotationSpeed(30.0f);
+    satellites.push_back(neptune);
+
+    Planet *mars = new Planet(1.0f, 4.0f, 15, 15);
+    mars->setTexturePointer(marsTexture);
+    mars->setMaterialPointer(material);
+    mars->setPosition(glm::vec3(35.0f, -35.0f, 22.5f));
+    mars->setVelocity(glm::vec3(-15.0f, 15.0f, 15.0f));
+    mars->setRotation(glm::vec3(-1.0f, 0.0f, -2.0f));
+    mars->setRotationSpeed(-100.0f);
+    satellites.push_back(mars);
+
+    Planet *moon = new Planet(0.5f, 1.25f, 15, 15);
+    moon->setTexturePointer(moonTexture);
+    moon->setMaterialPointer(material);
+    moon->setPosition(glm::vec3(37.0f, -35.5f, 23.5f));
+    moon->setVelocity(glm::vec3(-15.0f, 15.0f, 15.0f));
+    moon->setRotation(glm::vec3(1.0f, 0.0f, 2.0f));
+    moon->setRotationSpeed(200.0f);
+    satellites.push_back(moon);
 
     if (verlet)
         setOldPositions(satellites, stars);

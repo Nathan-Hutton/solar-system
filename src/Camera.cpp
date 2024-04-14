@@ -20,7 +20,6 @@ Camera::Camera()
     moveSpeed = 5.0f;
     turnSpeed = 1.0f;
 
-
     spotLight = NULL;
 }
 

@@ -34,6 +34,9 @@ namespace SceneFunctions {
     void createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
             Camera *camera, bool verlet);
+    void createObjectsFancy(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
+            PointLight* pLights[], unsigned int *pLightCount,
+            Camera *camera, bool verlet);
 }
 
 #endif
