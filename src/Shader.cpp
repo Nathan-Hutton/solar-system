@@ -142,7 +142,6 @@ void Shader::compileProgram()
     uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
 
     // Point lights
-    uniformPointLightCount = glGetUniformLocation(shaderID, "pointLightCount");
     for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
     {
         char locBuff[100] = {'\0'};
@@ -277,9 +276,6 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
 
-    // Pass the number of lights we're using
-    glUniform1i(uniformPointLightCount, lightCount);
-
     for (size_t i = 0; i < lightCount; i++)
     {
         pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
@@ -292,9 +288,6 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
 {
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
-
-    // Pass the number of lights we're using
-    glUniform1i(uniformPointLightCount, lightCount);
 
     for (size_t i = 0; i < lightCount; i++)
     {

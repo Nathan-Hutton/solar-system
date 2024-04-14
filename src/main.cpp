@@ -111,6 +111,7 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
+    glUniform1i(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "pointLightCount"), pointLightCount);
 
     halfShader = new Shader();
     halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
@@ -126,6 +127,7 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
+    glUniform1i(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "pointLightCount"), pointLightCount);
 
     // This is so we can disable shadows
     // By default, shadows will be turned off
