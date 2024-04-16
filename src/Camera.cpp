@@ -64,9 +64,9 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime, bool* shadowsEnabled)
 
     // Roll
     if (keys[GLFW_KEY_E])
-        roll += velocity * 15;
+        roll += turnSpeed * 3;
     if (keys[GLFW_KEY_Q])
-        roll -= velocity * 15;
+        roll -= turnSpeed * 3;
 
     handleFlashlightKey(keys);
 
