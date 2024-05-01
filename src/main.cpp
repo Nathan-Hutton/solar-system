@@ -436,7 +436,7 @@ int main()
     printf("S: Move backwards\n");
     printf("A: Move left\n");
     printf("D: Move right\n\n");
-    printf("Q: Roll right\n");
+    printf("Q: Roll left\n");
     printf("E: Roll right\n\n");
     printf("Space: Move up\n");
     printf("Shift: Move down\n\n");
