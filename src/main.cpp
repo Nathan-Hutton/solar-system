@@ -427,14 +427,32 @@ void renderPass(glm::mat4 view)
 
 int main()
 {
+    // Print out the controls
+    printf("**********\n");
+    std::cout << "\033[92m" << "Controls" << "\033[0m" << std::endl;
+    printf("**********\n\n");
+    printf("Mouse: Look around\n\n");
+    printf("W: Move forward\n");
+    printf("S: Move backwards\n");
+    printf("A: Move left\n");
+    printf("D: Move right\n\n");
+    printf("Q: Roll right\n");
+    printf("E: Roll right\n\n");
+    printf("Space: Move up\n");
+    printf("Shift: Move down\n\n");
+    printf("F: Toggle flashlight\n");
+    printf("L: Toggle shadows\n\n\n");
+
     // Promp user to select a numerical integration scheme
+    std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m" << std::endl;
     bool verlet;
     std::cout << "0: Euler method\n1: Verlet method \n>";
     std::cin >> verlet;
 
     // Prompt user to select scene
     int selectedScene;
-    std::cout << "\n1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
+    std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m" << std::endl;
+    std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
     std::cin >> selectedScene;
 
     Window mainWindow = Window(1920, 1200);
