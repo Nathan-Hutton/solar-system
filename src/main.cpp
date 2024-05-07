@@ -264,6 +264,7 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 
 void toggleShadows()
 {
+    // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
     if (shadowsEnabled)
     {
         mainShader = mainShaderWithShadows;
