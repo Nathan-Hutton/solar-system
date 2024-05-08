@@ -20,7 +20,7 @@ bool Texture::loadTexture()
     unsigned char *textData {stbi_load(fileLocation, &width, &height, &bitDepth, 0)};
     if (!textData)
     {
-        std::cerr << "Failed to find " << fileLocation << "\n";
+        std::cerr << "Failed to find " << fileLocation << '\n';
         return false;
     }
 

@@ -36,7 +36,7 @@ std::string Shader::readFile(const char* fileLocation)
     while (!fileStream.eof())
     {
         std::getline(fileStream, line);
-        content.append(line + "\n"); // Newline is cosmetic, GLSL is not whitespace sensitive
+        content.append(line + '\n'); // Newline is cosmetic, GLSL is not whitespace sensitive
     }
 
     fileStream.close();
@@ -90,7 +90,7 @@ void Shader::validate()
     glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error validating program: " << eLog << "\n";
+        std::cerr << "Error validating program: " << eLog << '\n';
         return;
     }
 }
@@ -109,7 +109,7 @@ void Shader::compileProgram()
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error linking program: " << eLog << "\n";
+        std::cerr << "Error linking program: " << eLog << '\n';
         return;
     }
 
@@ -242,7 +242,7 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result) {
         glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << "\n";
+        std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << '\n';
         return;
     }
 

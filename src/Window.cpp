@@ -29,7 +29,7 @@ int Window::initialize()
     // Sets up things that are OS specific and sets up input handling
     if (!glfwInit()) 
     {
-        std::cerr << "GLFW initialization failed" << "\n";
+        std::cerr << "GLFW initialization failed\n";
         glfwTerminate();
         return 1;
     }
@@ -47,7 +47,7 @@ int Window::initialize()
     mainWindow = glfwCreateWindow(width, height, "Solar System", NULL, NULL);
     if (!mainWindow)
     {
-        std::cerr << "GLFW window creation failed" << "\n";
+        std::cerr << "GLFW window creation failed\n";
         glfwTerminate();
         return 1;
     }
@@ -75,7 +75,7 @@ int Window::initialize()
     // Allows us to access features/extensions not in the core OpenGL specification
     if(glewInit() != GLEW_OK)
     {
-        std::cerr << "Glew initialization failed" << "\n";
+        std::cerr << "Glew initialization failed\n";
         glfwDestroyWindow(mainWindow);
         glfwTerminate();
         return 1;

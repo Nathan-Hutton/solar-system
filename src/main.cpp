@@ -191,7 +191,7 @@ void setupPostProcessingObjects()
     GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        std::cerr << "Framebuffer error: " << status << "\n";
+        std::cerr << "Framebuffer error: " << status << '\n';
         std::exit(0);
     }
 
@@ -215,7 +215,7 @@ void setupPostProcessingObjects()
         GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
         if (status != GL_FRAMEBUFFER_COMPLETE)
         {
-            std::cerr << "Framebuffer Error: " << status << "\n";
+            std::cerr << "Framebuffer Error: " << status << '\n';
             std::exit(0);
         }
     }
@@ -244,7 +244,7 @@ void setupPostProcessingObjects()
     status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        std::cerr << "Framebuffer Error: " << status << "\n";
+        std::cerr << "Framebuffer Error: " << status << '\n';
         std::exit(0);
     }
 }
