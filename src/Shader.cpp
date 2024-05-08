@@ -28,7 +28,7 @@ std::string Shader::readFile(const char* fileLocation)
     std::ifstream fileStream(fileLocation, std::ios::in);
 
     if (!fileStream.is_open()) {
-        std::cerr << "Failed to read" << fileLocation << " File doesn't exist." << std::endl;
+        std::cerr << "Failed to read" << fileLocation << " File doesn't exist.\n";
         return "";
     }
 
@@ -51,7 +51,7 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
     shaderID = glCreateProgram();
 
     if (!shaderID) {
-        std::cerr << "Error creating shader program" << std::endl;
+        std::cerr << "Error creating shader program\n";
         return;
     }
 
@@ -69,7 +69,7 @@ void Shader::compileShader(const char* vertexCode, const char* geometryCode, con
     shaderID = glCreateProgram();
 
     if (!shaderID) {
-        std::cerr << "Error creating shader program" << std::endl;
+        std::cerr << "Error creating shader program\n";
         return;
     }
 
@@ -90,7 +90,7 @@ void Shader::validate()
     glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error validating program: " << eLog << std::endl;
+        std::cerr << "Error validating program: " << eLog << "\n";
         return;
     }
 }
@@ -109,7 +109,7 @@ void Shader::compileProgram()
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error linking program: " << eLog << std::endl;
+        std::cerr << "Error linking program: " << eLog << "\n";
         return;
     }
 
@@ -242,7 +242,7 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result) {
         glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << std::endl;
+        std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << "\n";
         return;
     }
 

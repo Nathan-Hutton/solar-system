@@ -191,7 +191,7 @@ void setupPostProcessingObjects()
     GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        std::cerr << "Framebuffer error: " << status << std::endl;
+        std::cerr << "Framebuffer error: " << status << "\n";
         std::exit(0);
     }
 
@@ -215,7 +215,7 @@ void setupPostProcessingObjects()
         GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
         if (status != GL_FRAMEBUFFER_COMPLETE)
         {
-            std::cerr << "Framebuffer Error: " << status << std::endl;
+            std::cerr << "Framebuffer Error: " << status << "\n";
             std::exit(0);
         }
     }
@@ -244,7 +244,7 @@ void setupPostProcessingObjects()
     status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        std::cerr << "Framebuffer Error: " << status << std::endl;
+        std::cerr << "Framebuffer Error: " << status << "\n";
         std::exit(0);
     }
 }
@@ -430,30 +430,30 @@ void renderPass(glm::mat4 view)
 int main()
 {
     // Print out the controls
-    std::cout << "**********" << std::endl;
-    std::cout << "\033[92m" << "Controls" << "\033[0m" << std::endl;
-    std::cout << "**********" << std::endl;
-    std::cout << "Mouse: Look around" << std::endl << std::endl;
-    std::cout << "W: Move forward" << std::endl;
-    std::cout << "S: Move backwards" << std::endl;
-    std::cout << "A: Move left" << std::endl;
-    std::cout << "D: Move right" << std::endl << std::endl;
-    std::cout << "Q: Roll left" << std::endl;
-    std::cout << "E: Roll right" << std::endl;
-    std::cout << "Space: Move up" << std::endl;
-    std::cout << "Shift: Move down" << std::endl << std::endl;
-    std::cout << "F: Toggle flashlight" << std::endl;
-    std::cout << "Toggle shadows" << std::endl << std::endl << std::endl;
+    std::cout << "**********\n";
+    std::cout << "\033[92m" << "Controls" << "\033[0m\n";
+    std::cout << "**********\n";
+    std::cout << "Mouse: Look around\n\n";
+    std::cout << "W: Move forward\n";
+    std::cout << "S: Move backwards\n";
+    std::cout << "A: Move left\n";
+    std::cout << "D: Move right\n\n";
+    std::cout << "Q: Roll left\n";
+    std::cout << "E: Roll right\n\n";
+    std::cout << "Space: Move up\n";
+    std::cout << "Shift: Move down\n\n";
+    std::cout << "F: Toggle flashlight\n";
+    std::cout << "L: Toggle shadows\n\n\n";
 
     // Promp user to select a numerical integration scheme
-    std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m" << std::endl;
+    std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m\n";
     bool verlet {};
     std::cout << "0: Euler method\n1: Verlet method \n>";
     std::cin >> verlet;
 
     // Prompt user to select scene
     int selectedScene {};
-    std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m" << std::endl;
+    std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
     std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
     std::cin >> selectedScene;
 

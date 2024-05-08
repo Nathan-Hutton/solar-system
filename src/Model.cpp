@@ -37,7 +37,7 @@ void Model::loadModel(const std::string& fileName) {
 
     if (!scene)
     {
-        std::cerr << "Model " << fileName.c_str() << " failed to load " << importer.GetErrorString() << std::endl;
+        std::cerr << "Model " << fileName.c_str() << " failed to load " << importer.GetErrorString() << "\n";
         return;
     }
 
@@ -184,7 +184,7 @@ void Model::loadMaterials(const aiScene *scene)
 
             if (!textureList[i]->loadTexture())
             {
-                std::cerr << "Failed to laod teture at " << textPath.c_str() << std::endl;
+                std::cerr << "Failed to laod teture at " << textPath.c_str() << "\n";
                 delete textureList[i];
                 textureList[i] = nullptr;
             }
