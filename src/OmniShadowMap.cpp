@@ -40,7 +40,7 @@ bool OmniShadowMap::init(unsigned int width, unsigned int height)
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        printf("Framebuffer Error: %i\n", status);
+        std::cerr << "Framebuffer Error: " << status << std::endl;
         return false;
     }
 

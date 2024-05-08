@@ -23,7 +23,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
         unsigned char *textData {stbi_load(faceLocations[i].c_str(), &width, &height, &bitDepth, STBI_rgb)};
         if (!textData)
         {
-            printf("Failed to find %s\n", faceLocations[i].c_str());
+            std::cerr << "Failed to find " << faceLocations[i].c_str() << std::endl;
             return;
         }
 

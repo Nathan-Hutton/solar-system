@@ -1,9 +1,10 @@
 #pragma once
 
-#include <stdio.h>
+#include <iostream>
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

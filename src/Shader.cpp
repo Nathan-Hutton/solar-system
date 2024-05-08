@@ -28,7 +28,7 @@ std::string Shader::readFile(const char* fileLocation)
     std::ifstream fileStream(fileLocation, std::ios::in);
 
     if (!fileStream.is_open()) {
-        printf("Failed to read %s File doesn't exist", fileLocation);
+        std::cerr << "Failed to read" << fileLocation << " File doesn't exist." << std::endl;
         return "";
     }
 
@@ -51,7 +51,7 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
     shaderID = glCreateProgram();
 
     if (!shaderID) {
-        printf("Error creating shader program\n");
+        std::cerr << "Error creating shader program" << std::endl;
         return;
     }
 
@@ -69,7 +69,7 @@ void Shader::compileShader(const char* vertexCode, const char* geometryCode, con
     shaderID = glCreateProgram();
 
     if (!shaderID) {
-        printf("Error creating shader program\n");
+        std::cerr << "Error creating shader program" << std::endl;
         return;
     }
 
@@ -90,7 +90,7 @@ void Shader::validate()
     glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        printf("Error validating program: '%s'\n", eLog);
+        std::cerr << "Error validating program: " << eLog << std::endl;
         return;
     }
 }
@@ -109,7 +109,7 @@ void Shader::compileProgram()
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        printf("Error linking program: '%s'\n", eLog);
+        std::cerr << "Error linking program: " << eLog << std::endl;
         return;
     }
 
@@ -128,25 +128,50 @@ void Shader::compileProgram()
     uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
 
     // Point lights
+    std::stringstream ss {};
     for (size_t i {0}; i < MAX_POINT_LIGHTS; i++)
     {
-        char locBuff[100] {'\0'};
+        // Base color
+        ss << "pointLights[" << i << "].base.color";
+        uniformPointLights[i].uniformColor = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
 
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].base.color", i);
-        uniformPointLights[i].uniformColor = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].base.ambientIntensity", i);
-        uniformPointLights[i].uniformAmbientIntensity = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].base.diffuseIntensity", i);
-        uniformPointLights[i].uniformDiffuseIntensity = glGetUniformLocation(shaderID, locBuff);
+        // Ambient intensity
+        ss << "pointLights[" << i << "].base.ambientIntensity";
+        uniformPointLights[i].uniformAmbientIntensity = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
 
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].position", i);
-        uniformPointLights[i].uniformPosition = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].exponential", i);
-        uniformPointLights[i].uniformExponential = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].linear", i);
-        uniformPointLights[i].uniformLinear = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].constant", i);
-        uniformPointLights[i].uniformConstant = glGetUniformLocation(shaderID, locBuff);
+        // Diffuse intensity
+        ss << "pointLights[" << i << "].base.diffuseIntensity";
+        uniformPointLights[i].uniformDiffuseIntensity = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
+
+        // Position
+        ss << "pointLights[" << i << "].position";
+        uniformPointLights[i].uniformPosition = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
+
+        // Exponential
+        ss << "pointLights[" << i << "].exponential";
+        uniformPointLights[i].uniformExponential = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
+
+        // Linear
+        ss << "pointLights[" << i << "].linear";
+        uniformPointLights[i].uniformLinear = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
+
+        // Constant
+        ss << "pointLights[" << i << "].constant";
+        uniformPointLights[i].uniformConstant = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
     }
     
     // Spot lights
@@ -169,22 +194,28 @@ void Shader::compileProgram()
     uniformOmniLightPos = glGetUniformLocation(shaderID, "lightPos");
     uniformFarPlane = glGetUniformLocation(shaderID, "farPlane");
 
-    // This loop only gets values for the omni_shadow_shaders
+    // Light matrices
     for (size_t i {0}; i < 6; i++)
     {
-        char locBuff[100] {'\0'};
-        snprintf(locBuff, sizeof(locBuff), "lightMatrices[%ld]", i);
-        uniformLightMatrices[i] = glGetUniformLocation(shaderID, locBuff);
+        ss << "lightMatrices[" << i << "]";
+        uniformLightMatrices[i] = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
     }
 
-    // This gets values for the main shade.frag
     for (size_t i {0}; i < MAX_POINT_LIGHTS + 1; i++)
     {
-        char locBuff[100] {'\0'};
-        snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%ld].shadowMap", i);
-        uniformOmniShadowMaps[i].shadowMap = glGetUniformLocation(shaderID, locBuff);
-        snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%ld].farPlane", i);
-        uniformOmniShadowMaps[i].farPlane = glGetUniformLocation(shaderID, locBuff);
+        // Shadowmap
+        ss << "omniShadowMaps[" << i << "].shadowMap";
+        uniformOmniShadowMaps[i].shadowMap = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
+                    
+        // Far plane
+        ss << "omniShadowMaps[" << i << "].farPlane";
+        uniformOmniShadowMaps[i].farPlane = glGetUniformLocation(shaderID, ss.str().c_str());
+        ss.str(""); // Clear the buffer
+        ss.clear(); // Clear error flags
     }
 }
 
@@ -211,7 +242,7 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result) {
         glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-        printf("Error compiling the %d shader: '%s'\n", shaderType, eLog);
+        std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << std::endl;
         return;
     }
 

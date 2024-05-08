@@ -4,6 +4,7 @@
 #include <cstring>
 #include <memory>
 #include "CommonValues.h"
+#include <iostream>
 
 class Texture
 {

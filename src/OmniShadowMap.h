@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ShadowMap.h"
+#include "iostream"
 
 class OmniShadowMap : public ShadowMap
 {

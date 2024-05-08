@@ -37,7 +37,7 @@ void Model::loadModel(const std::string& fileName) {
 
     if (!scene)
     {
-        printf("Model (%s) failed to load: %s", fileName.c_str(), importer.GetErrorString());
+        std::cerr << "Model " << fileName.c_str() << " failed to load " << importer.GetErrorString() << std::endl;
         return;
     }
 
@@ -147,7 +147,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
         }
     }
 
-    Mesh *newMesh {};
+    Mesh *newMesh {new Mesh()};
     newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
     meshList.push_back(newMesh);
     meshToTex.push_back(mesh->mMaterialIndex);
@@ -184,7 +184,7 @@ void Model::loadMaterials(const aiScene *scene)
 
             if (!textureList[i]->loadTexture())
             {
-                printf("Failed to load texture at %s\n", textPath.c_str());
+                std::cerr << "Failed to laod teture at " << textPath.c_str() << std::endl;
                 delete textureList[i];
                 textureList[i] = nullptr;
             }

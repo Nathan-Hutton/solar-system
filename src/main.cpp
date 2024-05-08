@@ -191,7 +191,7 @@ void setupPostProcessingObjects()
     GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        printf("Framebuffer Error: %i\n", status);
+        std::cerr << "Framebuffer error: " << status << std::endl;
         std::exit(0);
     }
 
@@ -215,7 +215,7 @@ void setupPostProcessingObjects()
         GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
         if (status != GL_FRAMEBUFFER_COMPLETE)
         {
-            printf("Framebuffer Error: %i\n", status);
+            std::cerr << "Framebuffer Error: " << status << std::endl;
             std::exit(0);
         }
     }
@@ -244,7 +244,7 @@ void setupPostProcessingObjects()
     status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        printf("Framebuffer Error: %i\n", status);
+        std::cerr << "Framebuffer Error: " << status << std::endl;
         std::exit(0);
     }
 }
@@ -430,20 +430,20 @@ void renderPass(glm::mat4 view)
 int main()
 {
     // Print out the controls
-    printf("**********\n");
+    std::cout << "**********" << std::endl;
     std::cout << "\033[92m" << "Controls" << "\033[0m" << std::endl;
-    printf("**********\n\n");
-    printf("Mouse: Look around\n\n");
-    printf("W: Move forward\n");
-    printf("S: Move backwards\n");
-    printf("A: Move left\n");
-    printf("D: Move right\n\n");
-    printf("Q: Roll left\n");
-    printf("E: Roll right\n\n");
-    printf("Space: Move up\n");
-    printf("Shift: Move down\n\n");
-    printf("F: Toggle flashlight\n");
-    printf("L: Toggle shadows\n\n\n");
+    std::cout << "**********" << std::endl;
+    std::cout << "Mouse: Look around" << std::endl << std::endl;
+    std::cout << "W: Move forward" << std::endl;
+    std::cout << "S: Move backwards" << std::endl;
+    std::cout << "A: Move left" << std::endl;
+    std::cout << "D: Move right" << std::endl << std::endl;
+    std::cout << "Q: Roll left" << std::endl;
+    std::cout << "E: Roll right" << std::endl;
+    std::cout << "Space: Move up" << std::endl;
+    std::cout << "Shift: Move down" << std::endl << std::endl;
+    std::cout << "F: Toggle flashlight" << std::endl;
+    std::cout << "Toggle shadows" << std::endl << std::endl << std::endl;
 
     // Promp user to select a numerical integration scheme
     std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m" << std::endl;

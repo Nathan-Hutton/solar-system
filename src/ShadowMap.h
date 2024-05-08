@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+#include <iostream>
 #include <GL/glew.h>
 
 class ShadowMap
