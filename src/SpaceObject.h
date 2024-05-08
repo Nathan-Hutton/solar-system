@@ -42,14 +42,14 @@ class SpaceObject
         ~SpaceObject();
 
     protected:
-        GLfloat mass;
-        glm::vec3 oldPosition;
-        glm::vec3 position;
-        glm::vec3 velocity;
-        glm::vec3 rotation;
-        GLfloat angle;
-        GLfloat rotationSpeed;
-        Material *material;
+        GLfloat mass {};
+        glm::vec3 oldPosition {};
+        glm::vec3 position {};
+        glm::vec3 velocity {};
+        glm::vec3 rotation {};
+        GLfloat angle {};
+        GLfloat rotationSpeed {};
+        Material *material {};
 
-        GLfloat greatestDistanceBetweenVertices;
+        GLfloat greatestDistanceBetweenVertices {};
 };

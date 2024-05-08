@@ -35,21 +35,21 @@ public:
     ~Camera();
 
 private:
-    glm::vec3 position;
-    glm::vec3 front;
-    glm::vec3 up;
-    glm::vec3 right;
-    glm::vec3 worldUp;
+    glm::vec3 position {};
+    glm::vec3 front {};
+    glm::vec3 up {};
+    glm::vec3 right {};
+    glm::vec3 worldUp {};
 
-    GLfloat yaw;
-    GLfloat oldYaw;
-    GLfloat pitch;
-    GLfloat oldPitch;
-    GLfloat oldRoll;
-    GLfloat roll;
+    GLfloat yaw {};
+    GLfloat oldYaw {};
+    GLfloat pitch {};
+    GLfloat oldPitch {};
+    GLfloat oldRoll {};
+    GLfloat roll {};
 
-    GLfloat moveSpeed;
-    GLfloat turnSpeed;
+    GLfloat moveSpeed {};
+    GLfloat turnSpeed {};
 
-    SpotLight *spotLight;
+    SpotLight *spotLight {};
 };

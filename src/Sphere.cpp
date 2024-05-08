@@ -3,21 +3,17 @@
 Sphere::Sphere() : SpaceObject()
 {
     this->radius = 0.5f;
-    this->sphereMesh = new Mesh();
-    this->texture = NULL;
+    this->sphereMesh = new Mesh{};
 }
 
 Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass)
 {
     this->radius = radius;
 
-    // These are default values we'll set with setters
-    this->texture = NULL;
-
     // Create the mesh
-    this->sphereMesh = new Mesh();
-    std::vector<GLfloat> vertices;
-    std::vector<GLuint> indices;
+    this->sphereMesh = new Mesh{};
+    std::vector<GLfloat> vertices {};
+    std::vector<GLuint> indices {};
     generateSphereData(vertices, indices, radius, stacks, slices);
     this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size());
     this->greatestDistanceBetweenVertices = radius * 2;

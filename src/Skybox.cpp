@@ -1,13 +1,11 @@
 #include "Skybox.h"
 
-Skybox::Skybox()
-{
-}
+Skybox::Skybox() {}
 
 Skybox::Skybox(std::vector<std::string> faceLocations)
 {
     // Shader setup
-    skyShader = new Shader();
+    skyShader = new Shader{};
     skyShader->createFromFiles("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
 
     uniformProjection = skyShader->getProjectionLocation();
@@ -18,7 +16,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
-    int width, height, bitDepth;
+    int width {}, height {}, bitDepth {};
 
     for (size_t i {0}; i < 6; i++)
     {
@@ -73,7 +71,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
         1.0f, -1.0f, 1.0f,		0.0f, 0.0f
     };
 
-    skyMesh = new Mesh();
+    skyMesh = new Mesh{};
     skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36, false);
 }
 
@@ -102,6 +100,4 @@ void Skybox::drawSkybox(glm::mat4 viewMatrix)
     skyMesh->render();
 }
 
-Skybox::~Skybox()
-{
-}
+Skybox::~Skybox() {}

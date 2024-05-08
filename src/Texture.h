@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <cstring>
+#include <memory>
 #include "CommonValues.h"
 
 class Texture
@@ -19,8 +20,8 @@ class Texture
         ~Texture();
 
     private:
-        GLuint textureID;
-        int width, height;
+        GLuint textureID {};
+        int width {}, height {};
 
-        const char* fileLocation;
+        const char* fileLocation {};
 };

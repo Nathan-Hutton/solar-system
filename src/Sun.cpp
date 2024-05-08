@@ -8,24 +8,20 @@ Sun::Sun(float radius, GLfloat mass, int stacks, int slices)
     this->mass = mass;
     this->radius = radius;
 
-    // These are default values we'll set with setters
-    this->texture = NULL;
-
     // Create the mesh
-    this->sphereMesh = new Mesh();
-    std::vector<GLfloat> vertices;
-    std::vector<GLuint> indices;
+    this->sphereMesh = new Mesh{};
+    std::vector<GLfloat> vertices {};
+    std::vector<GLuint> indices {};
     generateSphereData(vertices, indices, radius, stacks, slices);
     this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), false);
-    this->light = NULL;
 }
 
 void Sun::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)
 {
     this->radius = radius;
     for (int i {0}; i <= stacks; ++i) {
-        float V = i / static_cast<float>(stacks);
-        float phi = V * M_PI;
+        float V {i / static_cast<float>(stacks)};
+        float phi {V * glm::pi<float>()};
 
         for (int j {0}; j <= slices; ++j) {
             float U {j / static_cast<float>(slices)};
@@ -68,12 +64,12 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat ambientIntensity, GLfloat diffuseIntensity,
     GLfloat exponential, GLfloat linear, GLfloat constant)
 {
-    this->light = new PointLight(shadowWidth, shadowHeight,
+    this->light = new PointLight{shadowWidth, shadowHeight,
             near, far,
             red, green, blue, 
             ambientIntensity, diffuseIntensity,
             position.x, position.y, position.z, 
-            exponential, linear, constant);
+            exponential, linear, constant};
 }
 
 void Sun::setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess){}

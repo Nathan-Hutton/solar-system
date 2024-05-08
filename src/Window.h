@@ -33,21 +33,21 @@ class Window
     private:
         GLFWwindow *mainWindow;
 
-        GLint width, height;
-        GLint bufferWidth, bufferHeight;
+        GLint width {}, height {};
+        GLint bufferWidth {}, bufferHeight {};
 
         // For keyboard input
-        bool keys[1024];
+        bool keys[1024] {};
 
         // For mouse movement
         // Every time we move the mouse, we want to see how much it's changed since it's last location
-        GLfloat lastX;
-        GLfloat lastY;
-        GLfloat xChange;
-        GLfloat yChange;
-        GLfloat yScrollOffset;
+        GLfloat lastX {};
+        GLfloat lastY {};
+        GLfloat xChange {};
+        GLfloat yChange {};
+        GLfloat yScrollOffset {};
         // When we start the scene, the mouse will go somewhere and we don't want that to be counted as movement
-        bool mouseFirstMoved;
+        bool mouseFirstMoved {};
 
         void createCallbacks();
         // This is our callback function

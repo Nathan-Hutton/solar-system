@@ -1,7 +1,7 @@
 #include "OrbitalPhysics.h"
 
-float MAX_TIME_STEP = 0.005f;
-float gForce = -100.0f;
+float MAX_TIME_STEP {0.005f};
+float gForce {-100.0f};
 
 glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *object2)
 {
@@ -11,7 +11,7 @@ glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *o
     
     // TODO: fine tune this
     if (object1->getGreatestDistanceBetweenVertices() + object2->getGreatestDistanceBetweenVertices() >= displacementVectorLength)
-        return glm::vec3{0.0f,0.0f,0.0f};
+        return glm::vec3{0.0f};
 
     return ((gForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * directionVector;
 }
@@ -39,16 +39,16 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<SpaceObject*
 
 void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
 {
-    float tStep;
+    float tStep {};
     if (timeStep > MAX_TIME_STEP)
         tStep = MAX_TIME_STEP;
     else
         tStep = timeStep;
 
-    std::vector<glm::vec3> newSatellitePositions;
-    glm::vec3 acceleration;
-    glm::vec3 velocity;
-    glm::vec3 position;
+    std::vector<glm::vec3> newSatellitePositions {};
+    glm::vec3 acceleration {};
+    glm::vec3 velocity {};
+    glm::vec3 position {};
     
     // Apply forces to all planets and moons
     for (int i {0}; i < satellites.size(); i++) 
@@ -89,9 +89,9 @@ void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<SpaceObject*>& s
 
     (*timeSinceLastUpdate) += MAX_TIME_STEP;
 
-    std::vector<glm::vec3> newSatellitePositions;
-    glm::vec3 acceleration;
-    glm::vec3 position;
+    std::vector<glm::vec3> newSatellitePositions {};
+    glm::vec3 acceleration {};
+    glm::vec3 position {};
     
     // Apply forces to all planets and moons
     for (int i {0}; i < satellites.size(); i++) 

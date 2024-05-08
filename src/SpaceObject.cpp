@@ -6,9 +6,6 @@ SpaceObject::SpaceObject()
     this->position = glm::vec3{0.0f};
     this->velocity = glm::vec3{0.0f};
     this->rotation = glm::vec3{0.0f};
-    this->angle = 0.0f;
-    this->rotationSpeed = 0.0f;
-    this->greatestDistanceBetweenVertices = 0.0f;
 }
 
 SpaceObject::SpaceObject(GLfloat mass)

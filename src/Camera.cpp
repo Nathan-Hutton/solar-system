@@ -19,8 +19,6 @@ Camera::Camera()
 
     moveSpeed = 5.0f;
     turnSpeed = 1.0f;
-
-    spotLight = NULL;
 }
 
 Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLfloat startPitch, GLfloat startMoveSpeed, GLfloat startTurnSpeed)
@@ -39,13 +37,11 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
 
     moveSpeed = startMoveSpeed;
     turnSpeed = startTurnSpeed;
-
-    spotLight = NULL;
 }
 
 void Camera::keyControl(bool* keys, GLfloat deltaTime, bool* shadowsEnabled)
 {
-    GLfloat velocity = moveSpeed * deltaTime;
+    GLfloat velocity {moveSpeed * deltaTime};
 
     if (keys[GLFW_KEY_W])
         position += front * velocity;
@@ -115,14 +111,14 @@ void Camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                 GLfloat exponential, GLfloat linear, GLfloat constant,
                 GLfloat edge)
 {
-    spotLight = new SpotLight(shadowWidth, shadowHeight,
+    spotLight = new SpotLight{shadowWidth, shadowHeight,
                         near, far,
                         red, green, blue,
                         ambientIntensity, diffuseIntensity,
                         xPos, yPos, zPos,
                         xDir, yDir, zDir,
                         exponential, linear, constant,
-                        edge);
+                        edge};
 }
 
 SpotLight* Camera::getSpotLight()

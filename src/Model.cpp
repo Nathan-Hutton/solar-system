@@ -5,14 +5,14 @@ Model::Model() : SpaceObject()
 {
     this->material = nullptr;
     this->scaleFactor = 1.0f;
-    this->scaleFactorVector = glm::vec3{1.0f, 1.0f, 1.0f};
+    this->scaleFactorVector = glm::vec3{1.0f};
 }
 
 Model::Model(GLfloat mass) : SpaceObject(mass)
 {
     this->material = nullptr;
     this->scaleFactor = 1.0f;
-    this->scaleFactorVector = glm::vec3{1.0f, 1.0f, 1.0f};
+    this->scaleFactorVector = glm::vec3{1.0f};
 }
 
 void Model::setScaleFactor(GLfloat sFactor)
@@ -32,7 +32,7 @@ glm::vec3 Model::getScaleFactorVector()
 }
 
 void Model::loadModel(const std::string& fileName) {
-    Assimp::Importer importer;
+    Assimp::Importer importer {};
     const aiScene *scene {importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices)};
 
     if (!scene)
@@ -108,8 +108,8 @@ void Model::loadNode(aiNode *node, const aiScene *scene)
 void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
 {
     // Each vertex will contain 3 float values
-    std::vector<GLfloat> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<GLfloat> vertices {};
+    std::vector<unsigned int> indices {};
 
     for(size_t i {0}; i < mesh->mNumVertices; i++)
     {
@@ -127,19 +127,19 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     }
 
     // Each face contains the 3 indices, so we set up our indices with the faces
-    for (size_t i = 0; i < mesh->mNumFaces; i++)
+    for (size_t i {0}; i < mesh->mNumFaces; i++)
     {
-        aiFace face = mesh->mFaces[i];
-        for (size_t j = 0; j < face.mNumIndices; j++)
+        aiFace face {mesh->mFaces[i]};
+        for (size_t j {0}; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
 
     // Get rid of this if we ever make collision detection
     // We're calculating the greatest distance between vectors in the model
-    for (int i = 0; i < vertices.size(); i+=8)
+    for (int i {0}; i < vertices.size(); i+=8)
     {
         glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
-        for (int j = 0; i < vertices.size(); i++)
+        for (int j {0}; i < vertices.size(); i++)
         {
             glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
             GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
@@ -147,7 +147,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
         }
     }
 
-    Mesh *newMesh {new Mesh()};
+    Mesh *newMesh {};
     newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
     meshList.push_back(newMesh);
     meshToTex.push_back(mesh->mMaterialIndex);

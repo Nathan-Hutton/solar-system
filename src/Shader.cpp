@@ -1,20 +1,6 @@
 #include "Shader.h"
 
-Shader::Shader()
-{
-    shaderID = 0;
-    uniformProjection = 0;
-    uniformModel = 0;
-
-    pointLightCount = 0;
-
-    uniformEyePosition = 0;
-    uniformSpecularIntensity = 0;
-    uniformShininess = 0;
-    
-    uniformPointLightCount = 0;
-    uniformFlashLightOn = 0;
-}
+Shader::Shader() {}
 
 void Shader::createFromFiles(const char* file1, const char* file2, const char* file3)
 {
@@ -38,7 +24,7 @@ void Shader::createFromFiles(const char* file1, const char* file2, const char* f
 
 std::string Shader::readFile(const char* fileLocation)
 {
-    std::string content;
+    std::string content {};
     std::ifstream fileStream(fileLocation, std::ios::in);
 
     if (!fileStream.is_open()) {
@@ -97,7 +83,7 @@ void Shader::compileShader(const char* vertexCode, const char* geometryCode, con
 void Shader::validate()
 {
     GLint result {0};
-    GLchar eLog[1024] { 0 };
+    GLchar eLog[1024] {0};
 
     // Check if the shader program can execute on the current OpenGL state
     glValidateProgram(shaderID);
@@ -117,7 +103,7 @@ void Shader::compileProgram()
     glLinkProgram(shaderID);
 
     GLint result {0};
-    GLchar eLog[1024] { 0 };
+    GLchar eLog[1024] {0};
 
     // Check for errors
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);

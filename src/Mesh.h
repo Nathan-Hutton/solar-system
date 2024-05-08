@@ -20,8 +20,8 @@ class Mesh
         ~Mesh();
 
     private:
-        GLuint VAO, VBO, IBO;
-        GLsizei indexCount;
-        Texture *texture;
-        Material *material;
+        GLuint VAO {}, VBO {}, IBO {};
+        GLsizei indexCount {};
+        Texture *texture {};
+        Material *material {};
 };

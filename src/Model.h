@@ -32,11 +32,11 @@ class Model : public SpaceObject
         ~Model();
 
     private:
-        Material *material;
-        GLuint specularIntensityLocation, shininessLocation;
+        Material *material {};
+        GLuint specularIntensityLocation {}, shininessLocation {};
         // Since this isn't a sphere where we just set the radius, we may want to use a glm::scale
-        GLfloat scaleFactor;
-        glm::vec3 scaleFactorVector;
+        GLfloat scaleFactor {};
+        glm::vec3 scaleFactorVector {};
         // We tend to call each mesh in the tree a node
         // The node won't store the mesh, just a reference to it
         // Scene holds all the data from a 3D scene or model, node holds data to a specific node
@@ -45,9 +45,9 @@ class Model : public SpaceObject
         // Materials contain data for textures, colors, shaders, etc.
         void loadMaterials(const aiScene *scene);
 
-        std::vector<Mesh*> meshList;
-        std::vector<Texture*> textureList;
+        std::vector<Mesh*> meshList {};
+        std::vector<Texture*> textureList {};
         // We'll create one of each texture and if a mesh uses the same texture 
         // as another, they'll just say which one it's using instead of remaking the texture
-        std::vector<unsigned int> meshToTex; 
+        std::vector<unsigned int> meshToTex {}; 
 };

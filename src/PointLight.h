@@ -27,9 +27,9 @@ class PointLight : public Light {
         ~PointLight();
 
     protected:
-        glm::vec3 position;
-        GLfloat exponential, linear, constant;
+        glm::vec3 position {};
+        GLfloat exponential {}, linear {}, constant {};
         
         // How far we want shadows to go. The farther they go, the lower resolution they are.
-        GLfloat farPlane;
+        GLfloat farPlane {};
 };

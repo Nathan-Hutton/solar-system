@@ -7,7 +7,6 @@ Mesh::Mesh()
     VBO = 0;
     IBO = 0;
     indexCount = 0;
-    this->material = NULL;
 }
 
 void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, 
@@ -53,7 +52,7 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices,
 
     // In the case where we're just rendering the quad for post-processing effects,
     // we just use 2 values for each vertex since it's a 2D shape
-    int size;
+    int size {};
     if (threeVertices)
         size = 3;
     else

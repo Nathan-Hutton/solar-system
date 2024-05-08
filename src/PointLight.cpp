@@ -26,7 +26,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
     // A bunch of 90 degree angles together makes a cube
     lightProj = glm::perspective(glm::radians(90.0f), aspectRatio, near, far);
 
-    shadowMap = new OmniShadowMap();
+    shadowMap = new OmniShadowMap{};
     shadowMap->init(shadowWidth, shadowHeight);
 }
 
@@ -46,7 +46,7 @@ void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensi
 
 std::vector<glm::mat4> PointLight::calculateLightTransform()
 {
-    std::vector<glm::mat4> lightMatrices;
+    std::vector<glm::mat4> lightMatrices {};
     // +x, -x
     lightMatrices.push_back(lightProj * glm::lookAt(position, position + glm::vec3{1.0f, 0.0f, 0.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));
     lightMatrices.push_back(lightProj * glm::lookAt(position, position + glm::vec3{-1.0f, 0.0f, 0.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));

@@ -30,7 +30,7 @@ class SpotLight : public PointLight {
         ~SpotLight();
 
     private:
-        glm::vec3 direction;
-        GLfloat edge, procEdge;
-        bool on;
+        glm::vec3 direction {};
+        GLfloat edge {}, procEdge {};
+        bool on {};
 };

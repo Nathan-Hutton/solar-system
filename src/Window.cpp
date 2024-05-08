@@ -8,9 +8,6 @@ Window::Window()
     for (size_t i {0}; i < 1024; i++)
         keys[i] = 0;
 
-    xChange = 0.0f;
-    yChange = 0.0f;
-    yScrollOffset = 0.0f;
     mouseFirstMoved = true;
 }
 
@@ -22,9 +19,6 @@ Window::Window(GLint windowWidth, GLint windowHeight)
     for (size_t i {0}; i < 1024; i++)
         keys[i] = 0;
     
-    xChange = 0.0f;
-    yChange = 0.0f;
-    yScrollOffset = 0.0f;
     mouseFirstMoved = true;
 }
 

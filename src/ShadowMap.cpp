@@ -1,10 +1,6 @@
 #include "ShadowMap.h"
 
-ShadowMap::ShadowMap()
-{
-    FBO = 0;
-    shadowMap = 0;
-}
+ShadowMap::ShadowMap() {}
 
 bool ShadowMap::init(GLuint width, GLuint height)
 {

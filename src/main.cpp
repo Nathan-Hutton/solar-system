@@ -30,15 +30,15 @@
 #include "Model.h"
 #include "Skybox.h"
 
-GLuint halfFBO;
-GLuint halfTexture;
-GLuint postProcessingFBO;
-GLuint postProcessingTexture;
-GLuint textureToBlur;
-Mesh* framebufferQuad;
+GLuint halfFBO {};
+GLuint halfTexture {};
+GLuint postProcessingFBO {};
+GLuint postProcessingTexture {};
+GLuint textureToBlur {};
+Mesh* framebufferQuad {};
 
-unsigned int pingPongFBO[2];
-unsigned int pingPongBuffer[2];
+unsigned int pingPongFBO[2] {};
+unsigned int pingPongBuffer[2] {};
 
 // TODO: Use structs to store these types of values
 GLuint uniformModelPlanets {0}, uniformViewPlanets {0},
@@ -49,20 +49,20 @@ GLuint uniformModelSuns {0}, uniformViewSuns {0};
 GLuint uniformModelOmniShadowMap {0};
 GLuint uniformHorizontal {0};
 
-std::vector<SpaceObject*> stars;
-std::vector<SpaceObject*> satellites;
+std::vector<SpaceObject*> stars {};
+std::vector<SpaceObject*> satellites {};
 
-Shader* mainShader;
-Shader* mainShaderWithoutShadows;
-Shader* mainShaderWithShadows;
-Shader* sunShader;
-Shader* omniShadowShader;
-Shader* hdrShader;
-Shader* bloomShader;
-Shader* halfShader;
+Shader* mainShader {};
+Shader* mainShaderWithoutShadows {};
+Shader* mainShaderWithShadows {};
+Shader* sunShader {};
+Shader* omniShadowShader {};
+Shader* hdrShader {};
+Shader* bloomShader {};
+Shader* halfShader {};
 
-Skybox skybox;
-Camera camera;
+Skybox skybox {};
+Camera camera {};
 
 bool shadowsEnabled {false};
 unsigned int pointLightCount {0};
@@ -70,7 +70,7 @@ unsigned int pointLightCount {0};
 void createShaders(PointLight* pointLights[], glm::mat4 projection)
 {
     // Shader for the suns (no lighting or shadows)
-    sunShader = new Shader();
+    sunShader = new Shader{};
     sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
     sunShader->useShader();
     glUniformMatrix4fv(sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
@@ -80,7 +80,7 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     uniformModelSuns = sunShader->getModelLocation();
     uniformViewSuns = sunShader->getViewLocation();
 
-    omniShadowShader = new Shader();
+    omniShadowShader = new Shader{};
 	omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
 		"../assets/shaders/omni_shadow_map.geom",
 	  	"../assets/shaders/omni_shadow_map.frag");
@@ -89,20 +89,20 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
 	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
 	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
 
-    hdrShader = new Shader();
+    hdrShader = new Shader{};
     hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
     hdrShader->useShader();
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 0);
     glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
 
-    bloomShader = new Shader();
+    bloomShader = new Shader{};
     bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
     bloomShader->useShader();
     bloomShader->setTexture(0);
     uniformHorizontal = glGetUniformLocation(bloomShader->getShaderID(), "horizontal");
     
     // Shader for the satellites, moons, and models. Includes shadows
-    mainShaderWithShadows = new Shader();
+    mainShaderWithShadows = new Shader{};
     mainShaderWithShadows->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
     mainShaderWithShadows->useShader();
 	mainShaderWithShadows->setTexture(2);
@@ -114,13 +114,13 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
 	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
     glUniform1i(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "pointLightCount"), pointLightCount);
 
-    halfShader = new Shader();
+    halfShader = new Shader{};
     halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
     halfShader->useShader();
     halfShader->setTexture(0);
     
     // Shader for the satellites, moons, and models. Doesn't use shadows
-    mainShaderWithoutShadows = new Shader();
+    mainShaderWithoutShadows = new Shader{};
     mainShaderWithoutShadows->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
     mainShaderWithoutShadows->useShader();
 	mainShaderWithoutShadows->setTexture(2);
@@ -153,7 +153,7 @@ void setupPostProcessingObjects()
         0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
         1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
     };
-    framebufferQuad = new Mesh();
+    framebufferQuad = new Mesh{};
     framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
     // HDR
     glGenFramebuffers(1, &postProcessingFBO);
@@ -182,20 +182,20 @@ void setupPostProcessingObjects()
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    unsigned int RBO;
+    unsigned int RBO {};
     glGenRenderbuffers(1, &RBO);
     glBindRenderbuffer(GL_RENDERBUFFER, RBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1200);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         printf("Framebuffer Error: %i\n", status);
         std::exit(0);
     }
 
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    unsigned int attachments[2] {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glDrawBuffers(2, attachments);
 
     // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
@@ -212,7 +212,7 @@ void setupPostProcessingObjects()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongBuffer[i], 0);
 
-        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
         if (status != GL_FRAMEBUFFER_COMPLETE)
         {
             printf("Framebuffer Error: %i\n", status);
@@ -300,7 +300,7 @@ void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
 
     // Model matrix positions and orients objects in the world.
     // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
-    glm::mat4 model;
+    glm::mat4 model {};
 
     // They'll all use GL_TEXTURE2
     glActiveTexture(GL_TEXTURE2);
@@ -447,22 +447,22 @@ int main()
 
     // Promp user to select a numerical integration scheme
     std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m" << std::endl;
-    bool verlet;
+    bool verlet {};
     std::cout << "0: Euler method\n1: Verlet method \n>";
     std::cin >> verlet;
 
     // Prompt user to select scene
-    int selectedScene;
+    int selectedScene {};
     std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m" << std::endl;
     std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
     std::cin >> selectedScene;
 
-    Window mainWindow = Window(1920, 1200);
+    Window mainWindow {1920, 1200};
     mainWindow.initialize();
 
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
     glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
-    PointLight* pointLights[MAX_POINT_LIGHTS];
+    PointLight* pointLights[MAX_POINT_LIGHTS] {};
 
     // Build scene based on user input
     switch (selectedScene)
@@ -490,9 +490,9 @@ int main()
         satellite->setUniformVariables(uniformSpecularIntensityPlanets, uniformShininessPlanets);
 
     // Loop until window is closed
-    GLfloat now;
+    GLfloat now {};
     unsigned int counter {0};
-    double lastFPSUpdateTime = glfwGetTime();
+    double lastFPSUpdateTime {glfwGetTime()};
     GLfloat lastFrame {0.0f};
     GLfloat deltaTime {0.0f};
     GLfloat timeChange {1.0f};

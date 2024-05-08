@@ -27,9 +27,9 @@ class Skybox
         ~Skybox();
 
     private:
-        Mesh* skyMesh;
-        Shader* skyShader;
+        Mesh* skyMesh {};
+        Shader* skyShader {};
 
-        GLuint textureID;
-        GLuint uniformProjection, uniformView;
+        GLuint textureID {};
+        GLuint uniformProjection {}, uniformView {};
 };

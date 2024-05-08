@@ -5,7 +5,6 @@ SpotLight::SpotLight() : PointLight()
     direction = glm::vec3{1.0f, 0.0f, 0.0f};
     edge = 1.0f;
     procEdge = cosf(glm::radians(edge));
-    on = false;
 }
 
 SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -21,7 +20,6 @@ SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
     direction = glm::normalize(glm::vec3{xDir, yDir, zDir});
     this->edge = edge;
     procEdge = cosf(glm::radians(edge));
-    on = false;
 }
 
 void SpotLight::setFlash(glm::vec3 pos, glm::vec3 dir)

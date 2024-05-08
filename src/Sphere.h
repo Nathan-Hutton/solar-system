@@ -2,6 +2,7 @@
 
 #include "SpaceObject.h"
 #include <cmath>
+#include <memory>
 
 class Sphere : public SpaceObject
 {
@@ -20,7 +21,7 @@ class Sphere : public SpaceObject
         ~Sphere();
 
     protected:
-        GLfloat radius;
-        Mesh *sphereMesh;
-        Texture *texture;
+        GLfloat radius {};
+        Mesh *sphereMesh {};
+        Texture *texture {};
 };

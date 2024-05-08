@@ -1,18 +1,9 @@
 #include "Texture.h"
 
-Texture::Texture()
-{
-    textureID = 0;
-    width = 0;
-    height = 0;
-    fileLocation = NULL;
-}
+Texture::Texture() {}
 
 Texture::Texture(const char* fileLocation)
 {
-    textureID = 0;
-    width = 0;
-    height = 0;
     this->fileLocation = strdup(fileLocation);
 }
 
@@ -25,7 +16,7 @@ const char* Texture::getFileLocation()
 bool Texture::loadTexture()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
-    int bitDepth;
+    int bitDepth {};
     unsigned char *textData {stbi_load(fileLocation, &width, &height, &bitDepth, 0)};
     if (!textData)
     {
