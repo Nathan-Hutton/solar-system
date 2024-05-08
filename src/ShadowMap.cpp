@@ -29,7 +29,7 @@ bool ShadowMap::init(GLuint width, GLuint height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float bColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float bColor[] {1.0f, 1.0f, 1.0f, 1.0f};
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bColor);
 
     // Bind the framebuffer so that the next operations apply to the framebuffer
@@ -43,7 +43,7 @@ bool ShadowMap::init(GLuint width, GLuint height)
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {

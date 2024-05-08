@@ -5,7 +5,7 @@ Window::Window()
     width = 800;
     height = 600;
 
-    for (size_t i = 0; i < 1024; i++)
+    for (size_t i {0}; i < 1024; i++)
         keys[i] = 0;
 
     xChange = 0.0f;
@@ -19,7 +19,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
     width = windowWidth;
     height = windowHeight;
 
-    for (size_t i = 0; i < 1024; i++)
+    for (size_t i {0}; i < 1024; i++)
         keys[i] = 0;
     
     xChange = 0.0f;
@@ -114,28 +114,28 @@ void Window::createCallbacks()
 
 GLfloat Window::getXChange()
 {
-    GLfloat theChange = xChange;
+    GLfloat theChange {xChange};
     xChange = 0.0f;
     return theChange;
 }
 
 GLfloat Window::getYChange()
 {
-    GLfloat theChange = yChange;
+    GLfloat theChange {yChange};
     yChange = 0.0f;
     return theChange;
 }
 
 GLfloat Window::getYScrollOffset()
 {
-    GLfloat theOffset = yScrollOffset;
+    GLfloat theOffset {yScrollOffset};
     yScrollOffset = 0.0f;
     return theOffset;
 }
 
 void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
 {
-    Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
 
     if (key < 0 || key >= 1024)
         return;
@@ -151,7 +151,7 @@ void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int m
 
 void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
 {
-    Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
 
     // This if will only pass a single time
     if (theWindow->mouseFirstMoved)
@@ -171,7 +171,7 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
 
 void Window::handleScroll(GLFWwindow* window, double xOffset, double yOffset)
 {
-    Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
 
     theWindow->yScrollOffset = yOffset;
 }

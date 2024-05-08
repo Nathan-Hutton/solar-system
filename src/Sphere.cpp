@@ -26,17 +26,17 @@ Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject
 void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)
 {
     this->radius = radius;
-    for (int i = 0; i <= stacks; ++i) {
-        float V = i / static_cast<float>(stacks);
-        float phi = V * M_PI;
+    for (int i {0}; i <= stacks; ++i) {
+        float V {i / static_cast<float>(stacks)};
+        float phi {V * glm::pi<float>()};
 
-        for (int j = 0; j <= slices; ++j) {
-            float U = j / static_cast<float>(slices);
-            float theta = U * M_PI * 2;
+        for (int j {0}; j <= slices; ++j) {
+            float U {j / static_cast<float>(slices)};
+            float theta {U * glm::pi<float>() * 2};
 
-            float x = cos(theta) * sin(phi) * radius;
-            float y = cos(phi) * radius;
-            float z = sin(theta) * sin(phi) * radius;
+            float x {cosf(theta) * sinf(phi) * radius};
+            float y {cosf(phi) * radius};
+            float z {sinf(theta) * sinf(phi) * radius};
 
             vertices.push_back(x);
             vertices.push_back(y);
@@ -46,7 +46,7 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
             vertices.push_back(U);
             vertices.push_back(V);
 
-            glm::vec3 normal(x,y,z);
+            glm::vec3 normal{x,y,z};
             normal = glm::normalize(normal);
             vertices.push_back(normal.x);
             vertices.push_back(normal.y);
@@ -54,7 +54,7 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
         }
     }
 
-    for (int i = 0; i < slices * stacks + slices; ++i) {
+    for (int i {0}; i < slices * stacks + slices; ++i) {
         indices.push_back(i);
         indices.push_back(i + slices);
         indices.push_back(i + slices + 1);

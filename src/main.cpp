@@ -40,13 +40,14 @@ Mesh* framebufferQuad;
 unsigned int pingPongFBO[2];
 unsigned int pingPongBuffer[2];
 
-GLuint uniformModelPlanets = 0, uniformViewPlanets = 0,
-uniformEyePositionPlanets = 0, uniformSpecularIntensityPlanets = 0, uniformShininessPlanets = 0,
-uniformOmniLightPos = 0, uniformFarPlane = 0;
+// TODO: Use structs to store these types of values
+GLuint uniformModelPlanets {0}, uniformViewPlanets {0},
+uniformEyePositionPlanets {0}, uniformSpecularIntensityPlanets {0}, uniformShininessPlanets {0},
+uniformOmniLightPos {0}, uniformFarPlane {0};
 
-GLuint uniformModelSuns = 0, uniformViewSuns = 0;
-GLuint uniformModelOmniShadowMap = 0;
-GLuint uniformHorizontal = 0;
+GLuint uniformModelSuns {0}, uniformViewSuns {0};
+GLuint uniformModelOmniShadowMap {0};
+GLuint uniformHorizontal {0};
 
 std::vector<SpaceObject*> stars;
 std::vector<SpaceObject*> satellites;
@@ -63,8 +64,8 @@ Shader* halfShader;
 Skybox skybox;
 Camera camera;
 
-bool shadowsEnabled = false;
-unsigned int pointLightCount = 0;
+bool shadowsEnabled {false};
+unsigned int pointLightCount {0};
 
 void createShaders(PointLight* pointLights[], glm::mat4 projection)
 {
@@ -200,7 +201,7 @@ void setupPostProcessingObjects()
     // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
     glGenFramebuffers(2, pingPongFBO);
     glGenTextures(2, pingPongBuffer);
-    for (unsigned int i = 0; i < 2; i++)
+    for (unsigned int i {0}; i < 2; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[i]);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffer[i]);
@@ -305,7 +306,7 @@ void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
     glActiveTexture(GL_TEXTURE2);
     for (SpaceObject *object : objects)
     {
-        model = glm::mat4(1.0f);
+        model = glm::mat4{1.0f};
         object->setWorldProperties(&model);
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         object->render();
@@ -394,15 +395,15 @@ void renderPass(glm::mat4 view)
 
     // Ping-pong bloom effect. Performs horiztonal and vertical bluring.
     // First iteration of the bloom effect. This means we don't need if conditions in the for loop
-    bool horizontal = false;
+    bool horizontal {false};
     bloomShader->useShader();
     glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
     glUniform1i(uniformHorizontal, !horizontal);
     glBindTexture(GL_TEXTURE_2D, halfTexture);
     framebufferQuad->render();
 
-    int amount = 4;
-    for (unsigned int i = 0; i < amount; i++)
+    int amount {4};
+    for (unsigned int i {0}; i < amount; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
         glUniform1i(uniformHorizontal, horizontal);
@@ -460,7 +461,7 @@ int main()
     mainWindow.initialize();
 
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f);
+    glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
     PointLight* pointLights[MAX_POINT_LIGHTS];
 
     // Build scene based on user input
@@ -490,13 +491,13 @@ int main()
 
     // Loop until window is closed
     GLfloat now;
-    unsigned int counter = 0;
+    unsigned int counter {0};
     double lastFPSUpdateTime = glfwGetTime();
-    GLfloat lastFrame = 0.0f;
-    GLfloat deltaTime = 0.0f;
-    GLfloat timeChange = 1.0f;
-    GLfloat timeStep = 0.0f;
-    GLfloat timeSinceLastVerlet = 0.0f;
+    GLfloat lastFrame {0.0f};
+    GLfloat deltaTime {0.0f};
+    GLfloat timeChange {1.0f};
+    GLfloat timeStep {0.0f};
+    GLfloat timeSinceLastVerlet {0.0f};
     while(!mainWindow.getShouldClose())
     {
         now = glfwGetTime();
@@ -508,9 +509,9 @@ int main()
         // Update FPS counter
         if (counter == 30)
         {
-            double timeElapsed = now - lastFPSUpdateTime;
-            std::string FPS = std::to_string(30.0 / timeElapsed);
-            std::string newTitle = "Solar System - " + FPS + " FPS";
+            double timeElapsed {now - lastFPSUpdateTime};
+            std::string FPS {std::to_string(30.0 / timeElapsed)};
+            std::string newTitle {"Solar System - " + FPS + " FPS"};
             mainWindow.setWindowTitle(newTitle);
             lastFPSUpdateTime = now;
             counter = 0;
@@ -530,7 +531,7 @@ int main()
 
         // Get + handle user input
         glfwPollEvents();
-        bool* keys = mainWindow.getKeys();
+        bool* keys {mainWindow.getKeys()};
         camera.keyControl(keys, deltaTime, &shadowsEnabled);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
@@ -538,7 +539,7 @@ int main()
         if (shadowsEnabled)
         {
             // These needs to be index based loops so that we don't make a copy of the lights each time
-            for (size_t i = 0; i < pointLightCount; i++)
+            for (size_t i {0}; i < pointLightCount; i++)
                 omniShadowMapPass(pointLights[i]);
             omniShadowMapPass(camera.getSpotLight());
         }

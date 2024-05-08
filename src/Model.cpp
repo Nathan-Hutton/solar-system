@@ -5,20 +5,20 @@ Model::Model() : SpaceObject()
 {
     this->material = nullptr;
     this->scaleFactor = 1.0f;
-    this->scaleFactorVector = glm::vec3(1.0f, 1.0f, 1.0f);
+    this->scaleFactorVector = glm::vec3{1.0f, 1.0f, 1.0f};
 }
 
 Model::Model(GLfloat mass) : SpaceObject(mass)
 {
     this->material = nullptr;
     this->scaleFactor = 1.0f;
-    this->scaleFactorVector = glm::vec3(1.0f, 1.0f, 1.0f);
+    this->scaleFactorVector = glm::vec3{1.0f, 1.0f, 1.0f};
 }
 
 void Model::setScaleFactor(GLfloat sFactor)
 {
     this->scaleFactor = sFactor;
-    this->scaleFactorVector = glm::vec3(sFactor, sFactor, sFactor);
+    this->scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
 }
 
 GLfloat Model::getScaleFactor()
@@ -33,7 +33,7 @@ glm::vec3 Model::getScaleFactorVector()
 
 void Model::loadModel(const std::string& fileName) {
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
+    const aiScene *scene {importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices)};
 
     if (!scene)
     {
@@ -48,9 +48,9 @@ void Model::loadModel(const std::string& fileName) {
 
 void Model::render()
 {
-    for (size_t i = 0; i < meshList.size(); i++)
+    for (size_t i {0}; i < meshList.size(); i++)
     {
-        unsigned int materialIndex = meshToTex[i];
+        unsigned int materialIndex {meshToTex[i]};
 
         // Check if it's possible for the material to be inside the textureList
         // Then check if that index is null
@@ -70,7 +70,7 @@ void Model::setWorldProperties(glm::mat4* model)
 
 void Model::clearModel()
 {
-    for (size_t i = 0; i < meshList.size(); i++)
+    for (size_t i {0}; i < meshList.size(); i++)
     {
         if (meshList[i])
         {
@@ -79,7 +79,7 @@ void Model::clearModel()
         }
     }
 
-    for (size_t i = 0; i < textureList.size(); i++)
+    for (size_t i {0}; i < textureList.size(); i++)
     {
         if (textureList[i])
         {
@@ -92,14 +92,14 @@ void Model::clearModel()
 void Model::loadNode(aiNode *node, const aiScene *scene)
 {
     // Load meshes for the node
-    for(size_t i = 0; i < node->mNumMeshes; i++)
+    for(size_t i {0}; i < node->mNumMeshes; i++)
     {
         // node only stores the ID of the mesh, the scene stores the data
         loadMesh(scene->mMeshes[node->mMeshes[i]], scene);
     }
 
     // Recursively call loadNode on all children
-    for (size_t i = 0; i < node->mNumChildren; i++)
+    for (size_t i {0}; i < node->mNumChildren; i++)
     {
         loadNode(node->mChildren[i], scene);
     }
@@ -111,7 +111,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     std::vector<GLfloat> vertices;
     std::vector<unsigned int> indices;
 
-    for(size_t i = 0; i < mesh->mNumVertices; i++)
+    for(size_t i {0}; i < mesh->mNumVertices; i++)
     {
         // With 'insert' we can append all the data from an array to our vector
         vertices.insert(vertices.end(), {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z});
@@ -138,16 +138,16 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     // We're calculating the greatest distance between vectors in the model
     for (int i = 0; i < vertices.size(); i+=8)
     {
-        glm::vec3 vertex1 = glm::vec3(vertices[i], vertices[i+1], vertices[i+2]);
+        glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
         for (int j = 0; i < vertices.size(); i++)
         {
-            glm::vec3 vertex2 = glm::vec3(vertices[j], vertices[j+1], vertices[j+2]);
-            GLfloat displacementVectorLength = glm::length(vertex1 - vertex2);
+            glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
+            GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
             greatestDistanceBetweenVertices = std::max(greatestDistanceBetweenVertices, displacementVectorLength);
         }
     }
 
-    Mesh *newMesh = new Mesh();
+    Mesh *newMesh {new Mesh()};
     newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
     meshList.push_back(newMesh);
     meshToTex.push_back(mesh->mMaterialIndex);
@@ -157,9 +157,9 @@ void Model::loadMaterials(const aiScene *scene)
 {
     textureList.resize(scene->mNumMaterials);
 
-    for (size_t i = 0; i < scene->mNumMaterials; i++)
+    for (size_t i {0}; i < scene->mNumMaterials; i++)
     {
-        aiMaterial* material = scene->mMaterials[i];
+        aiMaterial* material {scene->mMaterials[i]};
 
         textureList[i] = nullptr;
 
@@ -177,10 +177,10 @@ void Model::loadMaterials(const aiScene *scene)
             int idx1 = std::string(path.data).rfind("/");
             idx = std::max(idx, idx1);
 
-            std::string filename = std::string(path.data).substr(idx + 1);
+            std::string filename {std::string(path.data).substr(idx + 1)};
 
-            std::string textPath = std::string("../assets/textures/") + filename;
-            textureList[i] = new Texture(textPath.c_str());
+            std::string textPath {std::string("../assets/textures/") + filename};
+            textureList[i] = new Texture{textPath.c_str()};
 
             if (!textureList[i]->loadTexture())
             {
@@ -192,7 +192,7 @@ void Model::loadMaterials(const aiScene *scene)
 
         if (!textureList[i])
         {
-            textureList[i] = new Texture("../assets/textures/plain.png");
+            textureList[i] = new Texture{"../assets/textures/plain.png"};
             textureList[i]->loadTexture();
         }
     }

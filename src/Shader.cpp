@@ -20,19 +20,19 @@ void Shader::createFromFiles(const char* file1, const char* file2, const char* f
 {
     if (file3 != nullptr)
     {
-        std::string vertexString = readFile(file1);
-        std::string geometryString = readFile(file2);
-        std::string fragmentString = readFile(file3);
-        const char* vertexCode = vertexString.c_str();
-        const char* geometryCode = geometryString.c_str();
-        const char* fragmentCode = fragmentString.c_str();
+        std::string vertexString{readFile(file1)};
+        std::string geometryString{readFile(file2)};
+        std::string fragmentString{readFile(file3)};
+        const char* vertexCode{vertexString.c_str()};
+        const char* geometryCode{geometryString.c_str()};
+        const char* fragmentCode{fragmentString.c_str()};
         compileShader(vertexCode, geometryCode, fragmentCode);
         return;
     }
-    std::string vertexString = readFile(file1);
-    std::string fragmentString = readFile(file2);
-    const char* vertexCode = vertexString.c_str();
-    const char* fragmentCode = fragmentString.c_str();
+    std::string vertexString{readFile(file1)};
+    std::string fragmentString{readFile(file2)};
+    const char* vertexCode{vertexString.c_str()};
+    const char* fragmentCode{fragmentString.c_str()};
     compileShader(vertexCode, fragmentCode);
 }
 
@@ -46,7 +46,7 @@ std::string Shader::readFile(const char* fileLocation)
         return "";
     }
 
-    std::string line = "";
+    std::string line {""};
     while (!fileStream.eof())
     {
         std::getline(fileStream, line);
@@ -96,8 +96,8 @@ void Shader::compileShader(const char* vertexCode, const char* geometryCode, con
 
 void Shader::validate()
 {
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
+    GLint result {0};
+    GLchar eLog[1024] { 0 };
 
     // Check if the shader program can execute on the current OpenGL state
     glValidateProgram(shaderID);
@@ -116,8 +116,8 @@ void Shader::compileProgram()
     // Creates an executable that runs on the programmable parts of the GPU
     glLinkProgram(shaderID);
 
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
+    GLint result {0};
+    GLchar eLog[1024] { 0 };
 
     // Check for errors
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
@@ -142,9 +142,9 @@ void Shader::compileProgram()
     uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
 
     // Point lights
-    for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
+    for (size_t i {0}; i < MAX_POINT_LIGHTS; i++)
     {
-        char locBuff[100] = {'\0'};
+        char locBuff[100] {'\0'};
 
         snprintf(locBuff, sizeof(locBuff), "pointLights[%ld].base.color", i);
         uniformPointLights[i].uniformColor = glGetUniformLocation(shaderID, locBuff);
@@ -184,17 +184,17 @@ void Shader::compileProgram()
     uniformFarPlane = glGetUniformLocation(shaderID, "farPlane");
 
     // This loop only gets values for the omni_shadow_shaders
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i {0}; i < 6; i++)
     {
-        char locBuff[100] = {'\0'};
+        char locBuff[100] {'\0'};
         snprintf(locBuff, sizeof(locBuff), "lightMatrices[%ld]", i);
         uniformLightMatrices[i] = glGetUniformLocation(shaderID, locBuff);
     }
 
     // This gets values for the main shade.frag
-    for (size_t i = 0; i < MAX_POINT_LIGHTS + 1; i++)
+    for (size_t i {0}; i < MAX_POINT_LIGHTS + 1; i++)
     {
-        char locBuff[100] = {'\0'};
+        char locBuff[100] {'\0'};
         snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%ld].shadowMap", i);
         uniformOmniShadowMaps[i].shadowMap = glGetUniformLocation(shaderID, locBuff);
         snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%ld].farPlane", i);
@@ -205,7 +205,7 @@ void Shader::compileProgram()
 void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
 {
     // Makes a shader object
-    GLuint theShader = glCreateShader(shaderType);
+    GLuint theShader {glCreateShader(shaderType)};
 
     // Sort the code in a way OpenGL can understand
     const GLchar* theCode[1];
@@ -218,8 +218,8 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     // Compile the shader source code
     glCompileShader(theShader);
 
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
+    GLint result {0};
+    GLchar eLog[1024] { 0 };
 
     // Check for compilation errors
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
@@ -276,7 +276,7 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
 
-    for (size_t i = 0; i < lightCount; i++)
+    for (size_t i {0}; i < lightCount; i++)
     {
         pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
                             uniformPointLights[i].uniformColor, uniformPointLights[i].uniformPosition, 
@@ -289,7 +289,7 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
 
-    for (size_t i = 0; i < lightCount; i++)
+    for (size_t i {0}; i < lightCount; i++)
     {
         pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
                             uniformPointLights[i].uniformColor, uniformPointLights[i].uniformPosition, 
@@ -348,7 +348,7 @@ void Shader::setTexture(GLuint textureUnit)
 
 void Shader::setLightMatrices(std::vector<glm::mat4> lightMatrices)
 {
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i {0}; i < 6; i++)
         glUniformMatrix4fv(uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
 }
 

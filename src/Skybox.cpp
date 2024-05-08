@@ -20,9 +20,9 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
 
     int width, height, bitDepth;
 
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i {0}; i < 6; i++)
     {
-        unsigned char *textData = stbi_load(faceLocations[i].c_str(), &width, &height, &bitDepth, STBI_rgb);
+        unsigned char *textData {stbi_load(faceLocations[i].c_str(), &width, &height, &bitDepth, STBI_rgb)};
         if (!textData)
         {
             printf("Failed to find %s\n", faceLocations[i].c_str());
@@ -40,7 +40,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
 
     // Mesh setup
 
-    unsigned int skyboxIndices[] = {
+    unsigned int skyboxIndices[] {
         // front
         2, 1, 0,
         3, 1, 2,
@@ -61,7 +61,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
         7, 6, 3
     };
 
-    float skyboxVertices[] = {
+    float skyboxVertices[] {
         -1.0f, 1.0f, -1.0f,		0.0f, 0.0f,
         -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
         1.0f, 1.0f, -1.0f,		0.0f, 0.0f,
@@ -88,7 +88,7 @@ void Skybox::drawSkybox(glm::mat4 viewMatrix)
     // We only want to use the rotation values. All of the transformation values
     // are stored in the 4th column of the viewMatrix, so we'll remove that column
     // by converting it to a 3x3 then a 4x4 again
-    viewMatrix = glm::mat4(glm::mat3(viewMatrix));
+    viewMatrix = glm::mat4{glm::mat3{viewMatrix}};
     skyShader->useShader();
 
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));

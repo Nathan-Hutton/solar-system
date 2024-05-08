@@ -3,8 +3,8 @@
 
 Camera::Camera()
 {
-    position = glm::vec3(0.0f, 0.0f, 0.0f);
-    worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    position = glm::vec3{0.0f};
+    worldUp = glm::vec3{0.0f, 1.0f, 0.0f};
     yaw = 90.0f;
     oldYaw = 90.0f;
     pitch = 0.0f;
@@ -12,7 +12,7 @@ Camera::Camera()
     roll = 0.0f;
     oldRoll = 0.0f;
     
-    front = glm::vec3(0.0f, 0.0f, -1.0f);
+    front = glm::vec3{0.0f, 0.0f, -1.0f};
     front = glm::normalize(front);
     right = glm::normalize(glm::cross(front, worldUp));
     up = glm::normalize(glm::cross(right, front));
@@ -33,7 +33,7 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     oldPitch = startPitch;
     oldRoll = 0.0f;
     roll = 0.0f;
-    front = glm::vec3(0.0f, 0.0f, -1.0f);
+    front = glm::vec3{0.0f, 0.0f, -1.0f};
     right = glm::normalize(glm::cross(front, worldUp));
     up = glm::normalize(glm::cross(right, front));
 
@@ -148,18 +148,18 @@ glm::vec3 Camera::getDirection()
 
 void Camera::update()
 {
-    glm::mat4 yawMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(oldYaw - yaw), up);
-    front = glm::normalize(glm::vec3(yawMatrix * glm::vec4(front, 0.0f)));
+    glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
+    front = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
     oldYaw = yaw;
     right = glm::normalize(glm::cross(front, up));
 
-    glm::mat4 pitchMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(pitch - oldPitch), right);
-    front = glm::normalize(glm::vec3(pitchMatrix * glm::vec4(front, 0.0f)));
+    glm::mat4 pitchMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(pitch - oldPitch), right)};
+    front = glm::normalize(glm::vec3{pitchMatrix * glm::vec4{front, 0.0f}});
     oldPitch = pitch;
     up = glm::normalize(glm::cross(right, front));
 
-    glm::mat4 rollMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(roll - oldRoll), front);
-    up = glm::normalize(glm::vec3(rollMatrix * glm::vec4(up, 0.0f)));
+    glm::mat4 rollMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(roll - oldRoll), front)};
+    up = glm::normalize(glm::vec3{rollMatrix * glm::vec4{up, 0.0f}});
     oldRoll = roll;
     right = glm::normalize(glm::cross(front, up));
 

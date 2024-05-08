@@ -16,7 +16,7 @@ bool OmniShadowMap::init(unsigned int width, unsigned int height)
 
     // Initialize the 6 textures of the cubemap
     // These enums represent integers
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i {0}; i < 6; i++)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -36,7 +36,7 @@ bool OmniShadowMap::init(unsigned int width, unsigned int height)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
