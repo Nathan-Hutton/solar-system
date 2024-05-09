@@ -2,23 +2,18 @@
 
 SpaceObject::SpaceObject()
 {
-    this->mass = 1.0f;
-    this->position = glm::vec3{0.0f};
-    this->velocity = glm::vec3{0.0f};
-    this->rotation = glm::vec3{0.0f};
+    this->mass      = 1.0f;
+    this->position  = glm::vec3{0.0f};
+    this->velocity  = glm::vec3{0.0f};
+    this->rotation  = glm::vec3{0.0f};
 }
 
 SpaceObject::SpaceObject(GLfloat mass)
 {
-    this->mass = mass;
-
-    // These are default values we'll set with setters
-    this->position = glm::vec3{0.0f};
-    this->velocity = glm::vec3{0.0f};
-    this->rotation = glm::vec3{0.0f};
-    this->angle = 0.0f;
-    this->rotationSpeed = 0.0f;
-    this->greatestDistanceBetweenVertices = 0.0f;
+    this->mass      = mass;
+    this->position  = glm::vec3{0.0f};
+    this->velocity  = glm::vec3{0.0f};
+    this->rotation  = glm::vec3{0.0f};
 }
 
 GLfloat SpaceObject::getMass()

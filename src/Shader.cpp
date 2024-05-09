@@ -118,14 +118,14 @@ void Shader::compileProgram()
     // for them every frame
 
     // Camera/Window
-    uniformModel = glGetUniformLocation(shaderID, "model");
-    uniformProjection = glGetUniformLocation(shaderID, "projection");
-    uniformView = glGetUniformLocation(shaderID, "view");
+    uniformModel                = glGetUniformLocation(shaderID, "model");
+    uniformProjection           = glGetUniformLocation(shaderID, "projection");
+    uniformView                 = glGetUniformLocation(shaderID, "view");
 
     // Specular
-    uniformEyePosition = glGetUniformLocation(shaderID, "eyePosition");
-    uniformSpecularIntensity = glGetUniformLocation(shaderID, "material.specularIntensity");
-    uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
+    uniformEyePosition          = glGetUniformLocation(shaderID, "eyePosition");
+    uniformSpecularIntensity    = glGetUniformLocation(shaderID, "material.specularIntensity");
+    uniformShininess            = glGetUniformLocation(shaderID, "material.shininess");
 
     // Point lights
     std::stringstream ss {};
@@ -175,18 +175,18 @@ void Shader::compileProgram()
     }
     
     // Spot lights
-    uniformFlashLightOn = glGetUniformLocation(shaderID, "flashLightOn");
-    uniformSpotLight.uniformColor = glGetUniformLocation(shaderID, "spotLight.base.base.color");
-    uniformSpotLight.uniformAmbientIntensity = glGetUniformLocation(shaderID, "spotLight.base.base.ambientIntensity");
-    uniformSpotLight.uniformDiffuseIntensity = glGetUniformLocation(shaderID, "spotLight.base.base.diffuseIntensity");
+    uniformFlashLightOn                         = glGetUniformLocation(shaderID, "flashLightOn");
+    uniformSpotLight.uniformColor               = glGetUniformLocation(shaderID, "spotLight.base.base.color");
+    uniformSpotLight.uniformAmbientIntensity    = glGetUniformLocation(shaderID, "spotLight.base.base.ambientIntensity");
+    uniformSpotLight.uniformDiffuseIntensity    = glGetUniformLocation(shaderID, "spotLight.base.base.diffuseIntensity");
 
-    uniformSpotLight.uniformPosition = glGetUniformLocation(shaderID, "spotLight.base.position");
-    uniformSpotLight.uniformExponential = glGetUniformLocation(shaderID, "spotLight.base.exponential");
-    uniformSpotLight.uniformLinear = glGetUniformLocation(shaderID, "spotLight.base.linear");
-    uniformSpotLight.uniformConstant = glGetUniformLocation(shaderID, "spotLight.base.constant");
+    uniformSpotLight.uniformPosition            = glGetUniformLocation(shaderID, "spotLight.base.position");
+    uniformSpotLight.uniformExponential         = glGetUniformLocation(shaderID, "spotLight.base.exponential");
+    uniformSpotLight.uniformLinear              = glGetUniformLocation(shaderID, "spotLight.base.linear");
+    uniformSpotLight.uniformConstant            = glGetUniformLocation(shaderID, "spotLight.base.constant");
 
-    uniformSpotLight.uniformDirection = glGetUniformLocation(shaderID, "spotLight.direction");
-    uniformSpotLight.uniformEdge = glGetUniformLocation(shaderID, "spotLight.edge");
+    uniformSpotLight.uniformDirection           = glGetUniformLocation(shaderID, "spotLight.direction");
+    uniformSpotLight.uniformEdge                = glGetUniformLocation(shaderID, "spotLight.edge");
 
     uniformTexture = glGetUniformLocation(shaderID, "theTexture");
 
@@ -383,8 +383,8 @@ void Shader::clearShader()
         shaderID = 0;
     }
 
-    uniformModel = 0;
-    uniformProjection = 0;
+    uniformModel        = 0;
+    uniformProjection   = 0;
 }
 
 Shader::~Shader()

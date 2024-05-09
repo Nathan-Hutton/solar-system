@@ -4,8 +4,8 @@ OmniShadowMap::OmniShadowMap() : ShadowMap() {}
 
 bool OmniShadowMap::init(unsigned int width, unsigned int height)
 {
-    shadowWidth = width;
-    shadowHeight = height;
+    shadowWidth     = width;
+    shadowHeight    = height;
 
     // Make the framebuffer and texture
     glGenFramebuffers(1, &FBO);

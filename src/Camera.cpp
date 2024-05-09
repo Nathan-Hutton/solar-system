@@ -3,40 +3,40 @@
 
 Camera::Camera()
 {
-    position = glm::vec3{0.0f};
-    worldUp = glm::vec3{0.0f, 1.0f, 0.0f};
-    yaw = 90.0f;
-    oldYaw = 90.0f;
-    pitch = 0.0f;
-    oldPitch = 0.0f;
-    roll = 0.0f;
-    oldRoll = 0.0f;
+    position    = glm::vec3{0.0f};
+    worldUp     = glm::vec3{0.0f, 1.0f, 0.0f};
+    yaw         = 90.0f;
+    oldYaw      = 90.0f;
+    pitch       = 0.0f;
+    oldPitch    = 0.0f;
+    roll        = 0.0f;
+    oldRoll     = 0.0f;
     
-    front = glm::vec3{0.0f, 0.0f, -1.0f};
-    front = glm::normalize(front);
-    right = glm::normalize(glm::cross(front, worldUp));
-    up = glm::normalize(glm::cross(right, front));
+    front       = glm::vec3{0.0f, 0.0f, -1.0f};
+    front       = glm::normalize(front);
+    right       = glm::normalize(glm::cross(front, worldUp));
+    up          = glm::normalize(glm::cross(right, front));
 
-    moveSpeed = 5.0f;
-    turnSpeed = 1.0f;
+    moveSpeed   = 5.0f;
+    turnSpeed   = 1.0f;
 }
 
 Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLfloat startPitch, GLfloat startMoveSpeed, GLfloat startTurnSpeed)
 {
-    position = startPosition;
-    worldUp = startUp;
-    yaw = startYaw;
-    oldYaw = startYaw;
-    pitch = startPitch;
-    oldPitch = startPitch;
-    oldRoll = 0.0f;
-    roll = 0.0f;
-    front = glm::vec3{0.0f, 0.0f, -1.0f};
-    right = glm::normalize(glm::cross(front, worldUp));
-    up = glm::normalize(glm::cross(right, front));
+    position    = startPosition;
+    worldUp     = startUp;
+    yaw         = startYaw;
+    oldYaw      = startYaw;
+    pitch       = startPitch;
+    oldPitch    = startPitch;
+    oldRoll     = 0.0f;
+    roll        = 0.0f;
+    front       = glm::vec3{0.0f, 0.0f, -1.0f};
+    right       = glm::normalize(glm::cross(front, worldUp));
+    up          = glm::normalize(glm::cross(right, front));
 
-    moveSpeed = startMoveSpeed;
-    turnSpeed = startTurnSpeed;
+    moveSpeed   = startMoveSpeed;
+    turnSpeed   = startTurnSpeed;
 }
 
 void Camera::keyControl(bool* keys, GLfloat deltaTime, bool* shadowsEnabled)
@@ -145,19 +145,19 @@ glm::vec3 Camera::getDirection()
 void Camera::update()
 {
     glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
-    front = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
-    oldYaw = yaw;
-    right = glm::normalize(glm::cross(front, up));
+    front       = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
+    oldYaw      = yaw;
+    right       = glm::normalize(glm::cross(front, up));
 
     glm::mat4 pitchMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(pitch - oldPitch), right)};
-    front = glm::normalize(glm::vec3{pitchMatrix * glm::vec4{front, 0.0f}});
-    oldPitch = pitch;
-    up = glm::normalize(glm::cross(right, front));
+    front       = glm::normalize(glm::vec3{pitchMatrix * glm::vec4{front, 0.0f}});
+    oldPitch    = pitch;
+    up          = glm::normalize(glm::cross(right, front));
 
     glm::mat4 rollMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(roll - oldRoll), front)};
-    up = glm::normalize(glm::vec3{rollMatrix * glm::vec4{up, 0.0f}});
-    oldRoll = roll;
-    right = glm::normalize(glm::cross(front, up));
+    up          = glm::normalize(glm::vec3{rollMatrix * glm::vec4{up, 0.0f}});
+    oldRoll     = roll;
+    right       = glm::normalize(glm::cross(front, up));
 
     // Update the flashlight position and direction
     spotLight->setFlash(position, front);

@@ -77,17 +77,18 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
 	sunShader->setTexture(2);
     sunShader->validate();
     // For the sun shaders we don't do any light or shadow calculations
-    uniformModelSuns = sunShader->getModelLocation();
-    uniformViewSuns = sunShader->getViewLocation();
+    uniformModelSuns    = sunShader->getModelLocation();
+    uniformViewSuns     = sunShader->getViewLocation();
 
     omniShadowShader = new Shader{};
 	omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
 		"../assets/shaders/omni_shadow_map.geom",
 	  	"../assets/shaders/omni_shadow_map.frag");
+
     // The shadow map shader will record the depth values of all objects except suns
-    uniformModelOmniShadowMap = omniShadowShader->getModelLocation();
-	uniformOmniLightPos = omniShadowShader->getOmniLightPosLocation();
-	uniformFarPlane = omniShadowShader->getFarPlaneLocation();
+    uniformModelOmniShadowMap   = omniShadowShader->getModelLocation();
+	uniformOmniLightPos         = omniShadowShader->getOmniLightPosLocation();
+	uniformFarPlane             = omniShadowShader->getFarPlaneLocation();
 
     hdrShader = new Shader{};
     hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
@@ -132,12 +133,12 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
 
     // This is so we can disable shadows
     // By default, shadows will be turned off
-    mainShader = mainShaderWithoutShadows;
-    uniformModelPlanets = mainShaderWithoutShadows->getModelLocation();
-    uniformViewPlanets = mainShaderWithoutShadows->getViewLocation();
-    uniformEyePositionPlanets = mainShaderWithoutShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
-    uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
+    mainShader                          = mainShaderWithoutShadows;
+    uniformModelPlanets                 = mainShaderWithoutShadows->getModelLocation();
+    uniformViewPlanets                  = mainShaderWithoutShadows->getViewLocation();
+    uniformEyePositionPlanets           = mainShaderWithoutShadows->getEyePositionLocation();
+    uniformSpecularIntensityPlanets     = mainShaderWithoutShadows->getSpecularIntensityLocation();
+    uniformShininessPlanets             = mainShaderWithoutShadows->getShininessLocation();
 }
 
 void setupPostProcessingObjects()
@@ -268,21 +269,21 @@ void toggleShadows()
     // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
     if (shadowsEnabled)
     {
-        mainShader = mainShaderWithShadows;
-        uniformModelPlanets = mainShaderWithShadows->getModelLocation();
-        uniformViewPlanets = mainShaderWithShadows->getViewLocation();
-        uniformEyePositionPlanets = mainShaderWithShadows->getEyePositionLocation();
-        uniformSpecularIntensityPlanets = mainShaderWithShadows->getSpecularIntensityLocation();
-        uniformShininessPlanets = mainShaderWithShadows->getShininessLocation();
+        mainShader                          = mainShaderWithShadows;
+        uniformModelPlanets                 = mainShaderWithShadows->getModelLocation();
+        uniformViewPlanets                  = mainShaderWithShadows->getViewLocation();
+        uniformEyePositionPlanets           = mainShaderWithShadows->getEyePositionLocation();
+        uniformSpecularIntensityPlanets     = mainShaderWithShadows->getSpecularIntensityLocation();
+        uniformShininessPlanets             = mainShaderWithShadows->getShininessLocation();
     }
     else
     {
-        mainShader = mainShaderWithoutShadows;
-        uniformModelPlanets = mainShaderWithoutShadows->getModelLocation();
-        uniformViewPlanets = mainShaderWithoutShadows->getViewLocation();
-        uniformEyePositionPlanets = mainShaderWithoutShadows->getEyePositionLocation();
-        uniformSpecularIntensityPlanets = mainShaderWithoutShadows->getSpecularIntensityLocation();
-        uniformShininessPlanets = mainShaderWithoutShadows->getShininessLocation();
+        mainShader                          = mainShaderWithoutShadows;
+        uniformModelPlanets                 = mainShaderWithoutShadows->getModelLocation();
+        uniformViewPlanets                  = mainShaderWithoutShadows->getViewLocation();
+        uniformEyePositionPlanets           = mainShaderWithoutShadows->getEyePositionLocation();
+        uniformSpecularIntensityPlanets     = mainShaderWithoutShadows->getSpecularIntensityLocation();
+        uniformShininessPlanets             = mainShaderWithoutShadows->getShininessLocation();
     }
 
     for (SpaceObject *satellite : satellites)
@@ -433,7 +434,7 @@ int main()
     std::cout << "**********\n";
     std::cout << "\033[92m" << "Controls" << "\033[0m\n";
     std::cout << "**********\n";
-    std::cout << "Mouse: Look around\n\n";
+    std::cout << "\nMouse: Look around\n\n";
     std::cout << "W: Move forward\n";
     std::cout << "S: Move backwards\n";
     std::cout << "A: Move left\n";
@@ -500,10 +501,10 @@ int main()
     GLfloat timeSinceLastVerlet {0.0f};
     while(!mainWindow.getShouldClose())
     {
-        now = glfwGetTime();
-        deltaTime = now - lastFrame;
-        lastFrame = now;
-        timeStep = deltaTime * timeChange;
+        now         = glfwGetTime();
+        deltaTime   = now - lastFrame;
+        lastFrame   = now;
+        timeStep    = deltaTime * timeChange;
         counter++;
 
         // Update FPS counter

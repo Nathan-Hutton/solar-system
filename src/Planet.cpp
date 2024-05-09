@@ -13,8 +13,8 @@ void Planet::render()
 
 void Planet::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess)
 {
-    specularIntensityLocation = uniformSpecularIntensity;
-    shininessLocation = uniformShininess;
+    specularIntensityLocation   = uniformSpecularIntensity;
+    shininessLocation           = uniformShininess;
 }
 
 Planet::~Planet()

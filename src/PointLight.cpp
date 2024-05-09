@@ -2,9 +2,8 @@
 
 PointLight::PointLight() : Light()
 {
-    position = glm::vec3{0.0f, -1.0f, 0.0f};
-    linear = exponential = 0.0f;
-    constant = 1.0f; // Don't want to divide by 0 since we have reciprocal function
+    position    = glm::vec3{0.0f, -1.0f, 0.0f};
+    constant    = 1.0f; // Don't want to divide by 0 since we have reciprocal function
 }
 
 PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -15,12 +14,11 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
     : Light(1024, 1024, red, green, blue, ambientIntensity, diffuseIntensity)
 {
-    position = glm::vec3{xPos, yPos, zPos};
-    this->exponential = exponential;
-    this->linear = linear;
-    this->constant = constant;
-
-    farPlane = far;
+    this->position      = glm::vec3{xPos, yPos, zPos};
+    this->exponential   = exponential;
+    this->linear        = linear;
+    this->constant      = constant;
+    this->farPlane      = far;
 
     float aspectRatio {(float)shadowWidth / (float)shadowHeight};
     // A bunch of 90 degree angles together makes a cube

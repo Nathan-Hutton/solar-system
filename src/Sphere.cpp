@@ -2,8 +2,8 @@
 
 Sphere::Sphere() : SpaceObject()
 {
-    this->radius = 0.5f;
-    this->sphereMesh = new Mesh{};
+    this->radius        = 0.5f;
+    this->sphereMesh    = new Mesh{};
 }
 
 Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass)

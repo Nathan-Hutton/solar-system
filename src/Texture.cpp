@@ -72,10 +72,10 @@ void Texture::useTexture()
 void Texture::clearTexture()
 {
     glDeleteTextures(1, &textureID);
-    textureID = 0;
-    width = 0;
-    height = 0;
-    fileLocation = NULL;
+    textureID       = 0;
+    width           = 0;
+    height          = 0;
+    fileLocation    = NULL;
 }
 
 Texture::~Texture()

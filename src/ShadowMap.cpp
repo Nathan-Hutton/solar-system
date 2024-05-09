@@ -4,8 +4,8 @@ ShadowMap::ShadowMap() {}
 
 bool ShadowMap::init(GLuint width, GLuint height)
 {
-    shadowWidth = width;
-    shadowHeight = height;
+    shadowWidth     = width;
+    shadowHeight    = height;
 
     // A framebuffer is like a screen.
     // We're making another one that won't be rendered to the screen and we'll draw to it.

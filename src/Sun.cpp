@@ -5,8 +5,8 @@ Sun::Sun() : Sphere() {}
 
 Sun::Sun(float radius, GLfloat mass, int stacks, int slices)
 {
-    this->mass = mass;
-    this->radius = radius;
+    this->mass      = mass;
+    this->radius    = radius;
 
     // Create the mesh
     this->sphereMesh = new Mesh{};

@@ -3,21 +3,21 @@
 
 Model::Model() : SpaceObject()
 {
-    this->material = nullptr;
-    this->scaleFactor = 1.0f;
+    this->material          = nullptr;
+    this->scaleFactor       = 1.0f;
     this->scaleFactorVector = glm::vec3{1.0f};
 }
 
 Model::Model(GLfloat mass) : SpaceObject(mass)
 {
-    this->material = nullptr;
-    this->scaleFactor = 1.0f;
+    this->material          = nullptr;
+    this->scaleFactor       = 1.0f;
     this->scaleFactorVector = glm::vec3{1.0f};
 }
 
 void Model::setScaleFactor(GLfloat sFactor)
 {
-    this->scaleFactor = sFactor;
+    this->scaleFactor       = sFactor;
     this->scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
 }
 
@@ -173,9 +173,9 @@ void Model::loadMaterials(const aiScene *scene)
 
             // Chop off the parts of the path that don't matter
             // This is complicated because they may be on linux or windows
-            int idx = std::string(path.data).rfind("\\");
-            int idx1 = std::string(path.data).rfind("/");
-            idx = std::max(idx, idx1);
+            int idx     = std::string(path.data).rfind("\\");
+            int idx1    = std::string(path.data).rfind("/");
+            idx         = std::max(idx, idx1);
 
             std::string filename {std::string(path.data).substr(idx + 1)};
 
@@ -200,8 +200,8 @@ void Model::loadMaterials(const aiScene *scene)
 
 void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess)
 {
-    specularIntensityLocation = uniformSpecularIntensity;
-    shininessLocation = uniformShininess;
+    specularIntensityLocation   = uniformSpecularIntensity;
+    shininessLocation           = uniformShininess;
 }
 
 Model::~Model()

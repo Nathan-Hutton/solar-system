@@ -2,9 +2,9 @@
 
 SpotLight::SpotLight() : PointLight()
 {
-    direction = glm::vec3{1.0f, 0.0f, 0.0f};
-    edge = 1.0f;
-    procEdge = cosf(glm::radians(edge));
+    direction   = glm::vec3{1.0f, 0.0f, 0.0f};
+    edge        = 1.0f;
+    procEdge    = cosf(glm::radians(edge));
 }
 
 SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -17,15 +17,15 @@ SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat edge) 
     : PointLight(shadowWidth, shadowHeight, near, far, red, green, blue, ambientIntensity, diffuseIntensity, xPos, yPos, zPos, exponential, linear, constant)
 {
-    direction = glm::normalize(glm::vec3{xDir, yDir, zDir});
-    this->edge = edge;
-    procEdge = cosf(glm::radians(edge));
+    direction   = glm::normalize(glm::vec3{xDir, yDir, zDir});
+    this->edge  = edge;
+    procEdge    = cosf(glm::radians(edge));
 }
 
 void SpotLight::setFlash(glm::vec3 pos, glm::vec3 dir)
 {
-    position = pos;
-    direction = dir;
+    position    = pos;
+    direction   = dir;
 }
 
 void SpotLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,

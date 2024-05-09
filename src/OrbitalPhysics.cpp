@@ -66,9 +66,9 @@ void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<SpaceObject*>& st
             force += getForce(satellites[i], satellites[j]);
         }
 
-        acceleration = force / satellites[i]->getMass();
-        velocity = satellites[i]->getVelocity() + acceleration * tStep;
-        position = satellites[i]->getPosition() + velocity * tStep;
+        acceleration    = force / satellites[i]->getMass();
+        velocity        = satellites[i]->getVelocity() + acceleration * tStep;
+        position        = satellites[i]->getPosition() + velocity * tStep;
         satellites[i]->setVelocity(velocity);
         newSatellitePositions.push_back(position);
     }
@@ -109,8 +109,8 @@ void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<SpaceObject*>& s
             force += getForce(satellites[i], satellites[j]);
         }
 
-        acceleration = force / satellites[i]->getMass();
-        position = 2.0f * satellites[i]->getPosition() - satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f);
+        acceleration    = force / satellites[i]->getMass();
+        position        = 2.0f * satellites[i]->getPosition() - satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f);
         satellites[i]->setOldPosition(satellites[i]->getPosition());
         newSatellitePositions.push_back(position);
     }

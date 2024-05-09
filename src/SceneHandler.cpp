@@ -23,8 +23,8 @@ void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std:
             force += OrbitalPhysicsFunctions::getForce(satellites[i], satellites[j]);
         }
 
-        acceleration = force / satellites[i]->getMass();
-        velocity = satellites[i]->getVelocity() + acceleration * 0.005f;
+        acceleration    = force / satellites[i]->getMass();
+        velocity        = satellites[i]->getVelocity() + acceleration * 0.005f;
         satellites[i]->setOldPosition(satellites[i]->getPosition() - velocity * 0.005f);
     }
 }
