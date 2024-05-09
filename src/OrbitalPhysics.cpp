@@ -3,7 +3,7 @@
 float MAX_TIME_STEP {0.005f};
 float gForce {-100.0f};
 
-glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *object2)
+glm::vec3 OrbitalPhysics::getForce(SpaceObject *object1, SpaceObject *object2)
 {
     glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
     glm::vec3 directionVector {glm::normalize(displacementVector)};
@@ -16,7 +16,7 @@ glm::vec3 OrbitalPhysicsFunctions::getForce(SpaceObject *object1, SpaceObject *o
     return ((gForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * directionVector;
 }
 
-void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
+void OrbitalPhysics::updateCelestialBodyAngles(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
     for (SpaceObject *sphere : satellites) 
@@ -37,7 +37,7 @@ void OrbitalPhysicsFunctions::updateCelestialBodyAngles(std::vector<SpaceObject*
     }
 }
 
-void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
+void OrbitalPhysics::updatePositionsEuler(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
 {
     float tStep {};
     if (timeStep > MAX_TIME_STEP)
@@ -81,7 +81,7 @@ void OrbitalPhysicsFunctions::updatePositionsEuler(std::vector<SpaceObject*>& st
         updatePositionsEuler(stars, satellites, timeStep - MAX_TIME_STEP);
 }
 
-void OrbitalPhysicsFunctions::updatePositionsVerlet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat* timeSinceLastUpdate)
+void OrbitalPhysics::updatePositionsVerlet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat* timeSinceLastUpdate)
 {
     // Only do these calculations it's been a whole 0.005f seconds since the last time we ran this
     if (glfwGetTime() - *timeSinceLastUpdate < MAX_TIME_STEP)

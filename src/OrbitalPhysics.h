@@ -15,7 +15,7 @@
 #include "Model.h"
 #include "Sun.h"
 
-namespace OrbitalPhysicsFunctions {
+namespace OrbitalPhysics {
     glm::vec3 getForce(SpaceObject *object1, SpaceObject *object2);
     glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force);
     glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat timeStep);

@@ -30,36 +30,47 @@
 #include "Model.h"
 #include "Skybox.h"
 
-GLuint halfFBO {};
-GLuint halfTexture {};
-GLuint postProcessingFBO {};
-GLuint postProcessingTexture {};
-GLuint textureToBlur {};
-Mesh* framebufferQuad {};
+struct PostProcessingResources {
+    GLuint halfFBO {};
+    GLuint halfTexture {};
+    GLuint postProcessingFBO {};
+    GLuint postProcessingTexture {};
+    GLuint textureToBlur {};
+    Mesh* framebufferQuad {};
+    unsigned int pingPongFBO[2] {};
+    unsigned int pingPongBuffer[2] {};
+};
+PostProcessingResources postProcessingResources;
 
-unsigned int pingPongFBO[2] {};
-unsigned int pingPongBuffer[2] {};
+struct UniformVariables {
+    GLuint uniformModelPlanets {};
+    GLuint uniformViewPlanets {};
+    GLuint uniformEyePositionPlanets {};
+    GLuint uniformSpecularIntensityPlanets {};
+    GLuint uniformShininessPlanets {};
+    GLuint uniformOmniLightPos {};
+    GLuint uniformFarPlane {};
+    GLuint uniformModelSuns {};
+    GLuint uniformViewSuns {};
+    GLuint uniformModelOmniShadowMap {};
+    GLuint uniformHorizontal {};
+};
+UniformVariables uniformVariables;
 
-// TODO: Use structs to store these types of values
-GLuint uniformModelPlanets {0}, uniformViewPlanets {0},
-uniformEyePositionPlanets {0}, uniformSpecularIntensityPlanets {0}, uniformShininessPlanets {0},
-uniformOmniLightPos {0}, uniformFarPlane {0};
-
-GLuint uniformModelSuns {0}, uniformViewSuns {0};
-GLuint uniformModelOmniShadowMap {0};
-GLuint uniformHorizontal {0};
+struct Shaders {
+    Shader* mainShader {};
+    Shader* mainShaderWithoutShadows {};
+    Shader* mainShaderWithShadows {};
+    Shader* sunShader {};
+    Shader* omniShadowShader {};
+    Shader* hdrShader {};
+    Shader* bloomShader {};
+    Shader* halfShader {};
+};
+Shaders shaders;
 
 std::vector<SpaceObject*> stars {};
 std::vector<SpaceObject*> satellites {};
-
-Shader* mainShader {};
-Shader* mainShaderWithoutShadows {};
-Shader* mainShaderWithShadows {};
-Shader* sunShader {};
-Shader* omniShadowShader {};
-Shader* hdrShader {};
-Shader* bloomShader {};
-Shader* halfShader {};
 
 Skybox skybox {};
 Camera camera {};
@@ -70,75 +81,75 @@ unsigned int pointLightCount {0};
 void createShaders(PointLight* pointLights[], glm::mat4 projection)
 {
     // Shader for the suns (no lighting or shadows)
-    sunShader = new Shader{};
-    sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
-    sunShader->useShader();
-    glUniformMatrix4fv(sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
-	sunShader->setTexture(2);
-    sunShader->validate();
+    shaders.sunShader = new Shader{};
+    shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
+    shaders.sunShader->useShader();
+    glUniformMatrix4fv(shaders.sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
+	shaders.sunShader->setTexture(2);
+    shaders.sunShader->validate();
     // For the sun shaders we don't do any light or shadow calculations
-    uniformModelSuns    = sunShader->getModelLocation();
-    uniformViewSuns     = sunShader->getViewLocation();
+    uniformVariables.uniformModelSuns    = shaders.sunShader->getModelLocation();
+    uniformVariables.uniformViewSuns     = shaders.sunShader->getViewLocation();
 
-    omniShadowShader = new Shader{};
-	omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
+    shaders.omniShadowShader = new Shader{};
+	shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
 		"../assets/shaders/omni_shadow_map.geom",
 	  	"../assets/shaders/omni_shadow_map.frag");
 
     // The shadow map shader will record the depth values of all objects except suns
-    uniformModelOmniShadowMap   = omniShadowShader->getModelLocation();
-	uniformOmniLightPos         = omniShadowShader->getOmniLightPosLocation();
-	uniformFarPlane             = omniShadowShader->getFarPlaneLocation();
+    uniformVariables.uniformModelOmniShadowMap   = shaders.omniShadowShader->getModelLocation();
+	uniformVariables.uniformOmniLightPos         = shaders.omniShadowShader->getOmniLightPosLocation();
+	uniformVariables.uniformFarPlane             = shaders.omniShadowShader->getFarPlaneLocation();
 
-    hdrShader = new Shader{};
-    hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
-    hdrShader->useShader();
-    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 0);
-    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 1);
+    shaders.hdrShader = new Shader{};
+    shaders.hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
+    shaders.hdrShader->useShader();
+    glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 0);
+    glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 1);
 
-    bloomShader = new Shader{};
-    bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
-    bloomShader->useShader();
-    bloomShader->setTexture(0);
-    uniformHorizontal = glGetUniformLocation(bloomShader->getShaderID(), "horizontal");
+    shaders.bloomShader = new Shader{};
+    shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
+    shaders.bloomShader->useShader();
+    shaders.bloomShader->setTexture(0);
+    uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShader->getShaderID(), "horizontal");
     
     // Shader for the satellites, moons, and models. Includes shadows
-    mainShaderWithShadows = new Shader{};
-    mainShaderWithShadows->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
-    mainShaderWithShadows->useShader();
-	mainShaderWithShadows->setTexture(2);
-    mainShaderWithShadows->validate();
-    mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
-    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    shaders.mainShaderWithShadows = new Shader{};
+    shaders.mainShaderWithShadows->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
+    shaders.mainShaderWithShadows->useShader();
+	shaders.mainShaderWithShadows->setTexture(2);
+    shaders.mainShaderWithShadows->validate();
+    shaders.mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
+    glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
-	mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
-    glUniform1i(glGetUniformLocation(mainShaderWithShadows->getShaderID(), "pointLightCount"), pointLightCount);
+	shaders.mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
+    glUniform1i(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "pointLightCount"), pointLightCount);
 
-    halfShader = new Shader{};
-    halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
-    halfShader->useShader();
-    halfShader->setTexture(0);
+    shaders.halfShader = new Shader{};
+    shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
+    shaders.halfShader->useShader();
+    shaders.halfShader->setTexture(0);
     
     // Shader for the satellites, moons, and models. Doesn't use shadows
-    mainShaderWithoutShadows = new Shader{};
-    mainShaderWithoutShadows->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
-    mainShaderWithoutShadows->useShader();
-	mainShaderWithoutShadows->setTexture(2);
-    mainShaderWithoutShadows->validate();
-    mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
-    glUniformMatrix4fv(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-    glUniform1i(glGetUniformLocation(mainShaderWithoutShadows->getShaderID(), "pointLightCount"), pointLightCount);
+    shaders.mainShaderWithoutShadows = new Shader{};
+    shaders.mainShaderWithoutShadows->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
+    shaders.mainShaderWithoutShadows->useShader();
+	shaders.mainShaderWithoutShadows->setTexture(2);
+    shaders.mainShaderWithoutShadows->validate();
+    shaders.mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
+    glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	shaders.mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
+    glUniform1i(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "pointLightCount"), pointLightCount);
 
     // This is so we can disable shadows
     // By default, shadows will be turned off
-    mainShader                          = mainShaderWithoutShadows;
-    uniformModelPlanets                 = mainShaderWithoutShadows->getModelLocation();
-    uniformViewPlanets                  = mainShaderWithoutShadows->getViewLocation();
-    uniformEyePositionPlanets           = mainShaderWithoutShadows->getEyePositionLocation();
-    uniformSpecularIntensityPlanets     = mainShaderWithoutShadows->getSpecularIntensityLocation();
-    uniformShininessPlanets             = mainShaderWithoutShadows->getShininessLocation();
+    shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
+    uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
+    uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
+    uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
+    uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
+    uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
 }
 
 void setupPostProcessingObjects()
@@ -154,32 +165,32 @@ void setupPostProcessingObjects()
         0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
         1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
     };
-    framebufferQuad = new Mesh{};
-    framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
+    postProcessingResources.framebufferQuad = new Mesh{};
+    postProcessingResources.framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
     // HDR
-    glGenFramebuffers(1, &postProcessingFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingFBO);
+    glGenFramebuffers(1, &postProcessingResources.postProcessingFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
 	glViewport(0, 0, 1920, 1200);
 
     // Make the main framebuffer texture
-    glGenTextures(1, &postProcessingTexture);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+    glGenTextures(1, &postProcessingResources.postProcessingTexture);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.postProcessingTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingResources.postProcessingTexture, 0);
 
     // Make texture for bright spots so we cacn have bloom
-    glGenTextures(1, &textureToBlur);
-    glBindTexture(GL_TEXTURE_2D, textureToBlur);
+    glGenTextures(1, &postProcessingResources.textureToBlur);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.textureToBlur);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textureToBlur, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, postProcessingResources.textureToBlur, 0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -200,18 +211,18 @@ void setupPostProcessingObjects()
     glDrawBuffers(2, attachments);
 
     // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
-    glGenFramebuffers(2, pingPongFBO);
-    glGenTextures(2, pingPongBuffer);
+    glGenFramebuffers(2, postProcessingResources.pingPongFBO);
+    glGenTextures(2, postProcessingResources.pingPongBuffer);
     for (unsigned int i {0}; i < 2; i++)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[i]);
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[i]);
+        glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 960, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongBuffer[i], 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[i], 0);
 
         GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
         if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -223,25 +234,25 @@ void setupPostProcessingObjects()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    hdrShader->useShader();
+    shaders.hdrShader->useShader();
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.postProcessingTexture);
     glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffer[1]);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[1]);
     glActiveTexture(GL_TEXTURE5);
-    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "theTexture"), 3);
-    glUniform1i(glGetUniformLocation(hdrShader->getShaderID(), "blurTexture"), 4);
+    glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 3);
+    glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 4);
 
-    glGenFramebuffers(1, &halfFBO);
-    glGenTextures(1, &halfTexture);
-    glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
-    glBindTexture(GL_TEXTURE_2D, halfTexture);
+    glGenFramebuffers(1, &postProcessingResources.halfFBO);
+    glGenTextures(1, &postProcessingResources.halfTexture);
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.halfFBO);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.halfTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 960, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, halfTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingResources.halfTexture, 0);
     status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
@@ -269,25 +280,25 @@ void toggleShadows()
     // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
     if (shadowsEnabled)
     {
-        mainShader                          = mainShaderWithShadows;
-        uniformModelPlanets                 = mainShaderWithShadows->getModelLocation();
-        uniformViewPlanets                  = mainShaderWithShadows->getViewLocation();
-        uniformEyePositionPlanets           = mainShaderWithShadows->getEyePositionLocation();
-        uniformSpecularIntensityPlanets     = mainShaderWithShadows->getSpecularIntensityLocation();
-        uniformShininessPlanets             = mainShaderWithShadows->getShininessLocation();
+        shaders.mainShader                                  = shaders.mainShaderWithShadows;
+        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithShadows->getModelLocation();
+        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithShadows->getViewLocation();
+        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithShadows->getEyePositionLocation();
+        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithShadows->getSpecularIntensityLocation();
+        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithShadows->getShininessLocation();
     }
     else
     {
-        mainShader                          = mainShaderWithoutShadows;
-        uniformModelPlanets                 = mainShaderWithoutShadows->getModelLocation();
-        uniformViewPlanets                  = mainShaderWithoutShadows->getViewLocation();
-        uniformEyePositionPlanets           = mainShaderWithoutShadows->getEyePositionLocation();
-        uniformSpecularIntensityPlanets     = mainShaderWithoutShadows->getSpecularIntensityLocation();
-        uniformShininessPlanets             = mainShaderWithoutShadows->getShininessLocation();
+        shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
+        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
+        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
+        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
+        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
+        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
     }
 
     for (SpaceObject *satellite : satellites)
-        satellite->setUniformVariables(uniformSpecularIntensityPlanets, uniformShininessPlanets);
+        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
 void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
@@ -316,7 +327,7 @@ void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
 
 void omniShadowMapPass(PointLight* light)
 {
-	omniShadowShader->useShader();
+	shaders.omniShadowShader->useShader();
 
 	// Make the viewport the same dimenstions as the FBO
 	glViewport(0, 0, light->getShadowMap()->getShadowWidth(), light->getShadowMap()->getShadowHeight());
@@ -328,14 +339,14 @@ void omniShadowMapPass(PointLight* light)
 
     // Get the uniformModel and lightTransform for the shader
 
-	glUniform3fv(uniformOmniLightPos, 1, glm::value_ptr(light->getPosition()));
-	glUniform1f(uniformFarPlane, light->getFarPlane());
-	omniShadowShader->setLightMatrices(light->calculateLightTransform());
+	glUniform3fv(uniformVariables.uniformOmniLightPos, 1, glm::value_ptr(light->getPosition()));
+	glUniform1f(uniformVariables.uniformFarPlane, light->getFarPlane());
+	shaders.omniShadowShader->setLightMatrices(light->calculateLightTransform());
 
-	omniShadowShader->validate();
+	shaders.omniShadowShader->validate();
 
 	// Draw just to the depth buffer
-	renderObjects(satellites, uniformModelOmniShadowMap);
+	renderObjects(satellites, uniformVariables.uniformModelOmniShadowMap);
 
     // Bind the default framebuffer
     // If we called swapbuffers without doing this the image wouldn't change
@@ -344,7 +355,7 @@ void omniShadowMapPass(PointLight* light)
 
 void renderPass(glm::mat4 view)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
 
     // Clear hdr buffer
 	glViewport(0, 0, 1920, 1200);
@@ -355,25 +366,25 @@ void renderPass(glm::mat4 view)
     // RENDER SUNS
     // ====================================
 
-    sunShader->useShader();
-    glUniformMatrix4fv(uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
-    renderObjects(stars, uniformModelSuns);
+    shaders.sunShader->useShader();
+    glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
+    renderObjects(stars, uniformVariables.uniformModelSuns);
 
     // ====================================
     // RENDER PLANETS, MOONS, and ASTEROIDS
     // ====================================
 
-	mainShader->useShader();
-    mainShader->setSpotLightDirAndPos(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
+	shaders.mainShader->useShader();
+    shaders.mainShader->setSpotLightDirAndPos(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
 
     //// Apply view matrix.
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
-    glUniformMatrix4fv(uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3fv(uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
+    glUniformMatrix4fv(uniformVariables.uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
+    glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
-	renderObjects(satellites, uniformModelPlanets);
+	renderObjects(satellites, uniformVariables.uniformModelPlanets);
 
     // ====================================
     // RENDER SKYBOX
@@ -388,31 +399,31 @@ void renderPass(glm::mat4 view)
 
     // Half the bloom texture size before the pingPongFBOs can actually start bluring it
 	glViewport(0, 0, 960, 600);
-    halfShader->useShader();
+    shaders.halfShader->useShader();
     glActiveTexture(GL_TEXTURE0);
-    glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
-    glBindTexture(GL_TEXTURE_2D, textureToBlur);
-    framebufferQuad->render();
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.halfFBO);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.textureToBlur);
+    postProcessingResources.framebufferQuad->render();
 
     // Ping-pong bloom effect. Performs horiztonal and vertical bluring.
     // First iteration of the bloom effect. This means we don't need if conditions in the for loop
     bool horizontal {false};
-    bloomShader->useShader();
-    glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[!horizontal]);
-    glUniform1i(uniformHorizontal, !horizontal);
-    glBindTexture(GL_TEXTURE_2D, halfTexture);
-    framebufferQuad->render();
+    shaders.bloomShader->useShader();
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[!horizontal]);
+    glUniform1i(uniformVariables.uniformHorizontal, !horizontal);
+    glBindTexture(GL_TEXTURE_2D, postProcessingResources.halfTexture);
+    postProcessingResources.framebufferQuad->render();
 
     int amount {4};
     for (unsigned int i {0}; i < amount; i++)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
-        glUniform1i(uniformHorizontal, horizontal);
+        glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[horizontal]);
+        glUniform1i(uniformVariables.uniformHorizontal, horizontal);
 
         // If it's the first iteration, we want data from the bloom texture (the texture with the bright points)
         // Move the data between pingPong FBOs
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffer[!horizontal]);
-        framebufferQuad->render();
+        glBindTexture(GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[!horizontal]);
+        postProcessingResources.framebufferQuad->render();
         horizontal = !horizontal;
     }
 	glViewport(0, 0, 1920, 1200);
@@ -424,8 +435,8 @@ void renderPass(glm::mat4 view)
     // The HDR shader uses the texture of the entire scene + the bloom texture to render to the screen.
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    hdrShader->useShader();
-    framebufferQuad->render();
+    shaders.hdrShader->useShader();
+    postProcessingResources.framebufferQuad->render();
 }
 
 int main()
@@ -488,7 +499,7 @@ int main()
     createShaders(pointLights, projection);
     setupPostProcessingObjects();
     for (SpaceObject *satellite : satellites)
-        satellite->setUniformVariables(uniformSpecularIntensityPlanets, uniformShininessPlanets);
+        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 
     // Loop until window is closed
     GLfloat now {};
@@ -521,13 +532,13 @@ int main()
         // Update our object's positions based on our chosen numerical scheme
         if (verlet)
         {
-            OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, timeStep);
-            OrbitalPhysicsFunctions::updatePositionsVerlet(stars, satellites, &timeSinceLastVerlet);
+            OrbitalPhysics::updateCelestialBodyAngles(stars, satellites, timeStep);
+            OrbitalPhysics::updatePositionsVerlet(stars, satellites, &timeSinceLastVerlet);
         }
         else
         {
-            OrbitalPhysicsFunctions::updateCelestialBodyAngles(stars, satellites, timeStep);
-            OrbitalPhysicsFunctions::updatePositionsEuler(stars, satellites, timeStep);
+            OrbitalPhysics::updateCelestialBodyAngles(stars, satellites, timeStep);
+            OrbitalPhysics::updatePositionsEuler(stars, satellites, timeStep);
         }
 
         // Get + handle user input

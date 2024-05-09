@@ -14,13 +14,13 @@ void SceneFunctions::setOldPositions(std::vector<SpaceObject*>& satellites, std:
         
         // Add up forces from stars
         for (SpaceObject *star : stars)
-            force += OrbitalPhysicsFunctions::getForce(satellites[i], star);
+            force += OrbitalPhysics::getForce(satellites[i], star);
             
         // Add up forces for other satellites
         for (int j {0}; j < satellites.size(); j++) 
         {
             if (i == j) continue;
-            force += OrbitalPhysicsFunctions::getForce(satellites[i], satellites[j]);
+            force += OrbitalPhysics::getForce(satellites[i], satellites[j]);
         }
 
         acceleration    = force / satellites[i]->getMass();
