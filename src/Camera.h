@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include "SpotLight.h"
-#include "ShaderHelperFunctions.h"
+#include "SolarSystemRenderer.h"
 
 class Camera 
 {
@@ -14,7 +14,7 @@ public:
     Camera();
     Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLfloat startPitch, GLfloat startMoveSpeed, GLfloat startTurnSpeed);
 
-    void keyControl(bool* keys, GLfloat deltaTime, bool* shadowsEnabled);
+    void keyControl(bool* keys, GLfloat deltaTime, SolarSystemRenderer* renderer);
     void handleFlashlightKey(bool* keys);
     void mouseControl(GLfloat xChange, GLfloat yChange);
     void setSpotLight(GLuint shadowWidth, GLuint shadowHeight,

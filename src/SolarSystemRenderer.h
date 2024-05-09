@@ -2,12 +2,10 @@
 
 #include "CommonValues.h"
 #include "Shader.h"
-#include "Camera.h"
 #include "Sun.h"
 #include "Planet.h"
 #include "PointLight.h"
 #include "SpotLight.h"
-#include "SceneHandler.h"
 #include "Material.h"
 #include "Model.h"
 #include "Skybox.h"
@@ -19,11 +17,11 @@ class SolarSystemRenderer
         bool* getShadowsEnabledAddress();
         bool getShadowsEnabled();
         void toggleShadows();
-        void createShaders(PointLight* pointLights[], glm::mat4 projection);
+        void createShaders(PointLight* pointLights[], GLuint pointLightCount, glm::mat4 projection, SpotLight* spotLight);
         void setupPostProcessingObjects();
         void omniShadowMapPass(PointLight* light);
-        void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel);
-        void renderPass(glm::mat4 view);
+        void renderObjects(std::vector<SpaceObject*>& objects, GLuint uniformModel);
+        void renderPass(glm::mat4 view, SpotLight* spotLight, GLuint pointLightCount, glm::vec3& eyePos);
         ~SolarSystemRenderer();
 
     private:
@@ -70,8 +68,6 @@ class SolarSystemRenderer
         std::vector<SpaceObject*> satellites {};
 
         Skybox skybox {};
-        Camera camera {};
 
-        unsigned int pointLightCount {};
         bool shadowsEnabled {false};
 };

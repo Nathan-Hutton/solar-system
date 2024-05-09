@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "ShaderHelperFunctions.h"
 #include "SolarSystemRenderer.h"
 
 #include <stdio.h>
@@ -77,7 +76,7 @@ Skybox skybox {};
 Camera camera {};
 
 bool shadowsEnabled {false};
-unsigned int pointLightCount {};
+GLuint pointLightCount {};
 
 void createShaders(PointLight* pointLights[], glm::mat4 projection)
 {
@@ -276,32 +275,6 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
         *timeChange = 0.0f;
 }
 
-void toggleShadows()
-{
-    // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
-    if (shadowsEnabled)
-    {
-        shaders.mainShader                                  = shaders.mainShaderWithShadows;
-        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithShadows->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithShadows->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithShadows->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithShadows->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithShadows->getShininessLocation();
-    }
-    else
-    {
-        shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
-        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
-    }
-
-    for (SpaceObject *satellite : satellites)
-        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
-}
-
 void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
 {
     // Apply rotations, transformations, and render objects
@@ -474,7 +447,7 @@ int main()
     Window mainWindow {1920, 1200};
     mainWindow.initialize();
 
-    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
+    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
     glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
     PointLight* pointLights[MAX_POINT_LIGHTS] {};
 
@@ -546,11 +519,11 @@ int main()
         // Get + handle user input
         glfwPollEvents();
         bool* keys {mainWindow.getKeys()};
-        camera.keyControl(keys, deltaTime, &shadowsEnabled);
+        camera.keyControl(keys, deltaTime, &renderer);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
 
-        if (shadowsEnabled)
+        if (renderer.getShadowsEnabled())
         {
             // These needs to be index based loops so that we don't make a copy of the lights each time
             for (size_t i {0}; i < pointLightCount; i++)

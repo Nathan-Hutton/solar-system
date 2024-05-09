@@ -2,11 +2,6 @@
 
 SolarSystemRenderer::SolarSystemRenderer() {}
 
-bool* SolarSystemRenderer::getShadowsEnabledAddress()
-{
-    return &shadowsEnabled;
-}
-
 bool SolarSystemRenderer::getShadowsEnabled()
 {
     return shadowsEnabled;
@@ -15,6 +10,7 @@ bool SolarSystemRenderer::getShadowsEnabled()
 void SolarSystemRenderer::toggleShadows()
 {
     // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
+    shadowsEnabled = !shadowsEnabled;
     if (shadowsEnabled)
     {
         shaders.mainShader                                  = shaders.mainShaderWithShadows;
@@ -38,7 +34,7 @@ void SolarSystemRenderer::toggleShadows()
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
-void SolarSystemRenderer::createShaders(PointLight* pointLights[], glm::mat4 projection)
+void SolarSystemRenderer::createShaders(PointLight* pointLights[], GLuint pointLightCount, glm::mat4 projection, SpotLight* spotLight)
 {
     // Shader for the suns (no lighting or shadows)
     shaders.sunShader = new Shader{};
@@ -79,7 +75,7 @@ void SolarSystemRenderer::createShaders(PointLight* pointLights[], glm::mat4 pro
     shaders.mainShaderWithShadows->useShader();
 	shaders.mainShaderWithShadows->setTexture(2);
     shaders.mainShaderWithShadows->validate();
-    shaders.mainShaderWithShadows->setSpotLight(camera.getSpotLight(), true, 4+pointLightCount, pointLightCount);
+    shaders.mainShaderWithShadows->setSpotLight(spotLight, true, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
@@ -97,7 +93,7 @@ void SolarSystemRenderer::createShaders(PointLight* pointLights[], glm::mat4 pro
     shaders.mainShaderWithoutShadows->useShader();
 	shaders.mainShaderWithoutShadows->setTexture(2);
     shaders.mainShaderWithoutShadows->validate();
-    shaders.mainShaderWithoutShadows->setSpotLight(camera.getSpotLight(), false, 4+pointLightCount, pointLightCount);
+    shaders.mainShaderWithoutShadows->setSpotLight(spotLight, false, 4+pointLightCount, pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	shaders.mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
     glUniform1i(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "pointLightCount"), pointLightCount);
@@ -249,7 +245,7 @@ void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void SolarSystemRenderer::renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
+void SolarSystemRenderer::renderObjects(std::vector<SpaceObject*>& objects, GLuint uniformModel)
 {
     // Apply rotations, transformations, and render objects
     // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -273,7 +269,7 @@ void SolarSystemRenderer::renderObjects(std::vector<SpaceObject*> objects, GLuin
     }
 }
 
-void SolarSystemRenderer::renderPass(glm::mat4 view)
+void SolarSystemRenderer::renderPass(glm::mat4 view, SpotLight* spotLight, GLuint pointLightCount, glm::vec3& eyePos)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
 
@@ -295,13 +291,13 @@ void SolarSystemRenderer::renderPass(glm::mat4 view)
     // ====================================
 
 	shaders.mainShader->useShader();
-    shaders.mainShader->setSpotLightDirAndPos(camera.getSpotLight(), shadowsEnabled, 4+pointLightCount, pointLightCount);
+    shaders.mainShader->setSpotLightDirAndPos(spotLight, shadowsEnabled, 4+pointLightCount, pointLightCount);
 
     //// Apply view matrix.
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
     glUniformMatrix4fv(uniformVariables.uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera.getPosition()));
+    glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(eyePos));
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
 	renderObjects(satellites, uniformVariables.uniformModelPlanets);

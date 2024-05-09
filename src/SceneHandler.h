@@ -20,7 +20,6 @@
 #include "Camera.h"
 #include "SpotLight.h"
 #include "Material.h"
-#include "Camera.h"
 #include "OrbitalPhysics.h"
 #include "Skybox.h"
 
