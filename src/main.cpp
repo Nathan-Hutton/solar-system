@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "ShaderHelperFunctions.h"
+#include "SolarSystemRenderer.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -441,6 +442,8 @@ void renderPass(glm::mat4 view)
 
 int main()
 {
+    SolarSystemRenderer renderer {};
+
     // Print out the controls
     std::cout << "**********\n";
     std::cout << "\033[92m" << "Controls" << "\033[0m\n";

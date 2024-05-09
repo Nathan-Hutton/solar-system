@@ -2,9 +2,14 @@
 
 SolarSystemRenderer::SolarSystemRenderer() {}
 
-void SolarSystemRenderer::setProjection(glm::mat4 projection)
+bool* SolarSystemRenderer::getShadowsEnabledAddress()
 {
-    this->projection = projection;
+    return &shadowsEnabled;
+}
+
+bool SolarSystemRenderer::getShadowsEnabled()
+{
+    return shadowsEnabled;
 }
 
 void SolarSystemRenderer::toggleShadows()
@@ -33,7 +38,7 @@ void SolarSystemRenderer::toggleShadows()
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
-void SolarSystemRenderer::createShaders()
+void SolarSystemRenderer::createShaders(PointLight* pointLights[], glm::mat4 projection)
 {
     // Shader for the suns (no lighting or shadows)
     shaders.sunShader = new Shader{};

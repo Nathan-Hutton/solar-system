@@ -16,9 +16,10 @@ class SolarSystemRenderer
 {
     public:
         SolarSystemRenderer();
-        void setProjection(glm::mat4 projection);
+        bool* getShadowsEnabledAddress();
+        bool getShadowsEnabled();
         void toggleShadows();
-        void createShaders();
+        void createShaders(PointLight* pointLights[], glm::mat4 projection);
         void setupPostProcessingObjects();
         void omniShadowMapPass(PointLight* light);
         void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel);
@@ -67,11 +68,9 @@ class SolarSystemRenderer
 
         std::vector<SpaceObject*> stars {};
         std::vector<SpaceObject*> satellites {};
-        PointLight* pointLights[MAX_POINT_LIGHTS];
 
         Skybox skybox {};
         Camera camera {};
-        glm::mat4 projection {};
 
         unsigned int pointLightCount {};
         bool shadowsEnabled {false};
