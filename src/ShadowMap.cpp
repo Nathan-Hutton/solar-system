@@ -44,7 +44,7 @@ bool ShadowMap::init(GLuint width, GLuint height)
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         std::cerr << "Framebuffer error: " << status << '\n';
-        return false;
+        std::exit(EXIT_FAILURE);
     }
 
     // Unbind by going back to default framebuffer (the main one that renders)

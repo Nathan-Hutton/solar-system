@@ -193,7 +193,7 @@ void setupPostProcessingObjects()
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         std::cerr << "Framebuffer error: " << status << '\n';
-        std::exit(0);
+        std::exit(EXIT_FAILURE);
     }
 
     unsigned int attachments[2] {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -217,7 +217,7 @@ void setupPostProcessingObjects()
         if (status != GL_FRAMEBUFFER_COMPLETE)
         {
             std::cerr << "Framebuffer Error: " << status << '\n';
-            std::exit(0);
+            std::exit(EXIT_FAILURE);
         }
     }
 
@@ -246,7 +246,7 @@ void setupPostProcessingObjects()
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         std::cerr << "Framebuffer Error: " << status << '\n';
-        std::exit(0);
+        std::exit(EXIT_FAILURE);
     }
 }
 

@@ -38,7 +38,7 @@ void Model::loadModel(const std::string& fileName) {
     if (!scene)
     {
         std::cerr << "Model " << fileName.c_str() << " failed to load " << importer.GetErrorString() << '\n';
-        return;
+        std::exit(EXIT_FAILURE);
     }
 
     // Load the first node in the scene, and call that recursively on all nodes

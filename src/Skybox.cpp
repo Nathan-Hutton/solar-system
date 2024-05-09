@@ -24,7 +24,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
         if (!textData)
         {
             std::cerr << "Failed to find " << faceLocations[i].c_str() << '\n';
-            return;
+            std::exit(EXIT_FAILURE);
         }
 
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);

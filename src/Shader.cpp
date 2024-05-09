@@ -29,7 +29,7 @@ std::string Shader::readFile(const char* fileLocation)
 
     if (!fileStream.is_open()) {
         std::cerr << "Failed to read" << fileLocation << " File doesn't exist.\n";
-        return "";
+        std::exit(EXIT_FAILURE);
     }
 
     std::string line {""};
@@ -52,7 +52,7 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
 
     if (!shaderID) {
         std::cerr << "Error creating shader program\n";
-        return;
+        std::exit(EXIT_FAILURE);
     }
 
     addShader(shaderID, vertexCode, GL_VERTEX_SHADER);
@@ -70,7 +70,7 @@ void Shader::compileShader(const char* vertexCode, const char* geometryCode, con
 
     if (!shaderID) {
         std::cerr << "Error creating shader program\n";
-        return;
+        std::exit(EXIT_FAILURE);
     }
 
     addShader(shaderID, vertexCode, GL_VERTEX_SHADER);
@@ -91,7 +91,7 @@ void Shader::validate()
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
         std::cerr << "Error validating program: " << eLog << '\n';
-        return;
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -110,7 +110,7 @@ void Shader::compileProgram()
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
         std::cerr << "Error linking program: " << eLog << '\n';
-        return;
+        std::exit(EXIT_FAILURE);
     }
 
     // Uniform variables let us pass info from the CPU to the GPU.
@@ -243,7 +243,7 @@ void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     if (!result) {
         glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
         std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << '\n';
-        return;
+        std::exit(EXIT_FAILURE);
     }
 
     // Attach the now compiled shader to the OpenGL program

@@ -31,7 +31,7 @@ int Window::initialize()
     {
         std::cerr << "GLFW initialization failed\n";
         glfwTerminate();
-        return 1;
+        std::exit(EXIT_FAILURE);
     }
 
     // Setup window properties. This is typically called multiple times before glfwCreateWindow
@@ -49,7 +49,7 @@ int Window::initialize()
     {
         std::cerr << "GLFW window creation failed\n";
         glfwTerminate();
-        return 1;
+        std::exit(EXIT_FAILURE);
     }
 
     // Get Buffer size information
@@ -78,7 +78,7 @@ int Window::initialize()
         std::cerr << "Glew initialization failed\n";
         glfwDestroyWindow(mainWindow);
         glfwTerminate();
-        return 1;
+        std::exit(EXIT_FAILURE);
     }
 
     // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
