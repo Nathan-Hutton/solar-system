@@ -1,84 +1,39 @@
-#define STB_IMAGE_IMPLEMENTATION
+#include "SolarSystemRenderer.h"
 
-#include <cstdlib>
-#include <iostream>
-#include "ShaderHelperFunctions.h"
+SolarSystemRenderer::SolarSystemRenderer() {}
 
-#include <stdio.h>
-#include <string.h>
-#include <cmath>
-#include <vector>
+void SolarSystemRenderer::setProjection(glm::mat4 projection)
+{
+    this->projection = projection;
+}
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+void SolarSystemRenderer::toggleShadows()
+{
+    // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
+    if (shadowsEnabled)
+    {
+        shaders.mainShader                                  = shaders.mainShaderWithShadows;
+        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithShadows->getModelLocation();
+        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithShadows->getViewLocation();
+        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithShadows->getEyePositionLocation();
+        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithShadows->getSpecularIntensityLocation();
+        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithShadows->getShininessLocation();
+    }
+    else
+    {
+        shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
+        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
+        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
+        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
+        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
+        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
+    }
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+    for (SpaceObject *satellite : satellites)
+        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
+}
 
-#include "CommonValues.h"
-#include "Shader.h"
-#include "Window.h"
-#include "Camera.h"
-#include "Sun.h"
-#include "Planet.h"
-#include "PointLight.h"
-#include "SpotLight.h"
-#include "SceneHandler.h"
-#include "OrbitalPhysics.h"
-#include "Material.h"
-#include "Model.h"
-#include "Skybox.h"
-
-struct PostProcessingResources {
-    GLuint halfFBO {};
-    GLuint halfTexture {};
-    GLuint postProcessingFBO {};
-    GLuint postProcessingTexture {};
-    GLuint textureToBlur {};
-    Mesh* framebufferQuad {};
-    unsigned int pingPongFBO[2] {};
-    unsigned int pingPongBuffer[2] {};
-};
-PostProcessingResources postProcessingResources;
-
-struct UniformVariables {
-    GLuint uniformModelPlanets {};
-    GLuint uniformViewPlanets {};
-    GLuint uniformEyePositionPlanets {};
-    GLuint uniformSpecularIntensityPlanets {};
-    GLuint uniformShininessPlanets {};
-    GLuint uniformOmniLightPos {};
-    GLuint uniformFarPlane {};
-    GLuint uniformModelSuns {};
-    GLuint uniformViewSuns {};
-    GLuint uniformModelOmniShadowMap {};
-    GLuint uniformHorizontal {};
-};
-UniformVariables uniformVariables;
-
-struct Shaders {
-    Shader* mainShader {};
-    Shader* mainShaderWithoutShadows {};
-    Shader* mainShaderWithShadows {};
-    Shader* sunShader {};
-    Shader* omniShadowShader {};
-    Shader* hdrShader {};
-    Shader* bloomShader {};
-    Shader* halfShader {};
-};
-Shaders shaders;
-
-std::vector<SpaceObject*> stars {};
-std::vector<SpaceObject*> satellites {};
-
-Skybox skybox {};
-Camera camera {};
-
-bool shadowsEnabled {false};
-unsigned int pointLightCount {};
-
-void createShaders(PointLight* pointLights[], glm::mat4 projection)
+void SolarSystemRenderer::createShaders()
 {
     // Shader for the suns (no lighting or shadows)
     shaders.sunShader = new Shader{};
@@ -152,7 +107,7 @@ void createShaders(PointLight* pointLights[], glm::mat4 projection)
     uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
 }
 
-void setupPostProcessingObjects()
+void SolarSystemRenderer::setupPostProcessingObjects()
 {
     float quadVertices[] = {
         // Positions     // Texture Coordinates
@@ -261,71 +216,7 @@ void setupPostProcessingObjects()
     }
 }
 
-void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
-{
-    if (yScrollOffset == 0.0f) return;
-
-    *timeChange += (yScrollOffset * 0.1f);
-    if (*timeChange > 3.0f)
-    {
-        *timeChange = 3.0f;
-        return;
-    }
-    if (*timeChange < 0.0f)
-        *timeChange = 0.0f;
-}
-
-void toggleShadows()
-{
-    // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
-    if (shadowsEnabled)
-    {
-        shaders.mainShader                                  = shaders.mainShaderWithShadows;
-        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithShadows->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithShadows->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithShadows->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithShadows->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithShadows->getShininessLocation();
-    }
-    else
-    {
-        shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
-        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
-    }
-
-    for (SpaceObject *satellite : satellites)
-        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
-}
-
-void renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
-{
-    // Apply rotations, transformations, and render objects
-    // Objects vertices are first transformed by the model matrix, then the view matrix
-    // to bring them into camera space, positioning them relative to the camera,
-    // then the projection matrix is applied to the view space coordinates to project them
-    // onto our 2D screen. 
-    // In the shader: gl_Position = projection * view * model * vec4(pos, 1.0);
-
-    // Model matrix positions and orients objects in the world.
-    // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
-    glm::mat4 model {};
-
-    // They'll all use GL_TEXTURE2
-    glActiveTexture(GL_TEXTURE2);
-    for (SpaceObject *object : objects)
-    {
-        model = glm::mat4{1.0f};
-        object->setWorldProperties(&model);
-        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        object->render();
-    }
-}
-
-void omniShadowMapPass(PointLight* light)
+void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
 {
 	shaders.omniShadowShader->useShader();
 
@@ -353,7 +244,31 @@ void omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void renderPass(glm::mat4 view)
+void SolarSystemRenderer::renderObjects(std::vector<SpaceObject*> objects, GLuint uniformModel)
+{
+    // Apply rotations, transformations, and render objects
+    // Objects vertices are first transformed by the model matrix, then the view matrix
+    // to bring them into camera space, positioning them relative to the camera,
+    // then the projection matrix is applied to the view space coordinates to project them
+    // onto our 2D screen. 
+    // In the shader: gl_Position = projection * view * model * vec4(pos, 1.0);
+
+    // Model matrix positions and orients objects in the world.
+    // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
+    glm::mat4 model {};
+
+    // They'll all use GL_TEXTURE2
+    glActiveTexture(GL_TEXTURE2);
+    for (SpaceObject *object : objects)
+    {
+        model = glm::mat4{1.0f};
+        object->setWorldProperties(&model);
+        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+        object->render();
+    }
+}
+
+void SolarSystemRenderer::renderPass(glm::mat4 view)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
 
@@ -439,127 +354,4 @@ void renderPass(glm::mat4 view)
     postProcessingResources.framebufferQuad->render();
 }
 
-int main()
-{
-    // Print out the controls
-    std::cout << "**********\n";
-    std::cout << "\033[92m" << "Controls" << "\033[0m\n";
-    std::cout << "**********\n";
-    std::cout << "\nMouse: Look around\n\n";
-    std::cout << "W: Move forward\n";
-    std::cout << "S: Move backwards\n";
-    std::cout << "A: Move left\n";
-    std::cout << "D: Move right\n\n";
-    std::cout << "Q: Roll left\n";
-    std::cout << "E: Roll right\n\n";
-    std::cout << "Space: Move up\n";
-    std::cout << "Shift: Move down\n\n";
-    std::cout << "F: Toggle flashlight\n";
-    std::cout << "L: Toggle shadows\n\n\n";
-
-    // Promp user to select a numerical integration scheme
-    std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m\n";
-    std::cout << "0: Euler method\n1: Verlet method \n>";
-    std::cin >> OrbitalPhysics::verlet;
-
-    // Prompt user to select scene
-    int selectedScene {};
-    std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
-    std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
-    std::cin >> selectedScene;
-
-    Window mainWindow {1920, 1200};
-    mainWindow.initialize();
-
-    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix.
-    glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
-    PointLight* pointLights[MAX_POINT_LIGHTS] {};
-
-    // Build scene based on user input
-    switch (selectedScene)
-    {
-        case (1):
-            SceneFunctions::createObjects1Sun1Planet(stars, satellites, pointLights, &pointLightCount, &camera);
-            break;
-        case (2):
-            SceneFunctions::createObjectsDefault(stars, satellites, pointLights, &pointLightCount, &camera);
-            break;
-        case (3):
-            SceneFunctions::createObjectsFigureEight(stars, satellites, pointLights, &pointLightCount, &camera);
-            break;
-        case (4):
-            SceneFunctions::createObjectsFancy(stars, satellites, pointLights, &pointLightCount, &camera);
-            break;
-        default:
-            break;
-    }
-
-    SceneFunctions::setupSkybox(&skybox, projection);
-    createShaders(pointLights, projection);
-    setupPostProcessingObjects();
-    for (SpaceObject *satellite : satellites)
-        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
-
-    // Loop until window is closed
-    GLfloat now {};
-    unsigned int counter {0};
-    double lastFPSUpdateTime {glfwGetTime()};
-    GLfloat lastFrame {0.0f};
-    GLfloat deltaTime {0.0f};
-    GLfloat timeChange {1.0f};
-    GLfloat timeStep {0.0f};
-    GLfloat timeSinceLastVerlet {0.0f};
-    while(!mainWindow.getShouldClose())
-    {
-        now         = glfwGetTime();
-        deltaTime   = now - lastFrame;
-        lastFrame   = now;
-        timeStep    = deltaTime * timeChange;
-        counter++;
-
-        // Update FPS counter
-        if (counter == 30)
-        {
-            double timeElapsed {now - lastFPSUpdateTime};
-            std::string FPS {std::to_string(30.0 / timeElapsed)};
-            std::string newTitle {"Solar System - " + FPS + " FPS"};
-            mainWindow.setWindowTitle(newTitle);
-            lastFPSUpdateTime = now;
-            counter = 0;
-        }
-
-        // Update our object's positions based on our chosen numerical scheme
-        if (OrbitalPhysics::verlet)
-        {
-            OrbitalPhysics::updateCelestialBodyAngles(stars, satellites, timeStep);
-            OrbitalPhysics::updatePositionsVerlet(stars, satellites, &timeSinceLastVerlet);
-        }
-        else
-        {
-            OrbitalPhysics::updateCelestialBodyAngles(stars, satellites, timeStep);
-            OrbitalPhysics::updatePositionsEuler(stars, satellites, timeStep);
-        }
-
-        // Get + handle user input
-        glfwPollEvents();
-        bool* keys {mainWindow.getKeys()};
-        camera.keyControl(keys, deltaTime, &shadowsEnabled);
-        camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-        handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
-
-        if (shadowsEnabled)
-        {
-            // These needs to be index based loops so that we don't make a copy of the lights each time
-            for (size_t i {0}; i < pointLightCount; i++)
-                omniShadowMapPass(pointLights[i]);
-            omniShadowMapPass(camera.getSpotLight());
-        }
-
-        renderPass(camera.calculateViewMatrix());
-
-        glUseProgram(0);
-        mainWindow.swapBuffers();
-    }
-
-    return 0;
-}
+SolarSystemRenderer::~SolarSystemRenderer() {}

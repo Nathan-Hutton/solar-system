@@ -1,5 +1,9 @@
 #include "OrbitalPhysics.h"
 
+namespace OrbitalPhysics {
+    bool verlet = false;
+}
+
 float MAX_TIME_STEP {0.005f};
 float gForce {-100.0f};
 

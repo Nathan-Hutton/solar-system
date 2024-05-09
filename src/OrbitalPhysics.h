@@ -1,6 +1,4 @@
-
-#ifndef ORBITALPHYSICSFUNCTIONS_H
-#define ORBITALPHYSICSFUNCTIONS_H
+#pragma once
 
 #include <vector>
 #include <math.h>
@@ -16,6 +14,7 @@
 #include "Sun.h"
 
 namespace OrbitalPhysics {
+    extern bool verlet;
     glm::vec3 getForce(SpaceObject *object1, SpaceObject *object2);
     glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force);
     glm::vec3 getNewVelocity(glm::vec3 oldVelocity, glm::vec3 acceleration, GLfloat timeStep);
@@ -24,5 +23,3 @@ namespace OrbitalPhysics {
     void updatePositionsVerlet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat* timeSinceLastUpdate);
     void updateCelestialBodyAngles(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep);
 }
-
-#endif

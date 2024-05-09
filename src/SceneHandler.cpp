@@ -44,7 +44,7 @@ void SceneFunctions::setupSkybox(Skybox* skybox, glm::mat4 projection)
 
 void SceneFunctions::createObjectsDefault(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet)
+            Camera *camera)
 {
     *camera = Camera(glm::vec3{0.0f, 0.0f, 110.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 25.0f, 0.3f);
     camera->setSpotLight(1024, 1024, 
@@ -114,13 +114,13 @@ void SceneFunctions::createObjectsDefault(std::vector<SpaceObject*>& stars, std:
     asteroid->setScaleFactor(0.5f);
     satellites.push_back(asteroid);
 
-    if (verlet)
+    if (OrbitalPhysics::verlet)
         setOldPositions(satellites, stars);
 }
 
 void SceneFunctions::createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet)
+            Camera *camera)
 {
     *camera = Camera{glm::vec3{0.0f, 0.0f, 50.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 10.0f, 0.3f};
     camera->setSpotLight(1024, 1024, 
@@ -158,14 +158,14 @@ void SceneFunctions::createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, 
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
 
-    if (verlet)
+    if (OrbitalPhysics::verlet)
         setOldPositions(satellites, stars);
 }
 
 
 void SceneFunctions::createObjectsFigureEight(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet)
+            Camera *camera)
 {
     *camera = Camera{glm::vec3{0.0f, 0.0f, 50.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 10.0f, 0.3f};
     camera->setSpotLight(1024, 1024, 
@@ -213,13 +213,13 @@ void SceneFunctions::createObjectsFigureEight(std::vector<SpaceObject*>& stars, 
     planet->setRotationSpeed(100.0f);
     satellites.push_back(planet);
 
-    if (verlet)
+    if (OrbitalPhysics::verlet)
         setOldPositions(satellites, stars);
 }
 
 void SceneFunctions::createObjectsFancy(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet)
+            Camera *camera)
 {
     Texture *sunTexture {new Texture{"../assets/textures/sun2.jpg"}};
     sunTexture->loadTexture();
@@ -314,6 +314,6 @@ void SceneFunctions::createObjectsFancy(std::vector<SpaceObject*>& stars, std::v
     mars->setRotationSpeed(-100.0f);
     satellites.push_back(mars);
 
-    if (verlet)
+    if (OrbitalPhysics::verlet)
         setOldPositions(satellites, stars);
 }

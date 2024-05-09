@@ -1,3 +1,5 @@
+#pragma once
+
 // This file will handle setting up the scene (creating the spheres) and calling their render methods
 #ifndef SCENEFUNCTIONS_H
 #define SCENEFUNCTIONS_H
@@ -27,16 +29,16 @@ namespace SceneFunctions {
     void setupSkybox(Skybox* skybox, glm::mat4 projection);
     void createObjectsDefault(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet);
+            Camera *camera);
     void createObjectsFigureEight(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet);
+            Camera *camera);
     void createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet);
+            Camera *camera);
     void createObjectsFancy(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
             PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera, bool verlet);
+            Camera *camera);
 }
 
 #endif
