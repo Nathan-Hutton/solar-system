@@ -1,10 +1,8 @@
-#ifndef COMMONVALS
-#define COMMONVALS
-
+#pragma once
 
 // This library breaks if you include it anywhere more than once
 #include "stb_image.h"
 
-const int MAX_POINT_LIGHTS {3};
-
-#endif
+namespace commonVals {
+    const int MAX_POINT_LIGHTS {3};
+}

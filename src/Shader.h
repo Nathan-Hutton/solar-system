@@ -78,7 +78,7 @@ class Shader
             GLuint uniformExponential {};
             GLuint uniformLinear {};
             GLuint uniformConstant {};
-        } uniformPointLights[MAX_POINT_LIGHTS] {};
+        } uniformPointLights[commonVals::MAX_POINT_LIGHTS] {};
 
         struct {
             GLuint uniformColor {};
@@ -97,7 +97,7 @@ class Shader
         struct {
             GLuint shadowMap {};
             GLuint farPlane {};
-        } uniformOmniShadowMaps[1 + MAX_POINT_LIGHTS] {};
+        } uniformOmniShadowMaps[1 + commonVals::MAX_POINT_LIGHTS] {};
 
         void compileShader(const char* vertexCode, const char* fragmentCode);
         void compileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode);
