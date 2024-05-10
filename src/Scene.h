@@ -13,6 +13,6 @@ namespace scene
     extern std::vector<SpaceObject*> stars;
     extern Skybox skybox;
     extern Camera camera;
-    extern PointLight* pointLights[commonVals::MAX_POINT_LIGHTS];
+    extern PointLight* pointLights[MAX_POINT_LIGHTS];
     extern GLuint pointLightCount;
 }
