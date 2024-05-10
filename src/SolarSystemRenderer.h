@@ -55,8 +55,9 @@ class SolarSystemRenderer
 
         struct Shaders {
             Shader* mainShader {};
-            Shader* mainShaderWithoutShadows {};
-            Shader* mainShaderWithShadows {};
+            Shader* mainShaders[2] {};
+            //Shader* mainShaderWithoutShadows {};
+            //Shader* mainShaderWithShadows {};
             Shader* sunShader {};
             Shader* omniShadowShader {};
             Shader* hdrShader {};

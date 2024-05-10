@@ -11,24 +11,14 @@ void SolarSystemRenderer::toggleShadows()
 {
     // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
     shadowsEnabled = !shadowsEnabled;
-    if (shadowsEnabled)
-    {
-        shaders.mainShader                                  = shaders.mainShaderWithShadows;
-        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithShadows->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithShadows->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithShadows->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithShadows->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithShadows->getShininessLocation();
-    }
-    else
-    {
-        shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
-        uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
-    }
+    shaders.mainShader = shaders.mainShaders[shadowsEnabled];
+
+    shaders.mainShader                                  = shaders.mainShader;
+    uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
+    uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
+    uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
+    uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
+    uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
 
     for (SpaceObject *satellite : scene::satellites)
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
@@ -70,17 +60,17 @@ void SolarSystemRenderer::createShaders(glm::mat4 projection)
     uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShader->getShaderID(), "horizontal");
     
     // Shader for the satellites, moons, and models. Includes shadows
-    shaders.mainShaderWithShadows = new Shader{};
-    shaders.mainShaderWithShadows->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
-    shaders.mainShaderWithShadows->useShader();
-	shaders.mainShaderWithShadows->setTexture(2);
-    shaders.mainShaderWithShadows->validate();
-    shaders.mainShaderWithShadows->setSpotLight(scene::camera.getSpotLight(), true, 4+scene::pointLightCount, scene::pointLightCount);
-    glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    shaders.mainShaders[1] = new Shader{};
+    shaders.mainShaders[1]->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
+    shaders.mainShaders[1]->useShader();
+	shaders.mainShaders[1]->setTexture(2);
+    shaders.mainShaders[1]->validate();
+    shaders.mainShaders[1]->setSpotLight(scene::camera.getSpotLight(), true, 4+scene::pointLightCount, scene::pointLightCount);
+    glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
-	shaders.mainShaderWithShadows->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
-    glUniform1i(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "pointLightCount"), scene::pointLightCount);
+	shaders.mainShaders[1]->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
+    glUniform1i(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
     shaders.halfShader = new Shader{};
     shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
@@ -88,24 +78,24 @@ void SolarSystemRenderer::createShaders(glm::mat4 projection)
     shaders.halfShader->setTexture(0);
     
     // Shader for the satellites, moons, and models. Doesn't use shadows
-    shaders.mainShaderWithoutShadows = new Shader{};
-    shaders.mainShaderWithoutShadows->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
-    shaders.mainShaderWithoutShadows->useShader();
-	shaders.mainShaderWithoutShadows->setTexture(2);
-    shaders.mainShaderWithoutShadows->validate();
-    shaders.mainShaderWithoutShadows->setSpotLight(scene::camera.getSpotLight(), false, 4+scene::pointLightCount, scene::pointLightCount);
-    glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	shaders.mainShaderWithoutShadows->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
-    glUniform1i(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "pointLightCount"), scene::pointLightCount);
+    shaders.mainShaders[0] = new Shader{};
+    shaders.mainShaders[0]->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
+    shaders.mainShaders[0]->useShader();
+	shaders.mainShaders[0]->setTexture(2);
+    shaders.mainShaders[0]->validate();
+    shaders.mainShaders[0]->setSpotLight(scene::camera.getSpotLight(), false, 4+scene::pointLightCount, scene::pointLightCount);
+    glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	shaders.mainShaders[0]->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
+    glUniform1i(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
     // This is so we can disable shadows
     // By default, shadows will be turned off
-    shaders.mainShader                                  = shaders.mainShaderWithoutShadows;
-    uniformVariables.uniformModelPlanets                = shaders.mainShaderWithoutShadows->getModelLocation();
-    uniformVariables.uniformViewPlanets                 = shaders.mainShaderWithoutShadows->getViewLocation();
-    uniformVariables.uniformEyePositionPlanets          = shaders.mainShaderWithoutShadows->getEyePositionLocation();
-    uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShaderWithoutShadows->getSpecularIntensityLocation();
-    uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
+    shaders.mainShader                                  = shaders.mainShaders[0];
+    uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
+    uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
+    uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
+    uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
+    uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
 }
 
 void SolarSystemRenderer::setupPostProcessingObjects()
