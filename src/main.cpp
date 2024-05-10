@@ -80,14 +80,13 @@ void setupScene(Window* mainWindow)
 
 int main()
 {
-    SolarSystemRenderer renderer {};
     Window mainWindow {1920, 1200};
     setupScene(&mainWindow);
 
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
     glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
     SceneHandler::setupSkybox(projection);
-    renderer.setup(projection);
+    SolarSystemRenderer::setup(projection);
 
     // Loop until window is closed
     GLfloat now {};
@@ -139,14 +138,14 @@ int main()
         // Check for flashlight toggle
         if (keys[GLFW_KEY_L])
         {
-            renderer.toggleShadows();
+            SolarSystemRenderer::toggleShadows();
 
             // Setting this to false means it won't trigger multiple times when we press it once
             keys[GLFW_KEY_L] = false;
         }
 
-        renderer.omniShadowMapPasses();
-        renderer.renderPass();
+        SolarSystemRenderer::omniShadowMapPasses();
+        SolarSystemRenderer::renderPass();
 
         glUseProgram(0);
         mainWindow.swapBuffers();
