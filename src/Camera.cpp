@@ -39,7 +39,7 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     turnSpeed   = startTurnSpeed;
 }
 
-void Camera::keyControl(bool* keys, GLfloat deltaTime, SolarSystemRenderer* renderer, std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars)
+void Camera::keyControl(bool* keys, GLfloat deltaTime)
 {
     GLfloat velocity {moveSpeed * deltaTime};
 
@@ -65,16 +65,6 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime, SolarSystemRenderer* rend
         roll -= turnSpeed * 3;
 
     handleFlashlightKey(keys);
-
-    // Check for flashlight toggle
-    if (!keys[GLFW_KEY_L])
-        return;
-
-    // Setting this to false means we won't trigger it multiple times when we press it once
-    keys[GLFW_KEY_L] = false;
-
-    // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
-    renderer->toggleShadows(satellites, stars);
 }
 
 void Camera::handleFlashlightKey(bool* keys)

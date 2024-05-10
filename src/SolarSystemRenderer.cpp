@@ -292,9 +292,9 @@ void SolarSystemRenderer::renderPass(const glm::mat4& view, SpotLight* spotLight
     glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
     renderObjects(stars, uniformVariables.uniformModelSuns);
 
-    // ====================================
-    // RENDER PLANETS, MOONS, and ASTEROIDS
-    // ====================================
+    // =================================================
+    // RENDER PLANETS, MOONS, ASTEROIDS, and the SKYBOX
+    // =================================================
 
 	shaders.mainShader->useShader();
     shaders.mainShader->setSpotLightDirAndPos(spotLight, shadowsEnabled, 4+pointLightCount, pointLightCount);
@@ -307,10 +307,6 @@ void SolarSystemRenderer::renderPass(const glm::mat4& view, SpotLight* spotLight
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
 	renderObjects(satellites, uniformVariables.uniformModelPlanets);
-
-    // ====================================
-    // RENDER SKYBOX
-    // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
     skybox->drawSkybox(view);

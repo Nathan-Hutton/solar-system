@@ -154,9 +154,18 @@ int main()
         // Get + handle user input
         glfwPollEvents();
         bool* keys {mainWindow.getKeys()};
-        camera.keyControl(keys, deltaTime, &renderer, satellites, stars);
+        camera.keyControl(keys, deltaTime);
         camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
+
+        // Check for flashlight toggle
+        if (keys[GLFW_KEY_L])
+        {
+            renderer.toggleShadows(satellites, stars);
+
+            // Setting this to false means it won't trigger multiple times when we press it once
+            keys[GLFW_KEY_L] = false;
+        }
 
         if (renderer.getShadowsEnabled())
         {
