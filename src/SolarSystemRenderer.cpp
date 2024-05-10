@@ -7,7 +7,7 @@ bool SolarSystemRenderer::getShadowsEnabled()
     return shadowsEnabled;
 }
 
-void SolarSystemRenderer::toggleShadows(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars)
+void SolarSystemRenderer::toggleShadows()
 {
     // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
     shadowsEnabled = !shadowsEnabled;
@@ -30,11 +30,11 @@ void SolarSystemRenderer::toggleShadows(std::vector<SpaceObject*>& satellites, s
         uniformVariables.uniformShininessPlanets            = shaders.mainShaderWithoutShadows->getShininessLocation();
     }
 
-    for (SpaceObject *satellite : satellites)
+    for (SpaceObject *satellite : scene::satellites)
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
-void SolarSystemRenderer::createShaders(PointLight* pointLights[], GLuint pointLightCount, glm::mat4 projection, SpotLight* spotLight)
+void SolarSystemRenderer::createShaders(glm::mat4 projection)
 {
     // Shader for the suns (no lighting or shadows)
     shaders.sunShader = new Shader{};
@@ -75,12 +75,12 @@ void SolarSystemRenderer::createShaders(PointLight* pointLights[], GLuint pointL
     shaders.mainShaderWithShadows->useShader();
 	shaders.mainShaderWithShadows->setTexture(2);
     shaders.mainShaderWithShadows->validate();
-    shaders.mainShaderWithShadows->setSpotLight(spotLight, true, 4+pointLightCount, pointLightCount);
+    shaders.mainShaderWithShadows->setSpotLight(scene::camera.getSpotLight(), true, 4+scene::pointLightCount, scene::pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
     // texture, and the third is the texture(s) of the objects we're rendering
-	shaders.mainShaderWithShadows->setPointLights(pointLights, pointLightCount, 4, 0);
-    glUniform1i(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "pointLightCount"), pointLightCount);
+	shaders.mainShaderWithShadows->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
+    glUniform1i(glGetUniformLocation(shaders.mainShaderWithShadows->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
     shaders.halfShader = new Shader{};
     shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
@@ -93,10 +93,10 @@ void SolarSystemRenderer::createShaders(PointLight* pointLights[], GLuint pointL
     shaders.mainShaderWithoutShadows->useShader();
 	shaders.mainShaderWithoutShadows->setTexture(2);
     shaders.mainShaderWithoutShadows->validate();
-    shaders.mainShaderWithoutShadows->setSpotLight(spotLight, false, 4+pointLightCount, pointLightCount);
+    shaders.mainShaderWithoutShadows->setSpotLight(scene::camera.getSpotLight(), false, 4+scene::pointLightCount, scene::pointLightCount);
     glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	shaders.mainShaderWithoutShadows->setPointLightsWithoutShadows(pointLights, pointLightCount);
-    glUniform1i(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "pointLightCount"), pointLightCount);
+	shaders.mainShaderWithoutShadows->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
+    glUniform1i(glGetUniformLocation(shaders.mainShaderWithoutShadows->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
     // This is so we can disable shadows
     // By default, shadows will be turned off
@@ -217,13 +217,13 @@ void SolarSystemRenderer::setupPostProcessingObjects()
     }
 }
 
-void SolarSystemRenderer::setLightUniformVariables(std::vector<SpaceObject*>& satellites)
+void SolarSystemRenderer::setLightUniformVariables()
 {
-    for (SpaceObject *satellite : satellites)
+    for (SpaceObject *satellite : scene::satellites)
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
-void SolarSystemRenderer::omniShadowMapPass(PointLight* light, const std::vector<SpaceObject*>& satellites)
+void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
 {
 	shaders.omniShadowShader->useShader();
 
@@ -244,7 +244,7 @@ void SolarSystemRenderer::omniShadowMapPass(PointLight* light, const std::vector
 	shaders.omniShadowShader->validate();
 
 	// Draw just to the depth buffer
-	renderObjects(satellites, uniformVariables.uniformModelOmniShadowMap);
+	renderObjects(scene::satellites, uniformVariables.uniformModelOmniShadowMap);
 
     // Bind the default framebuffer
     // If we called swapbuffers without doing this the image wouldn't change
@@ -275,8 +275,9 @@ void SolarSystemRenderer::renderObjects(const std::vector<SpaceObject*>& objects
     }
 }
 
-void SolarSystemRenderer::renderPass(const glm::mat4& view, SpotLight* spotLight, GLuint pointLightCount, const glm::vec3& eyePos, const std::vector<SpaceObject*>& satellites, const std::vector<SpaceObject*>& stars, Skybox* skybox)
+void SolarSystemRenderer::renderPass()
 {
+    glm::mat4 view = scene::camera.calculateViewMatrix();
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
 
     // Clear hdr buffer
@@ -290,26 +291,26 @@ void SolarSystemRenderer::renderPass(const glm::mat4& view, SpotLight* spotLight
 
     shaders.sunShader->useShader();
     glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
-    renderObjects(stars, uniformVariables.uniformModelSuns);
+    renderObjects(scene::stars, uniformVariables.uniformModelSuns);
 
     // =================================================
     // RENDER PLANETS, MOONS, ASTEROIDS, and the SKYBOX
     // =================================================
 
 	shaders.mainShader->useShader();
-    shaders.mainShader->setSpotLightDirAndPos(spotLight, shadowsEnabled, 4+pointLightCount, pointLightCount);
+    shaders.mainShader->setSpotLightDirAndPos(scene::camera.getSpotLight(), shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
 
     //// Apply view matrix.
     //// View matrix represents the camera's position and orientation in world.
     //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
     glUniformMatrix4fv(uniformVariables.uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
-    glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(eyePos));
+    glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(scene::camera.getPosition()));
 
  	//// Now we're not drawing just to the depth buffer but also the color buffer
-	renderObjects(satellites, uniformVariables.uniformModelPlanets);
+	renderObjects(scene::satellites, uniformVariables.uniformModelPlanets);
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    skybox->drawSkybox(view);
+    scene::skybox.drawSkybox(view);
 
     // ====================================
     // BLOOM EFFECT

@@ -79,13 +79,6 @@ int getUserSelectedScene()
 int main()
 {
     SolarSystemRenderer renderer {};
-    std::vector<SpaceObject*> stars {};
-    std::vector<SpaceObject*> satellites {};
-    PointLight* pointLights[MAX_POINT_LIGHTS] {};
-    GLuint pointLightCount {};
-    Skybox skybox {};
-    Camera camera {};
-
     int selectedScene = getUserSelectedScene();
 
     // If this isn't right here, we will get a segmentation fault
@@ -96,16 +89,16 @@ int main()
     switch (selectedScene)
     {
         case (1):
-            SceneFunctions::createObjects1Sun1Planet(stars, satellites, pointLights, &pointLightCount, &camera);
+            SceneHandler::createObjects1Sun1Planet();
             break;
         case (2):
-            SceneFunctions::createObjectsDefault(stars, satellites, pointLights, &pointLightCount, &camera);
+            SceneHandler::createObjectsDefault();
             break;
         case (3):
-            SceneFunctions::createObjectsFigureEight(stars, satellites, pointLights, &pointLightCount, &camera);
+            SceneHandler::createObjectsFigureEight();
             break;
         case (4):
-            SceneFunctions::createObjectsFancy(stars, satellites, pointLights, &pointLightCount, &camera);
+            SceneHandler::createObjectsFancy();
             break;
         default:
             break;
@@ -113,10 +106,10 @@ int main()
 
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
     glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
-    SceneFunctions::setupSkybox(&skybox, projection);
-    renderer.createShaders(pointLights, pointLightCount, projection, camera.getSpotLight());
+    SceneHandler::setupSkybox(projection);
+    renderer.createShaders(projection);
     renderer.setupPostProcessingObjects();
-    renderer.setLightUniformVariables(satellites);
+    renderer.setLightUniformVariables();
 
     // Loop until window is closed
     GLfloat now {};
@@ -149,26 +142,26 @@ int main()
         // Update our object's positions based on our chosen numerical scheme
         if (OrbitalPhysics::verlet)
         {
-            OrbitalPhysics::updateCelestialBodyAngles(stars, satellites, timeStep);
-            OrbitalPhysics::updatePositionsVerlet(stars, satellites, &timeSinceLastVerlet);
+            OrbitalPhysics::updateCelestialBodyAngles(timeStep);
+            OrbitalPhysics::updatePositionsVerlet(&timeSinceLastVerlet);
         }
         else
         {
-            OrbitalPhysics::updateCelestialBodyAngles(stars, satellites, timeStep);
-            OrbitalPhysics::updatePositionsEuler(stars, satellites, timeStep);
+            OrbitalPhysics::updateCelestialBodyAngles(timeStep);
+            OrbitalPhysics::updatePositionsEuler(timeStep);
         }
 
         // Get + handle user input
         glfwPollEvents();
         bool* keys {mainWindow.getKeys()};
-        camera.keyControl(keys, deltaTime);
-        camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+        scene::camera.keyControl(keys, deltaTime);
+        scene::camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
         handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
 
         // Check for flashlight toggle
         if (keys[GLFW_KEY_L])
         {
-            renderer.toggleShadows(satellites, stars);
+            renderer.toggleShadows();
 
             // Setting this to false means it won't trigger multiple times when we press it once
             keys[GLFW_KEY_L] = false;
@@ -177,12 +170,12 @@ int main()
         if (renderer.getShadowsEnabled())
         {
             // These needs to be index based loops so that we don't make a copy of the lights each time
-            for (size_t i {0}; i < pointLightCount; i++)
-                renderer.omniShadowMapPass(pointLights[i], satellites);
-            renderer.omniShadowMapPass(camera.getSpotLight(), satellites);
+            for (size_t i {0}; i < scene::pointLightCount; i++)
+                renderer.omniShadowMapPass(scene::pointLights[i]);
+            renderer.omniShadowMapPass(scene::camera.getSpotLight());
         }
 
-        renderer.renderPass(camera.calculateViewMatrix(), camera.getSpotLight(), pointLightCount, camera.getPosition(), satellites, stars, &skybox);
+        renderer.renderPass();
 
         glUseProgram(0);
         mainWindow.swapBuffers();

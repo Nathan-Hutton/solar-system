@@ -22,22 +22,15 @@
 #include "Material.h"
 #include "OrbitalPhysics.h"
 #include "Skybox.h"
+#include "Scene.h"
 
-namespace SceneFunctions {
-    void setOldPositions(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars);
-    void setupSkybox(Skybox* skybox, glm::mat4 projection);
-    void createObjectsDefault(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
-            PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
-    void createObjectsFigureEight(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
-            PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
-    void createObjects1Sun1Planet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
-            PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
-    void createObjectsFancy(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites,
-            PointLight* pLights[], unsigned int *pLightCount,
-            Camera *camera);
+namespace SceneHandler {
+    void setOldPositions();
+    void setupSkybox(glm::mat4 projection);
+    void createObjectsDefault();
+    void createObjectsFigureEight();
+    void createObjects1Sun1Planet();
+    void createObjectsFancy();
 }
 
 #endif

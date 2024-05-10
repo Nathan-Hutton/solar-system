@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 
 #include "SpotLight.h"
-#include "SolarSystemRenderer.h"
 
 class Camera 
 {

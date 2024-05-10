@@ -20,10 +20,10 @@ glm::vec3 OrbitalPhysics::getForce(SpaceObject *object1, SpaceObject *object2)
     return ((gForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * directionVector;
 }
 
-void OrbitalPhysics::updateCelestialBodyAngles(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
+void OrbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
-    for (SpaceObject *sphere : satellites) 
+    for (SpaceObject *sphere : scene::satellites) 
     {
         sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed() * timeStep);
         if (sphere->getAngle() >= 360)
@@ -31,7 +31,7 @@ void OrbitalPhysics::updateCelestialBodyAngles(std::vector<SpaceObject*>& stars,
         if (sphere->getAngle() <= -360)
             sphere->setAngle(sphere->getAngle() + 360);
     }
-    for (SpaceObject *star : stars) 
+    for (SpaceObject *star : scene::stars) 
     {
         star->setAngle(star->getAngle() + star->getRotationSpeed() * timeStep);
         if (star->getAngle() >= 360)
@@ -41,7 +41,7 @@ void OrbitalPhysics::updateCelestialBodyAngles(std::vector<SpaceObject*>& stars,
     }
 }
 
-void OrbitalPhysics::updatePositionsEuler(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat timeStep)
+void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
     float tStep {};
     if (timeStep > MAX_TIME_STEP)
@@ -55,37 +55,37 @@ void OrbitalPhysics::updatePositionsEuler(std::vector<SpaceObject*>& stars, std:
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i {0}; i < satellites.size(); i++) 
+    for (int i {0}; i < scene::satellites.size(); i++) 
     {
         glm::vec3 force {0};
         
         // Add up forces from stars
-        for (SpaceObject *star : stars)
-            force += getForce(satellites[i], star);
+        for (SpaceObject *star : scene::stars)
+            force += getForce(scene::satellites[i], star);
 
         // Add up forces for other satellites
-        for (int j {0}; j < satellites.size(); j++) 
+        for (int j {0}; j < scene::satellites.size(); j++) 
         {
             if (i == j) continue;
-            force += getForce(satellites[i], satellites[j]);
+            force += getForce(scene::satellites[i], scene::satellites[j]);
         }
 
-        acceleration    = force / satellites[i]->getMass();
-        velocity        = satellites[i]->getVelocity() + acceleration * tStep;
-        position        = satellites[i]->getPosition() + velocity * tStep;
-        satellites[i]->setVelocity(velocity);
+        acceleration    = force / scene::satellites[i]->getMass();
+        velocity        = scene::satellites[i]->getVelocity() + acceleration * tStep;
+        position        = scene::satellites[i]->getPosition() + velocity * tStep;
+        scene::satellites[i]->setVelocity(velocity);
         newSatellitePositions.push_back(position);
     }
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
-    for (int i {0}; i < satellites.size(); i++)
-        satellites[i]->setPosition(newSatellitePositions[i]);
+    for (int i {0}; i < scene::satellites.size(); i++)
+        scene::satellites[i]->setPosition(newSatellitePositions[i]);
 
     if (timeStep > MAX_TIME_STEP)
-        updatePositionsEuler(stars, satellites, timeStep - MAX_TIME_STEP);
+        updatePositionsEuler(timeStep - MAX_TIME_STEP);
 }
 
-void OrbitalPhysics::updatePositionsVerlet(std::vector<SpaceObject*>& stars, std::vector<SpaceObject*>& satellites, GLfloat* timeSinceLastUpdate)
+void OrbitalPhysics::updatePositionsVerlet(GLfloat* timeSinceLastUpdate)
 {
     // Only do these calculations it's been a whole 0.005f seconds since the last time we ran this
     if (glfwGetTime() - *timeSinceLastUpdate < MAX_TIME_STEP)
@@ -98,31 +98,31 @@ void OrbitalPhysics::updatePositionsVerlet(std::vector<SpaceObject*>& stars, std
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i {0}; i < satellites.size(); i++) 
+    for (int i {0}; i < scene::satellites.size(); i++) 
     {
         glm::vec3 force {0};
         
         // Add up forces from stars
-        for (SpaceObject *star : stars)
-            force += getForce(satellites[i], star);
+        for (SpaceObject *star : scene::stars)
+            force += getForce(scene::satellites[i], star);
             
-        // Add up forces for other satellites
-        for (int j {0}; j < satellites.size(); j++) 
+        // Add up forces for other scene::satellites
+        for (int j {0}; j < scene::satellites.size(); j++) 
         {
             if (i == j) continue;
-            force += getForce(satellites[i], satellites[j]);
+            force += getForce(scene::satellites[i], scene::satellites[j]);
         }
 
-        acceleration    = force / satellites[i]->getMass();
-        position        = 2.0f * satellites[i]->getPosition() - satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f);
-        satellites[i]->setOldPosition(satellites[i]->getPosition());
+        acceleration    = force / scene::satellites[i]->getMass();
+        position        = 2.0f * scene::satellites[i]->getPosition() - scene::satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f);
+        scene::satellites[i]->setOldPosition(scene::satellites[i]->getPosition());
         newSatellitePositions.push_back(position);
     }
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
-    for (int i {0}; i < satellites.size(); i++)
-        satellites[i]->setPosition(newSatellitePositions[i]);
+    for (int i {0}; i < scene::satellites.size(); i++)
+        scene::satellites[i]->setPosition(newSatellitePositions[i]);
 
     // Keep doing these calculations until I can no longer do full 0.005f timesteps
-    updatePositionsVerlet(stars, satellites, timeSinceLastUpdate);
+    updatePositionsVerlet(timeSinceLastUpdate);
 }
