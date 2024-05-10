@@ -16,12 +16,13 @@ class SolarSystemRenderer
         SolarSystemRenderer();
         bool* getShadowsEnabledAddress();
         bool getShadowsEnabled();
-        void toggleShadows();
+        void toggleShadows(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars);
         void createShaders(PointLight* pointLights[], GLuint pointLightCount, glm::mat4 projection, SpotLight* spotLight);
+        void setLightUniformVariables(std::vector<SpaceObject*>& satellites);
         void setupPostProcessingObjects();
-        void omniShadowMapPass(PointLight* light);
-        void renderObjects(std::vector<SpaceObject*>& objects, GLuint uniformModel);
-        void renderPass(glm::mat4 view, SpotLight* spotLight, GLuint pointLightCount, glm::vec3& eyePos);
+        void omniShadowMapPass(PointLight* light, const std::vector<SpaceObject*>& satellites);
+        void renderObjects(const std::vector<SpaceObject*>& objects, GLuint uniformModel);
+        void renderPass(const glm::mat4& view, SpotLight* spotLight, GLuint pointLightCount, const glm::vec3& eyePos, const std::vector<SpaceObject*>& satellites, const std::vector<SpaceObject*>& stars, Skybox* skybox);
         ~SolarSystemRenderer();
 
     private:
@@ -63,11 +64,6 @@ class SolarSystemRenderer
             Shader* halfShader {};
         };
         Shaders shaders;
-
-        std::vector<SpaceObject*> stars {};
-        std::vector<SpaceObject*> satellites {};
-
-        Skybox skybox {};
 
         bool shadowsEnabled {false};
 };

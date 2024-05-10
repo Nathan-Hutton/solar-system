@@ -39,7 +39,7 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
     turnSpeed   = startTurnSpeed;
 }
 
-void Camera::keyControl(bool* keys, GLfloat deltaTime, SolarSystemRenderer* renderer)
+void Camera::keyControl(bool* keys, GLfloat deltaTime, SolarSystemRenderer* renderer, std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars)
 {
     GLfloat velocity {moveSpeed * deltaTime};
 
@@ -74,7 +74,7 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime, SolarSystemRenderer* rend
     keys[GLFW_KEY_L] = false;
 
     // If flashlight is disabled, don't put it in the shader (it's the last spotLight in our array)
-    renderer->toggleShadows();
+    renderer->toggleShadows(satellites, stars);
 }
 
 void Camera::handleFlashlightKey(bool* keys)

@@ -7,7 +7,7 @@ bool SolarSystemRenderer::getShadowsEnabled()
     return shadowsEnabled;
 }
 
-void SolarSystemRenderer::toggleShadows()
+void SolarSystemRenderer::toggleShadows(std::vector<SpaceObject*>& satellites, std::vector<SpaceObject*>& stars)
 {
     // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
     shadowsEnabled = !shadowsEnabled;
@@ -217,7 +217,13 @@ void SolarSystemRenderer::setupPostProcessingObjects()
     }
 }
 
-void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
+void SolarSystemRenderer::setLightUniformVariables(std::vector<SpaceObject*>& satellites)
+{
+    for (SpaceObject *satellite : satellites)
+        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
+}
+
+void SolarSystemRenderer::omniShadowMapPass(PointLight* light, const std::vector<SpaceObject*>& satellites)
 {
 	shaders.omniShadowShader->useShader();
 
@@ -245,7 +251,7 @@ void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void SolarSystemRenderer::renderObjects(std::vector<SpaceObject*>& objects, GLuint uniformModel)
+void SolarSystemRenderer::renderObjects(const std::vector<SpaceObject*>& objects, GLuint uniformModel)
 {
     // Apply rotations, transformations, and render objects
     // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -269,7 +275,7 @@ void SolarSystemRenderer::renderObjects(std::vector<SpaceObject*>& objects, GLui
     }
 }
 
-void SolarSystemRenderer::renderPass(glm::mat4 view, SpotLight* spotLight, GLuint pointLightCount, glm::vec3& eyePos)
+void SolarSystemRenderer::renderPass(const glm::mat4& view, SpotLight* spotLight, GLuint pointLightCount, const glm::vec3& eyePos, const std::vector<SpaceObject*>& satellites, const std::vector<SpaceObject*>& stars, Skybox* skybox)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
 
@@ -307,7 +313,7 @@ void SolarSystemRenderer::renderPass(glm::mat4 view, SpotLight* spotLight, GLuin
     // ====================================
 
     // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
-    skybox.drawSkybox(view);
+    skybox->drawSkybox(view);
 
     // ====================================
     // BLOOM EFFECT
