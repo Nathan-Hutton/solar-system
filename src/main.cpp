@@ -44,15 +44,8 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
         *timeChange = 0.0f;
 }
 
-int main()
+int getUserSelectedScene()
 {
-    SolarSystemRenderer renderer {};
-    std::vector<SpaceObject*> stars {};
-    std::vector<SpaceObject*> satellites {};
-    GLuint pointLightCount {};
-    Skybox skybox {};
-    Camera camera {};
-
     // Print out the controls
     std::cout << "**********\n";
     std::cout << "\033[92m" << "Controls" << "\033[0m\n";
@@ -80,11 +73,25 @@ int main()
     std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
     std::cin >> selectedScene;
 
+    return selectedScene;
+}
+
+int main()
+{
+    SolarSystemRenderer renderer {};
+    std::vector<SpaceObject*> stars {};
+    std::vector<SpaceObject*> satellites {};
+    PointLight* pointLights[MAX_POINT_LIGHTS] {};
+    GLuint pointLightCount {};
+    Skybox skybox {};
+    Camera camera {};
+
+    int selectedScene = getUserSelectedScene();
+
+    // If this isn't right here, we will get a segmentation fault
     Window mainWindow {1920, 1200};
     mainWindow.initialize();
-
-    PointLight* pointLights[MAX_POINT_LIGHTS] {};
-
+    
     // Build scene based on user input
     switch (selectedScene)
     {
