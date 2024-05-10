@@ -251,6 +251,17 @@ void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void SolarSystemRenderer::omniShadowMapPasses()
+{
+    if (!shadowsEnabled)
+        return;
+
+    for (size_t i {0}; i < scene::pointLightCount; i++)
+        omniShadowMapPass(scene::pointLights[i]);
+    omniShadowMapPass(scene::camera.getSpotLight());
+}
+
+
 void SolarSystemRenderer::renderObjects(const std::vector<SpaceObject*>& objects, GLuint uniformModel)
 {
     // Apply rotations, transformations, and render objects

@@ -21,6 +21,7 @@ class SolarSystemRenderer
         void setupPostProcessingObjects();
         void omniShadowMapPass(PointLight* light);
         void renderObjects(const std::vector<SpaceObject*>& objects, GLuint uniformModel);
+        void omniShadowMapPasses();
         void renderPass();
         ~SolarSystemRenderer();
 

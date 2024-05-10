@@ -167,14 +167,7 @@ int main()
             keys[GLFW_KEY_L] = false;
         }
 
-        if (renderer.getShadowsEnabled())
-        {
-            // These needs to be index based loops so that we don't make a copy of the lights each time
-            for (size_t i {0}; i < scene::pointLightCount; i++)
-                renderer.omniShadowMapPass(scene::pointLights[i]);
-            renderer.omniShadowMapPass(scene::camera.getSpotLight());
-        }
-
+        renderer.omniShadowMapPasses();
         renderer.renderPass();
 
         glUseProgram(0);
