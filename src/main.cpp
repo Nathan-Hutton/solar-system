@@ -96,7 +96,7 @@ int main()
     GLfloat deltaTime {0.0f};
     GLfloat timeChange {1.0f};
     GLfloat timeStep {0.0f};
-    GLfloat timeSinceLastVerlet {0.0f};
+    GLfloat timeSinceLastVerlet {0.0f}; // Not relevant if we're using Euler for physics
     while(!mainWindow.getShouldClose())
     {
         now         = glfwGetTime();
@@ -108,25 +108,19 @@ int main()
         // Update FPS counter
         if (counter == 30)
         {
-            double timeElapsed {now - lastFPSUpdateTime};
-            std::string FPS {std::to_string(30.0 / timeElapsed)};
-            std::string newTitle {"Solar System - " + FPS + " FPS"};
-            mainWindow.setWindowTitle(newTitle);
+            std::string FPS {std::to_string(30.0 / (now - lastFPSUpdateTime))};
+            mainWindow.setWindowTitle("Solar System - " + FPS + " FPS");
             lastFPSUpdateTime = now;
             counter = 0;
         }
 
+        OrbitalPhysics::updateCelestialBodyAngles(timeStep);
+
         // Update our object's positions based on our chosen numerical scheme
         if (OrbitalPhysics::verlet)
-        {
-            OrbitalPhysics::updateCelestialBodyAngles(timeStep);
             OrbitalPhysics::updatePositionsVerlet(&timeSinceLastVerlet);
-        }
         else
-        {
-            OrbitalPhysics::updateCelestialBodyAngles(timeStep);
             OrbitalPhysics::updatePositionsEuler(timeStep);
-        }
 
         // Get + handle user input
         glfwPollEvents();
@@ -138,10 +132,10 @@ int main()
         // Check for flashlight toggle
         if (keys[GLFW_KEY_L])
         {
-            SolarSystemRenderer::toggleShadows();
-
             // Setting this to false means it won't trigger multiple times when we press it once
             keys[GLFW_KEY_L] = false;
+
+            SolarSystemRenderer::toggleShadows();
         }
 
         SolarSystemRenderer::omniShadowMapPasses();
