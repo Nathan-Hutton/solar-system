@@ -34,17 +34,11 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 {
     if (yScrollOffset == 0.0f) return;
 
-    *timeChange += (yScrollOffset * 0.1f);
-    if (*timeChange > 3.0f)
-    {
-        *timeChange = 3.0f;
-        return;
-    }
-    if (*timeChange < 0.0f)
-        *timeChange = 0.0f;
+    GLfloat amountChange = yScrollOffset * 0.1f;
+    *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
 }
 
-int getUserSelectedScene()
+void setupScene(Window* mainWindow)
 {
     // Print out the controls
     std::cout << "**********\n";
@@ -72,18 +66,9 @@ int getUserSelectedScene()
     std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
     std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
     std::cin >> selectedScene;
-
-    return selectedScene;
-}
-
-int main()
-{
-    SolarSystemRenderer renderer {};
-    int selectedScene = getUserSelectedScene();
-
+    
     // If this isn't right here, we will get a segmentation fault
-    Window mainWindow {1920, 1200};
-    mainWindow.initialize();
+    mainWindow->initialize();
     
     // Build scene based on user input
     switch (selectedScene)
@@ -103,6 +88,13 @@ int main()
         default:
             break;
     }
+}
+
+int main()
+{
+    SolarSystemRenderer renderer {};
+    Window mainWindow {1920, 1200};
+    setupScene(&mainWindow);
 
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
     glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
