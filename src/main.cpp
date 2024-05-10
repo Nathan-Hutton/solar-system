@@ -99,9 +99,7 @@ int main()
     //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
     glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
     SceneHandler::setupSkybox(projection);
-    renderer.createShaders(projection);
-    renderer.setupPostProcessingObjects();
-    renderer.setLightUniformVariables();
+    renderer.setup(projection);
 
     // Loop until window is closed
     GLfloat now {};

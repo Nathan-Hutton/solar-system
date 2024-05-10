@@ -213,6 +213,13 @@ void SolarSystemRenderer::setLightUniformVariables()
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
+void SolarSystemRenderer::setup(glm::mat4 projection)
+{
+    createShaders(projection);
+    setupPostProcessingObjects();
+    setLightUniformVariables();
+}
+
 void SolarSystemRenderer::omniShadowMapPass(PointLight* light)
 {
 	shaders.omniShadowShader->useShader();
