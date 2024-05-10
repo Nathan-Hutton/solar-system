@@ -1,5 +1,4 @@
 #include "Light.h"
-#include <stdio.h>
 
 Light::Light()
 {

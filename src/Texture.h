@@ -3,8 +3,8 @@
 #include <GL/glew.h>
 #include <cstring>
 #include <memory>
-#include "CommonValues.h"
 #include <iostream>
+#include "CommonValues.h"
 
 class Texture
 {

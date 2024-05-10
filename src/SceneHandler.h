@@ -17,11 +17,8 @@
 #include "Planet.h"
 #include "Model.h"
 #include "Shader.h"
-#include "Camera.h"
-#include "SpotLight.h"
 #include "Material.h"
 #include "OrbitalPhysics.h"
-#include "Skybox.h"
 #include "Scene.h"
 
 namespace SceneHandler {

@@ -11,7 +11,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "CommonValues.h"
-#include "PointLight.h"
 #include "SpotLight.h"
 
 class Shader

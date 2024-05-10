@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sphere.h"
-#include "Material.h"
 
 class Planet : public Sphere
 {

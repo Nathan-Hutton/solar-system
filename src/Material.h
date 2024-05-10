@@ -2,7 +2,6 @@
 // The specular component is a property of the material, not the light
 
 #include <GL/glew.h>
-#include <stdio.h>
 
 class Material
 {

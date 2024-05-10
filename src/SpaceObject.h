@@ -7,8 +7,6 @@
 #include <cmath>
 
 #include "Mesh.h"
-#include "Texture.h"
-#include "Material.h"
 
 class SpaceObject
 {

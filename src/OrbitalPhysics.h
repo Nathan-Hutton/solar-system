@@ -10,8 +10,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Model.h"
-#include "Sun.h"
 #include "Scene.h"
 
 namespace OrbitalPhysics {

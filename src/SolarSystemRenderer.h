@@ -2,11 +2,6 @@
 
 #include "CommonValues.h"
 #include "Shader.h"
-#include "Sun.h"
-#include "Planet.h"
-#include "SpotLight.h"
-#include "Material.h"
-#include "Model.h"
 #include "Scene.h"
 
 class SolarSystemRenderer

@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <stdio.h>
 #include <string.h>
 #include <cmath>
 #include <vector>
@@ -16,19 +15,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "SolarSystemRenderer.h"
-#include "CommonValues.h"
-#include "Shader.h"
 #include "Window.h"
-#include "Camera.h"
-#include "Sun.h"
-#include "Planet.h"
-#include "PointLight.h"
-#include "SpotLight.h"
 #include "SceneHandler.h"
-#include "OrbitalPhysics.h"
-#include "Material.h"
-#include "Model.h"
-#include "Skybox.h"
 
 void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 {
