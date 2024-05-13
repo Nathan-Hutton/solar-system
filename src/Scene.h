@@ -14,5 +14,5 @@ namespace scene
     extern Skybox skybox;
     extern Camera camera;
     extern PointLight* pointLights[MAX_POINT_LIGHTS];
-    extern GLuint pointLightCount;
+    extern GLint pointLightCount;
 }

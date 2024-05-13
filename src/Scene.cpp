@@ -7,5 +7,5 @@ namespace scene
     Skybox skybox {};
     Camera camera {};
     PointLight* pointLights[MAX_POINT_LIGHTS] {};
-    GLuint pointLightCount {};
+    GLint pointLightCount {};
 }
