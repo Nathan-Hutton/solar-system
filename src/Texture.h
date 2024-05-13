@@ -10,7 +10,7 @@ class Texture
 {
     public:
         Texture();
-        Texture(const char* fileLocation);
+        explicit Texture(const char* fileLocation);
 
         const char* getFileLocation();
 

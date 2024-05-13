@@ -17,7 +17,7 @@ class Model : public SpaceObject
 {
     public:
         Model();
-        Model(GLfloat mass);
+        explicit Model(GLfloat mass);
 
         void setScaleFactor(GLfloat sFactor);
         GLfloat getScaleFactor();
@@ -32,7 +32,6 @@ class Model : public SpaceObject
         ~Model();
 
     private:
-        Material *material {};
         GLuint specularIntensityLocation {}, shininessLocation {};
         // Since this isn't a sphere where we just set the radius, we may want to use a glm::scale
         GLfloat scaleFactor {};

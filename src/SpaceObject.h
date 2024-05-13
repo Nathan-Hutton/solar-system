@@ -12,7 +12,7 @@ class SpaceObject
 {
     public:
         SpaceObject();
-        SpaceObject(GLfloat mass);
+        explicit SpaceObject(GLfloat mass);
 
         GLfloat getMass();
         glm::vec3 getOldPosition() const;
