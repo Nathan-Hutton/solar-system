@@ -241,7 +241,7 @@ namespace SolarSystemRenderer
         shaders.omniShadowShader->validate();
 
         // Draw just to the depth buffer
-        renderObjects(scene::satellites, uniformVariables.uniformModelOmniShadowMap);
+        renderObjectsVector(scene::satellites, uniformVariables.uniformModelOmniShadowMap);
 
         // Bind the default framebuffer
         // If we called swapbuffers without doing this the image wouldn't change
@@ -258,8 +258,7 @@ namespace SolarSystemRenderer
         omniShadowMapPass(scene::camera.getSpotLight());
     }
 
-
-    void renderObjects(const std::vector<SpaceObject*>& objects, GLuint uniformModel)
+    void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel)
     {
         // Apply rotations, transformations, and render objects
         // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -283,23 +282,22 @@ namespace SolarSystemRenderer
         }
     }
 
-    void renderPass()
+    void renderAllObjects()
     {
         glm::mat4 view = scene::camera.calculateViewMatrix();
-        glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
-
-        // Clear hdr buffer
-        glViewport(0, 0, 1920, 1200);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         // ====================================
         // RENDER SUNS
         // ====================================
 
         shaders.sunShader->useShader();
+        
+        // Apply view matrix.
+        // View matrix represents the camera's position and orientation in world.
+        // The world is actually rotated around the camera with the view matrix. The camera is stationary.
         glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
-        renderObjects(scene::stars, uniformVariables.uniformModelSuns);
+
+        renderObjectsVector(scene::stars, uniformVariables.uniformModelSuns);
 
         // =================================================
         // RENDER PLANETS, MOONS, ASTEROIDS, and the SKYBOX
@@ -308,24 +306,23 @@ namespace SolarSystemRenderer
         shaders.mainShader->useShader();
         shaders.mainShader->setSpotLightDirAndPos(scene::camera.getSpotLight(), shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
 
-        //// Apply view matrix.
-        //// View matrix represents the camera's position and orientation in world.
-        //// The world is actually rotated around the camera with the view matrix. The camera is stationary.
-        glUniformMatrix4fv(uniformVariables.uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
+        // Eye position is for specular lighting
         glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(scene::camera.getPosition()));
+        glUniformMatrix4fv(uniformVariables.uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
 
-        //// Now we're not drawing just to the depth buffer but also the color buffer
-        renderObjects(scene::satellites, uniformVariables.uniformModelPlanets);
+        renderObjectsVector(scene::satellites, uniformVariables.uniformModelPlanets);
 
-        // Skybox goes last so that post-processing effects don't completely overwrite the skybox texture
+        // ==============
+        // RENDER SKYBOX
+        // ==============
         scene::skybox.drawSkybox(view);
+    }
 
-        // ====================================
-        // BLOOM EFFECT
-        // ====================================
-
+    void handleBloom()
+    {
         // Half the bloom texture size before the pingPongFBOs can actually start bluring it
         glViewport(0, 0, 960, 600);
+
         shaders.halfShader->useShader();
         glActiveTexture(GL_TEXTURE0);
         glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.halfFBO);
@@ -353,17 +350,31 @@ namespace SolarSystemRenderer
             postProcessingResources.framebufferQuad->render();
             horizontal = !horizontal;
         }
-        glViewport(0, 0, 1920, 1200);
 
-        // ====================================
-        // RENDER TO SCREEN
-        // ====================================
-        
+        // Make the viewport regularly sized again
+        glViewport(0, 0, 1920, 1200);
+    }
+
+    // Render to the screen after we've done all the post-processing effects
+    void renderToScreen()
+    {
         // The HDR shader uses the texture of the entire scene + the bloom texture to render to the screen.
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaders.hdrShader->useShader();
         postProcessingResources.framebufferQuad->render();
+    }
+
+    void renderPass()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
+        glViewport(0, 0, 1920, 1200);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        renderAllObjects();
+        handleBloom();
+        renderToScreen();
     }
 
 }

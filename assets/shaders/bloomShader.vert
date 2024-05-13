@@ -1,4 +1,4 @@
-#version 330
+#version 460
 in vec2 aPos;
 
 out vec2 texCoord;
