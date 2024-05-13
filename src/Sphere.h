@@ -14,9 +14,9 @@ class Sphere : public SpaceObject
         void setMeshPointer(Mesh* sphereMesh);
         Texture* getTexturePointer();
         void setTexturePointer(Texture* texture);
-        virtual void render() = 0;
+        virtual void render() override = 0;
         void setWorldProperties(glm::mat4* model) override;
-        virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
+        virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
 
         ~Sphere();
 

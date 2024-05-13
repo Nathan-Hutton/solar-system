@@ -9,7 +9,7 @@ class OmniShadowMap : public ShadowMap
         OmniShadowMap();
 
         bool init(unsigned int width, unsigned int height);
-        void read(GLenum textureUnit);
+        void read(GLenum textureUnit) override;
 
         ~OmniShadowMap();
 
