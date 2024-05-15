@@ -4,22 +4,7 @@ Shader::Shader() {}
 
 void Shader::createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3)
 {
-    if (file3 != "")
-    {
-        std::string vertexString    { readFile(file1) };
-        std::string geometryString  { readFile(file2) };
-        std::string fragmentString  { readFile(file3) };
-        const char* vertexCode      { vertexString.c_str() };
-        const char* geometryCode    { geometryString.c_str() };
-        const char* fragmentCode    { fragmentString.c_str() };
-        compileShader(vertexCode, geometryCode, fragmentCode);
-        return;
-    }
-    std::string vertexString    { readFile(file1) };
-    std::string fragmentString  { readFile(file2) };
-    const char* vertexCode      { vertexString.c_str() };
-    const char* fragmentCode    { fragmentString.c_str() };
-    compileShader(vertexCode, fragmentCode);
+    compileShader(readFile(file1), readFile(file2), (file3 == "") ? "" : readFile(file3));
 }
 
 std::string Shader::readFile(std::string_view fileLocation)
@@ -42,7 +27,7 @@ std::string Shader::readFile(std::string_view fileLocation)
     return fileContents;
 }
 
-void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
+void Shader::compileShader(std::string shader1Code, std::string shader2Code, std::string shader3Code)
 {
     // Create a new OpenGL program object. Is the final linked version of multiple
     // shaders combined. Shaders are written in GLSL (OpenGL shading language) and run on the GPU
@@ -54,27 +39,18 @@ void Shader::compileShader(const char* vertexCode, const char* fragmentCode)
         std::exit(EXIT_FAILURE);
     }
 
-    addShader(shaderID, vertexCode, GL_VERTEX_SHADER);
-    addShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
+    addShader(shaderID, shader1Code.c_str(), GL_VERTEX_SHADER); // We'll always have a vertex shader
 
-    compileProgram();
-}
-
-void Shader::compileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode)
-{
-    // Create a new OpenGL program object. Is the final linked version of multiple
-    // shaders combined. Shaders are written in GLSL (OpenGL shading language) and run on the GPU
-    // For rendering graphics. Creates container which we attach shaders to.
-    shaderID = glCreateProgram();
-
-    if (!shaderID) {
-        std::cerr << "Error creating shader program\n";
-        std::exit(EXIT_FAILURE);
+    // If we included 3 files, that means we're using a geometry shader
+    if (shader3Code != "")
+    {
+        addShader(shaderID, shader2Code.c_str(), GL_GEOMETRY_SHADER);
+        addShader(shaderID, shader3Code.c_str(), GL_FRAGMENT_SHADER);
     }
-
-    addShader(shaderID, vertexCode, GL_VERTEX_SHADER);
-    addShader(shaderID, geometryCode, GL_GEOMETRY_SHADER);
-    addShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
+    else
+    {
+        addShader(shaderID, shader2Code.c_str(), GL_FRAGMENT_SHADER);
+    }
 
     compileProgram();
 }
