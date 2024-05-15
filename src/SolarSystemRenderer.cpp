@@ -158,7 +158,7 @@ namespace SolarSystemRenderer
         // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
         glGenFramebuffers(2, postProcessingResources.pingPongFBO);
         glGenTextures(2, postProcessingResources.pingPongBuffer);
-        for (unsigned int i {0}; i < 2; i++)
+        for (unsigned int i {0}; i < 2; ++i)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[i]);
             glBindTexture(GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[i]);
@@ -252,7 +252,7 @@ namespace SolarSystemRenderer
         if (!shadowsEnabled)
             return;
 
-        for (size_t i {0}; i < scene::pointLightCount; i++)
+        for (size_t i {0}; i < scene::pointLightCount; ++i)
             omniShadowMapPass(scene::pointLights[i]);
         omniShadowMapPass(scene::camera.getSpotLight());
     }
@@ -338,7 +338,7 @@ namespace SolarSystemRenderer
         postProcessingResources.framebufferQuad->render();
 
         const int amount {4};
-        for (unsigned int i {0}; i < amount; i++)
+        for (unsigned int i {0}; i < amount; ++i)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[horizontal]);
             glUniform1i(uniformVariables.uniformHorizontal, horizontal);

@@ -8,7 +8,7 @@ void SceneHandler::setOldPositions()
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i {0}; i < scene::satellites.size(); i++) 
+    for (int i {0}; i < scene::satellites.size(); ++i) 
     {
         glm::vec3 force {0};
         
@@ -17,7 +17,7 @@ void SceneHandler::setOldPositions()
             force += OrbitalPhysics::getForce(scene::satellites[i], star);
             
         // Add up forces for other satellites
-        for (int j {0}; j < scene::satellites.size(); j++) 
+        for (int j {0}; j < scene::satellites.size(); ++j) 
         {
             if (i == j) continue;
             force += OrbitalPhysics::getForce(scene::satellites[i], scene::satellites[j]);

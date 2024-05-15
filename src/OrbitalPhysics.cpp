@@ -49,7 +49,7 @@ void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i {0}; i < scene::satellites.size(); i++) 
+    for (int i {0}; i < scene::satellites.size(); ++i) 
     {
         glm::vec3 force {0};
         
@@ -58,7 +58,7 @@ void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
             force += getForce(scene::satellites[i], star);
 
         // Add up forces for other satellites
-        for (int j {0}; j < scene::satellites.size(); j++) 
+        for (int j {0}; j < scene::satellites.size(); ++j) 
         {
             if (i == j) continue;
             force += getForce(scene::satellites[i], scene::satellites[j]);
@@ -72,7 +72,7 @@ void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
     }
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
-    for (int i {0}; i < scene::satellites.size(); i++)
+    for (int i {0}; i < scene::satellites.size(); ++i)
         scene::satellites[i]->setPosition(newSatellitePositions[i]);
 
     if (timeStep > MAX_TIME_STEP)
@@ -92,7 +92,7 @@ void OrbitalPhysics::updatePositionsVerlet(GLfloat* timeSinceLastUpdate)
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i {0}; i < scene::satellites.size(); i++) 
+    for (int i {0}; i < scene::satellites.size(); ++i) 
     {
         glm::vec3 force {0};
         
@@ -101,7 +101,7 @@ void OrbitalPhysics::updatePositionsVerlet(GLfloat* timeSinceLastUpdate)
             force += getForce(scene::satellites[i], star);
             
         // Add up forces for other scene::satellites
-        for (int j {0}; j < scene::satellites.size(); j++) 
+        for (int j {0}; j < scene::satellites.size(); ++j) 
         {
             if (i == j) continue;
             force += getForce(scene::satellites[i], scene::satellites[j]);
@@ -114,7 +114,7 @@ void OrbitalPhysics::updatePositionsVerlet(GLfloat* timeSinceLastUpdate)
     }
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
-    for (int i {0}; i < scene::satellites.size(); i++)
+    for (int i {0}; i < scene::satellites.size(); ++i)
         scene::satellites[i]->setPosition(newSatellitePositions[i]);
 
     // Keep doing these calculations until I can no longer do full 0.005f timesteps

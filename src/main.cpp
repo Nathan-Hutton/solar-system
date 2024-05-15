@@ -107,7 +107,7 @@ int main()
         deltaTime   = now - lastFrame;
         lastFrame   = now;
         timeStep    = deltaTime * timeChange;
-        counter++;
+        ++counter;
 
         // Update FPS counter
         if (counter == 30)

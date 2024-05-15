@@ -11,14 +11,13 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
     uniformProjection   = skyShader->getProjectionLocation();
     uniformView         = skyShader->getViewLocation();
 
-
     // Texture setup
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     int width {}, height {}, bitDepth {};
 
-    for (size_t i {0}; i < 6; i++)
+    for (size_t i {0}; i < 6; ++i)
     {
         unsigned char *textData {stbi_load(faceLocations[i].c_str(), &width, &height, &bitDepth, STBI_rgb)};
         if (!textData)

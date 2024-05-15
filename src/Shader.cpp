@@ -104,7 +104,7 @@ void Shader::compileProgram()
 
     // Point lights
     std::stringstream ss {};
-    for (size_t i {0}; i < MAX_POINT_LIGHTS; i++)
+    for (size_t i {0}; i < MAX_POINT_LIGHTS; ++i)
     {
         // Base color
         ss << "pointLights[" << i << "].base.color";
@@ -170,7 +170,7 @@ void Shader::compileProgram()
     uniformFarPlane = glGetUniformLocation(shaderID, "farPlane");
 
     // Light matrices
-    for (size_t i {0}; i < 6; i++)
+    for (size_t i {0}; i < 6; ++i)
     {
         ss << "lightMatrices[" << i << "]";
         uniformLightMatrices[i] = glGetUniformLocation(shaderID, ss.str().c_str());
@@ -178,7 +178,7 @@ void Shader::compileProgram()
         ss.clear(); // Clear error flags
     }
 
-    for (size_t i {0}; i < MAX_POINT_LIGHTS + 1; i++)
+    for (size_t i {0}; i < MAX_POINT_LIGHTS + 1; ++i)
     {
         // Shadowmap
         ss << "omniShadowMaps[" << i << "].shadowMap";
@@ -268,7 +268,7 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
 
-    for (size_t i {0}; i < lightCount; i++)
+    for (size_t i {0}; i < lightCount; ++i)
     {
         pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
                             uniformPointLights[i].uniformColor, uniformPointLights[i].uniformPosition, 
@@ -281,7 +281,7 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
     // Clamp the number of lights allowed
     if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
 
-    for (size_t i {0}; i < lightCount; i++)
+    for (size_t i {0}; i < lightCount; ++i)
     {
         pLights[i]->useLight(uniformPointLights[i].uniformAmbientIntensity, uniformPointLights[i].uniformDiffuseIntensity,
                             uniformPointLights[i].uniformColor, uniformPointLights[i].uniformPosition, 
@@ -340,7 +340,7 @@ void Shader::setTexture(GLuint textureUnit)
 
 void Shader::setLightMatrices(std::vector<glm::mat4> lightMatrices)
 {
-    for (size_t i {0}; i < 6; i++)
+    for (size_t i {0}; i < 6; ++i)
         glUniformMatrix4fv(uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
 }
 

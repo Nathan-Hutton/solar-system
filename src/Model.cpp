@@ -48,7 +48,7 @@ void Model::loadModel(const std::string& fileName) {
 
 void Model::render()
 {
-    for (size_t i {0}; i < meshList.size(); i++)
+    for (size_t i {0}; i < meshList.size(); ++i)
     {
         const unsigned int materialIndex {meshToTex[i]};
 
@@ -70,7 +70,7 @@ void Model::setWorldProperties(glm::mat4* model)
 
 void Model::clearModel()
 {
-    for (size_t i {0}; i < meshList.size(); i++)
+    for (size_t i {0}; i < meshList.size(); ++i)
     {
         if (meshList[i])
         {
@@ -79,7 +79,7 @@ void Model::clearModel()
         }
     }
 
-    for (size_t i {0}; i < textureList.size(); i++)
+    for (size_t i {0}; i < textureList.size(); ++i)
     {
         if (textureList[i])
         {
@@ -92,14 +92,14 @@ void Model::clearModel()
 void Model::loadNode(aiNode *node, const aiScene *scene)
 {
     // Load meshes for the node
-    for(size_t i {0}; i < node->mNumMeshes; i++)
+    for(size_t i {0}; i < node->mNumMeshes; ++i)
     {
         // node only stores the ID of the mesh, the scene stores the data
         loadMesh(scene->mMeshes[node->mMeshes[i]], scene);
     }
 
     // Recursively call loadNode on all children
-    for (size_t i {0}; i < node->mNumChildren; i++)
+    for (size_t i {0}; i < node->mNumChildren; ++i)
     {
         loadNode(node->mChildren[i], scene);
     }
@@ -111,7 +111,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     std::vector<GLfloat> vertices {};
     std::vector<unsigned int> indices {};
 
-    for(size_t i {0}; i < mesh->mNumVertices; i++)
+    for(size_t i {0}; i < mesh->mNumVertices; ++i)
     {
         // With 'insert' we can append all the data from an array to our vector
         vertices.insert(vertices.end(), {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z});
@@ -127,10 +127,10 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     }
 
     // Each face contains the 3 indices, so we set up our indices with the faces
-    for (size_t i {0}; i < mesh->mNumFaces; i++)
+    for (size_t i {0}; i < mesh->mNumFaces; ++i)
     {
         const aiFace face {mesh->mFaces[i]};
-        for (size_t j {0}; j < face.mNumIndices; j++)
+        for (size_t j {0}; j < face.mNumIndices; ++j)
             indices.push_back(face.mIndices[j]);
     }
 
@@ -139,7 +139,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     for (int i {0}; i < vertices.size(); i+=8)
     {
         const glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
-        for (int j {0}; i < vertices.size(); i++)
+        for (int j {0}; i < vertices.size(); ++i)
         {
             const glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
             const GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
@@ -157,7 +157,7 @@ void Model::loadMaterials(const aiScene *scene)
 {
     textureList.resize(scene->mNumMaterials);
 
-    for (size_t i {0}; i < scene->mNumMaterials; i++)
+    for (size_t i {0}; i < scene->mNumMaterials; ++i)
     {
         aiMaterial* material {scene->mMaterials[i]};
 
