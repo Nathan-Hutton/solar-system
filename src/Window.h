@@ -14,6 +14,7 @@ class Window
 
         int initialize();
 
+        GLFWwindow* getGlfwWindow();
         GLfloat getBufferWidth() { return bufferWidth; }
         GLfloat getBufferHeight() { return bufferHeight; }
 
@@ -24,8 +25,6 @@ class Window
         GLfloat getYChange();
         GLfloat getYScrollOffset();
 
-        void setWindowTitle(std::string newTitle);
-        
         void swapBuffers() { glfwSwapBuffers(mainWindow); }
 
         ~Window();

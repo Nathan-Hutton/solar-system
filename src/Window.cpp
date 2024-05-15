@@ -99,6 +99,11 @@ int Window::initialize()
     return 1;
 }
 
+GLFWwindow* Window::getGlfwWindow()
+{
+    return mainWindow;
+}
+
 void Window::createCallbacks()
 {
     glfwSetKeyCallback(mainWindow, handleKeys);
@@ -168,11 +173,6 @@ void Window::handleScroll(GLFWwindow* window, double xOffset, double yOffset)
     Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
 
     theWindow->yScrollOffset = yOffset;
-}
-
-void Window::setWindowTitle(std::string newTitle)
-{
-    glfwSetWindowTitle(mainWindow, newTitle.c_str());
 }
 
 Window::~Window()

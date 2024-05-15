@@ -83,13 +83,17 @@ int main()
     Window mainWindow {1920, 1200};
     setupScene(&mainWindow);
 
-    //// Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
-    glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
-    SceneHandler::setupSkybox(projection);
-    SolarSystemRenderer::setup(projection);
+    // This is its own block so that projection will go out of scope and get off the stack
+    {
+        // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
+        glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
+        SceneHandler::setupSkybox(projection);
+        SolarSystemRenderer::setup(projection);
+    }
 
     // Loop until window is closed
     GLfloat now {};
+    std::string FPS_str {};
     unsigned int counter {0};
     double lastFPSUpdateTime {glfwGetTime()};
     GLfloat lastFrame {0.0f};
@@ -108,8 +112,8 @@ int main()
         // Update FPS counter
         if (counter == 30)
         {
-            std::string FPS {std::to_string(30.0 / (now - lastFPSUpdateTime))};
-            mainWindow.setWindowTitle("Solar System - " + FPS + " FPS");
+            FPS_str = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
+            glfwSetWindowTitle(mainWindow.getGlfwWindow(), FPS_str.c_str());
             lastFPSUpdateTime = now;
             counter = 0;
         }
