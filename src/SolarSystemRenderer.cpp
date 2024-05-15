@@ -9,7 +9,6 @@ namespace SolarSystemRenderer
 
     void toggleShadows()
     {
-        // TODO: Store the main shaders in an array and index them with shadowsEnabled so we don't need to have an if/else 
         shadowsEnabled = !shadowsEnabled;
         shaders.mainShader = shaders.mainShaders[shadowsEnabled];
 

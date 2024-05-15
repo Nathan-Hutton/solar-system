@@ -52,11 +52,7 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices,
 
     // In the case where we're just rendering the quad for post-processing effects,
     // we just use 2 values for each vertex since it's a 2D shape
-    int size {};
-    if (threeVertices)
-        size = 3;
-    else
-        size = 2;
+    int size {threeVertices ? 3 : 2};
 
     // Not all objects need normals. Suns and quads used for post-processing don't need them
     if (hasNormals)

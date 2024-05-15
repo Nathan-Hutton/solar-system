@@ -4,8 +4,8 @@ namespace OrbitalPhysics {
     bool verlet = false;
 }
 
-float MAX_TIME_STEP {0.005f};
-float gForce {-100.0f};
+constexpr float MAX_TIME_STEP {0.005f};
+constexpr float gForce {-100.0f};
 
 glm::vec3 OrbitalPhysics::getForce(SpaceObject *object1, SpaceObject *object2)
 {
@@ -43,12 +43,7 @@ void OrbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 
 void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
-    float tStep {};
-    if (timeStep > MAX_TIME_STEP)
-        tStep = MAX_TIME_STEP;
-    else
-        tStep = timeStep;
-
+    float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
     std::vector<glm::vec3> newSatellitePositions {};
     glm::vec3 acceleration {};
     glm::vec3 velocity {};
