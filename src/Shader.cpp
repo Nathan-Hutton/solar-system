@@ -2,30 +2,31 @@
 
 Shader::Shader() {}
 
-void Shader::createFromFiles(const char* file1, const char* file2, const char* file3)
+void Shader::createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3)
 {
-    if (file3 != nullptr)
+    if (file3 != "")
     {
-        std::string vertexString{readFile(file1)};
-        std::string geometryString{readFile(file2)};
-        std::string fragmentString{readFile(file3)};
-        const char* vertexCode{vertexString.c_str()};
-        const char* geometryCode{geometryString.c_str()};
-        const char* fragmentCode{fragmentString.c_str()};
+        std::string vertexString    { readFile(file1) };
+        std::string geometryString  { readFile(file2) };
+        std::string fragmentString  { readFile(file3) };
+        const char* vertexCode      { vertexString.c_str() };
+        const char* geometryCode    { geometryString.c_str() };
+        const char* fragmentCode    { fragmentString.c_str() };
         compileShader(vertexCode, geometryCode, fragmentCode);
         return;
     }
-    std::string vertexString{readFile(file1)};
-    std::string fragmentString{readFile(file2)};
-    const char* vertexCode{vertexString.c_str()};
-    const char* fragmentCode{fragmentString.c_str()};
+    std::string vertexString    { readFile(file1) };
+    std::string fragmentString  { readFile(file2) };
+    const char* vertexCode      { vertexString.c_str() };
+    const char* fragmentCode    { fragmentString.c_str() };
     compileShader(vertexCode, fragmentCode);
 }
 
-std::string Shader::readFile(const char* fileLocation)
+std::string Shader::readFile(std::string_view fileLocation)
 {
     std::string content {};
-    std::ifstream fileStream(fileLocation, std::ios::in);
+    std::filesystem::path path(fileLocation);
+    std::ifstream fileStream(path);
 
     if (!fileStream.is_open()) {
         std::cerr << "Failed to read" << fileLocation << " File doesn't exist.\n";
@@ -33,14 +34,12 @@ std::string Shader::readFile(const char* fileLocation)
     }
 
     std::string line {""};
-    while (!fileStream.eof())
-    {
-        std::getline(fileStream, line);
-        content.append(line + '\n'); // Newline is cosmetic, GLSL is not whitespace sensitive
-    }
+    std::string fileContents {""};
+    while (getline(fileStream, line))
+        fileContents += line + "\n";
 
     fileStream.close();
-    return content;
+    return fileContents;
 }
 
 void Shader::compileShader(const char* vertexCode, const char* fragmentCode)

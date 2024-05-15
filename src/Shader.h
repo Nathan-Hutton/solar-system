@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -18,11 +19,11 @@ class Shader
     public:
         Shader();
 
-        void createFromFiles(const char* file1, const char* file2, const char* file3 = nullptr);
+        void createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3 = "");
 
         void validate();
 
-        std::string readFile(const char* fileLocation);
+        std::string readFile(std::string_view fileLocation);
 
         GLuint getShaderID();
 
