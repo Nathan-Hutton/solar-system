@@ -100,7 +100,7 @@ class Shader
             GLuint farPlane {};
         } uniformOmniShadowMaps[1 + MAX_POINT_LIGHTS] {};
 
-        void compileShader(std::string shader1Code, std::string shader2Code, std::string shader3Code = "");
-        void addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
+        void compileShader(const std::string shader1Code, const std::string shader2Code, const std::string shader3Code = "");
+        void addShader(GLuint theProgram, const std::string shaderCode, GLenum shaderType);
         void compileProgram();
 };

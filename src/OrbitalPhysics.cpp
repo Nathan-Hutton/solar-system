@@ -9,8 +9,8 @@ constexpr float gForce {-100.0f};
 
 glm::vec3 OrbitalPhysics::getForce(SpaceObject *object1, SpaceObject *object2)
 {
-    glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
-    float displacementVectorLength {glm::length(displacementVector)};
+    const glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
+    const float displacementVectorLength {glm::length(displacementVector)};
     
     // TODO: fine tune this
     if (object1->getGreatestDistanceBetweenVertices() + object2->getGreatestDistanceBetweenVertices() >= displacementVectorLength)
@@ -42,7 +42,7 @@ void OrbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 
 void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
-    float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
+    const float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
     std::vector<glm::vec3> newSatellitePositions {};
     glm::vec3 acceleration {};
     glm::vec3 velocity {};

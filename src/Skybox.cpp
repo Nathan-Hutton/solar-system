@@ -75,7 +75,7 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
     skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36, false);
 }
 
-void Skybox::setProjectionMatrix(glm::mat4 projection)
+void Skybox::setProjectionMatrix(const glm::mat4 projection)
 {
     skyShader->useShader();
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));

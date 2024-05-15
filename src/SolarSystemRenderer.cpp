@@ -23,7 +23,7 @@ namespace SolarSystemRenderer
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
 
-    void createShaders(glm::mat4 projection)
+    void createShaders(const glm::mat4 projection)
     {
         // Shader for the suns (no lighting or shadows)
         shaders.sunShader = new Shader{};
@@ -152,7 +152,7 @@ namespace SolarSystemRenderer
             std::exit(EXIT_FAILURE);
         }
 
-        unsigned int attachments[2] {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        const unsigned int attachments[2] {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
         glDrawBuffers(2, attachments);
 
         // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
@@ -169,7 +169,7 @@ namespace SolarSystemRenderer
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[i], 0);
 
-            GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
+            const GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
             if (status != GL_FRAMEBUFFER_COMPLETE)
             {
                 std::cerr << "Framebuffer Error: " << status << '\n';
@@ -283,7 +283,7 @@ namespace SolarSystemRenderer
 
     void renderAllObjects()
     {
-        glm::mat4 view = scene::camera.calculateViewMatrix();
+        const glm::mat4 view = scene::camera.calculateViewMatrix();
 
         // ====================================
         // RENDER SUNS
@@ -337,7 +337,7 @@ namespace SolarSystemRenderer
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.halfTexture);
         postProcessingResources.framebufferQuad->render();
 
-        int amount {4};
+        const int amount {4};
         for (unsigned int i {0}; i < amount; i++)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[horizontal]);

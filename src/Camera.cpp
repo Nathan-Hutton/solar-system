@@ -40,7 +40,7 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
 
 void Camera::keyControl(bool* keys, GLfloat deltaTime)
 {
-    GLfloat velocity {moveSpeed * deltaTime};
+    const GLfloat velocity {moveSpeed * deltaTime};
 
     if (keys[GLFW_KEY_W])
         position += front * velocity;
@@ -132,7 +132,7 @@ glm::vec3 Camera::getDirection()
 
 void Camera::update()
 {
-    glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
+    const glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
     front       = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
     oldYaw      = yaw;
     right       = glm::normalize(glm::cross(front, up));

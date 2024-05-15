@@ -2,12 +2,12 @@
 
 Texture::Texture() {}
 
-Texture::Texture(const char* fileLocation)
+Texture::Texture(std::string fileLocation)
 {
-    this->fileLocation = strdup(fileLocation);
+    this->fileLocation = fileLocation;
 }
 
-const char* Texture::getFileLocation()
+std::string Texture::getFileLocation()
 {
     return fileLocation;
 }
@@ -17,7 +17,7 @@ bool Texture::loadTexture()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
     int bitDepth {};
-    unsigned char *textData {stbi_load(fileLocation, &width, &height, &bitDepth, 0)};
+    unsigned char *textData {stbi_load(fileLocation.c_str(), &width, &height, &bitDepth, 0)};
     if (!textData)
     {
         std::cerr << "Failed to find " << fileLocation << '\n';
@@ -75,7 +75,7 @@ void Texture::clearTexture()
     textureID       = 0;
     width           = 0;
     height          = 0;
-    fileLocation    = NULL;
+    fileLocation    = "";
 }
 
 Texture::~Texture()

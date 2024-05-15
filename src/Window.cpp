@@ -113,21 +113,21 @@ void Window::createCallbacks()
 
 GLfloat Window::getXChange()
 {
-    GLfloat theChange {xChange};
+    const GLfloat theChange {xChange};
     xChange = 0.0f;
     return theChange;
 }
 
 GLfloat Window::getYChange()
 {
-    GLfloat theChange {yChange};
+    const GLfloat theChange {yChange};
     yChange = 0.0f;
     return theChange;
 }
 
 GLfloat Window::getYScrollOffset()
 {
-    GLfloat theOffset {yScrollOffset};
+    const GLfloat theOffset {yScrollOffset};
     yScrollOffset = 0.0f;
     return theOffset;
 }

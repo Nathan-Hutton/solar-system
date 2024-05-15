@@ -23,7 +23,7 @@
 
 namespace SceneHandler {
     void setOldPositions();
-    void setupSkybox(glm::mat4 projection);
+    void setupSkybox(const glm::mat4 projection);
     void createObjectsDefault();
     void createObjectsFigureEight();
     void createObjects1Sun1Planet();

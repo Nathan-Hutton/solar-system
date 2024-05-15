@@ -36,7 +36,7 @@ bool OmniShadowMap::init(unsigned int width, unsigned int height)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
+    const GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {

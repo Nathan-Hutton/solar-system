@@ -37,7 +37,7 @@ void Model::loadModel(const std::string& fileName) {
 
     if (!scene)
     {
-        std::cerr << "Model " << fileName.c_str() << " failed to load " << importer.GetErrorString() << '\n';
+        std::cerr << "Model " << fileName << " failed to load " << importer.GetErrorString() << '\n';
         std::exit(EXIT_FAILURE);
     }
 
@@ -50,7 +50,7 @@ void Model::render()
 {
     for (size_t i {0}; i < meshList.size(); i++)
     {
-        unsigned int materialIndex {meshToTex[i]};
+        const unsigned int materialIndex {meshToTex[i]};
 
         // Check if it's possible for the material to be inside the textureList
         // Then check if that index is null
@@ -129,7 +129,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     // Each face contains the 3 indices, so we set up our indices with the faces
     for (size_t i {0}; i < mesh->mNumFaces; i++)
     {
-        aiFace face {mesh->mFaces[i]};
+        const aiFace face {mesh->mFaces[i]};
         for (size_t j {0}; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
@@ -138,11 +138,11 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     // We're calculating the greatest distance between vectors in the model
     for (int i {0}; i < vertices.size(); i+=8)
     {
-        glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
+        const glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
         for (int j {0}; i < vertices.size(); i++)
         {
-            glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
-            GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
+            const glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
+            const GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
             greatestDistanceBetweenVertices = std::max(greatestDistanceBetweenVertices, displacementVectorLength);
         }
     }
@@ -173,18 +173,18 @@ void Model::loadMaterials(const aiScene *scene)
 
             // Chop off the parts of the path that don't matter
             // This is complicated because they may be on linux or windows
-            int idx     = std::string(path.data).rfind("\\");
-            int idx1    = std::string(path.data).rfind("/");
-            idx         = std::max(idx, idx1);
+            int idx             = std::string(path.data).rfind("\\");
+            const int idx1      = std::string(path.data).rfind("/");
+            idx                 = std::max(idx, idx1);
 
-            std::string filename {std::string(path.data).substr(idx + 1)};
+            const std::string filename {std::string(path.data).substr(idx + 1)};
 
-            std::string textPath {std::string("../assets/textures/") + filename};
-            textureList[i] = new Texture{textPath.c_str()};
+            const std::string textPath {"../assets/textures/" + filename};
+            textureList[i] = new Texture{textPath};
 
             if (!textureList[i]->loadTexture())
             {
-                std::cerr << "Failed to laod teture at " << textPath.c_str() << '\n';
+                std::cerr << "Failed to laod teture at " << textPath << '\n';
                 delete textureList[i];
                 textureList[i] = nullptr;
             }

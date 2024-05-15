@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <cstring>
+#include <string>
 #include <memory>
 #include <iostream>
 #include "CommonValues.h"
@@ -10,9 +10,9 @@ class Texture
 {
     public:
         Texture();
-        explicit Texture(const char* fileLocation);
+        explicit Texture(std::string fileLocation);
 
-        const char* getFileLocation();
+        std::string getFileLocation();
 
         bool loadTexture();
         void useTexture();
@@ -24,5 +24,5 @@ class Texture
         GLuint textureID {};
         int width {}, height {};
 
-        const char* fileLocation {};
+        std::string fileLocation {};
 };

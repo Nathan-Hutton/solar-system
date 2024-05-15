@@ -51,7 +51,7 @@ namespace SolarSystemRenderer
     void createShaders(glm::mat4 projection);
     void setLightUniformVariables();
     void setupPostProcessingObjects();
-    void setup(glm::mat4 projection);
+    void setup(const glm::mat4 projection);
     void omniShadowMapPass(PointLight* light);
     void omniShadowMapPasses();
     void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel);

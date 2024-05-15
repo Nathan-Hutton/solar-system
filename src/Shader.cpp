@@ -10,8 +10,7 @@ void Shader::createFromFiles(std::string_view file1, std::string_view file2, std
 std::string Shader::readFile(std::string_view fileLocation)
 {
     std::string content {};
-    std::filesystem::path path(fileLocation);
-    std::ifstream fileStream(path);
+    std::ifstream fileStream{std::filesystem::path{fileLocation}};
 
     if (!fileStream.is_open()) {
         std::cerr << "Failed to read" << fileLocation << " File doesn't exist.\n";
@@ -21,13 +20,13 @@ std::string Shader::readFile(std::string_view fileLocation)
     std::string line {""};
     std::string fileContents {""};
     while (getline(fileStream, line))
-        fileContents += line + "\n";
+        fileContents += line + '\n';
 
     fileStream.close();
     return fileContents;
 }
 
-void Shader::compileShader(std::string shader1Code, std::string shader2Code, std::string shader3Code)
+void Shader::compileShader(const std::string shader1Code, const std::string shader2Code, const std::string shader3Code)
 {
     // Create a new OpenGL program object. Is the final linked version of multiple
     // shaders combined. Shaders are written in GLSL (OpenGL shading language) and run on the GPU
@@ -39,17 +38,18 @@ void Shader::compileShader(std::string shader1Code, std::string shader2Code, std
         std::exit(EXIT_FAILURE);
     }
 
-    addShader(shaderID, shader1Code.c_str(), GL_VERTEX_SHADER); // We'll always have a vertex shader
+    // We'll always have a vertex shader
+    addShader(shaderID, shader1Code, GL_VERTEX_SHADER);
 
     // If we included 3 files, that means we're using a geometry shader
     if (shader3Code != "")
     {
-        addShader(shaderID, shader2Code.c_str(), GL_GEOMETRY_SHADER);
-        addShader(shaderID, shader3Code.c_str(), GL_FRAGMENT_SHADER);
+        addShader(shaderID, shader2Code, GL_GEOMETRY_SHADER);
+        addShader(shaderID, shader3Code, GL_FRAGMENT_SHADER);
     }
     else
     {
-        addShader(shaderID, shader2Code.c_str(), GL_FRAGMENT_SHADER);
+        addShader(shaderID, shader2Code, GL_FRAGMENT_SHADER);
     }
 
     compileProgram();
@@ -194,16 +194,16 @@ void Shader::compileProgram()
     }
 }
 
-void Shader::addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
+void Shader::addShader(GLuint theProgram, const std::string shaderCode, GLenum shaderType)
 {
     // Makes a shader object
     GLuint theShader {glCreateShader(shaderType)};
 
     // Sort the code in a way OpenGL can understand
     const GLchar* theCode[1];
-    theCode[0] = shaderCode;
+    theCode[0] = shaderCode.c_str();
     GLint codeLength[1];
-    codeLength[0] = strlen(shaderCode);
+    codeLength[0] = std::ssize(shaderCode);
 
     // Give the source code to the shader 
     glShaderSource(theShader, 1, theCode, codeLength);

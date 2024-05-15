@@ -22,7 +22,7 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 {
     if (yScrollOffset == 0.0f) return;
 
-    GLfloat amountChange = yScrollOffset * 0.1f;
+    const GLfloat amountChange = yScrollOffset * 0.1f;
     *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
 }
 
@@ -86,7 +86,7 @@ int main()
     // This is its own block so that projection will go out of scope and get off the stack
     {
         // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
-        glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
+        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
         SceneHandler::setupSkybox(projection);
         SolarSystemRenderer::setup(projection);
     }

@@ -20,7 +20,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
     this->constant      = constant;
     this->farPlane      = far;
 
-    float aspectRatio {(float)shadowWidth / (float)shadowHeight};
+    const float aspectRatio {(float)shadowWidth / (float)shadowHeight};
     // A bunch of 90 degree angles together makes a cube
     lightProj = glm::perspective(glm::radians(90.0f), aspectRatio, near, far);
 

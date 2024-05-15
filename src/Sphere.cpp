@@ -23,16 +23,16 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
 {
     this->radius = radius;
     for (int i {0}; i <= stacks; ++i) {
-        float V {i / static_cast<float>(stacks)};
-        float phi {V * glm::pi<float>()};
+        const float V {i / static_cast<float>(stacks)};
+        const float phi {V * glm::pi<float>()};
 
         for (int j {0}; j <= slices; ++j) {
-            float U {j / static_cast<float>(slices)};
-            float theta {U * glm::pi<float>() * 2};
+            const float U {j / static_cast<float>(slices)};
+            const float theta {U * glm::pi<float>() * 2};
 
-            float x {cosf(theta) * sinf(phi) * radius};
-            float y {cosf(phi) * radius};
-            float z {sinf(theta) * sinf(phi) * radius};
+            const float x {cosf(theta) * sinf(phi) * radius};
+            const float y {cosf(phi) * radius};
+            const float z {sinf(theta) * sinf(phi) * radius};
 
             vertices.push_back(x);
             vertices.push_back(y);
