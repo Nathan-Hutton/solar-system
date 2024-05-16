@@ -1,27 +1,18 @@
 #include "Sphere.h"
 
-Sphere::Sphere() : SpaceObject()
+Sphere::Sphere() : SpaceObject(), radius(0.5f)
 {
-    this->radius        = 0.5f;
-    this->sphereMesh    = new Mesh{};
-}
-
-Sphere::Sphere(float radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass)
-{
-    this->radius = radius;
-
-    // Create the mesh
     this->sphereMesh = new Mesh{};
-    std::vector<GLfloat> vertices {};
-    std::vector<GLuint> indices {};
-    generateSphereData(vertices, indices, radius, stacks, slices);
-    this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size());
-    this->greatestDistanceBetweenVertices = radius * 2;
 }
 
-void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)
+Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass), radius(radius)
 {
-    this->radius = radius;
+    this->greatestDistanceBetweenVertices = radius * 2;
+    this->sphereMesh = new Mesh{};
+}
+
+void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices)
+{
     for (int i {0}; i <= stacks; ++i) {
         const float V {i / static_cast<float>(stacks)};
         const float phi {V * glm::pi<float>()};

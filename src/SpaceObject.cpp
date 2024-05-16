@@ -1,16 +1,14 @@
 #include "SpaceObject.h"
 
-SpaceObject::SpaceObject()
+SpaceObject::SpaceObject() : mass(1.0f)
 {
-    this->mass      = 1.0f;
     this->position  = glm::vec3{0.0f};
     this->velocity  = glm::vec3{0.0f};
     this->rotation  = glm::vec3{0.0f};
 }
 
-SpaceObject::SpaceObject(GLfloat mass)
+SpaceObject::SpaceObject(GLfloat mass) : mass(mass)
 {
-    this->mass      = mass;
     this->position  = glm::vec3{0.0f};
     this->velocity  = glm::vec3{0.0f};
     this->rotation  = glm::vec3{0.0f};

@@ -1,9 +1,5 @@
 #pragma once
 
-// This file will handle setting up the scene (creating the spheres) and calling their render methods
-#ifndef SCENEFUNCTIONS_H
-#define SCENEFUNCTIONS_H
-
 #include <vector>
 #include <math.h>
 
@@ -29,6 +25,4 @@ namespace SceneHandler {
     void createObjects1Sun1Planet();
     void createObjectsFancy();
 }
-
-#endif
 

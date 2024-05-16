@@ -1,24 +1,18 @@
 #include "Sun.h"
 
-// TODO: Consider removing normals from suns since we don't use them
 Sun::Sun() : Sphere() {}
 
-Sun::Sun(float radius, GLfloat mass, int stacks, int slices)
+Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices)
 {
-    this->mass      = mass;
-    this->radius    = radius;
-
     // Create the mesh
-    this->sphereMesh = new Mesh{};
     std::vector<GLfloat> vertices {};
     std::vector<GLuint> indices {};
-    generateSphereData(vertices, indices, radius, stacks, slices);
+    generateSphereData(vertices, indices, stacks, slices);
     this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), false);
 }
 
-void Sun::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, float radius, int stacks, int slices)
+void Sun::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices)
 {
-    this->radius = radius;
     for (int i {0}; i <= stacks; ++i) {
         const float V {i / static_cast<float>(stacks)};
         const float phi {V * glm::pi<float>()};

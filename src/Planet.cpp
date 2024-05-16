@@ -2,7 +2,13 @@
 
 Planet::Planet() : Sphere() {}
 
-Planet::Planet(float radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices) {}
+Planet::Planet(float radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices) 
+{
+    std::vector<GLfloat> vertices {};
+    std::vector<GLuint> indices {};
+    generateSphereData(vertices, indices, stacks, slices);
+    this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size());
+}
 
 void Planet::render()
 {
