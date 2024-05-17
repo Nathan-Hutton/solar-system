@@ -13,7 +13,7 @@ glm::vec3 OrbitalPhysics::getForce(SpaceObject *object1, SpaceObject *object2)
     const float displacementVectorLength {glm::length(displacementVector)};
     
     // TODO: fine tune this
-    if (object1->getGreatestDistanceBetweenVertices() + object2->getGreatestDistanceBetweenVertices() >= displacementVectorLength)
+    if (object1->getCollisionDistance() + object2->getCollisionDistance() >= displacementVectorLength)
         return glm::vec3{0.0f};
 
     return ((gForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * glm::normalize(displacementVector);

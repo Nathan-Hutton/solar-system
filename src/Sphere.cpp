@@ -7,7 +7,6 @@ Sphere::Sphere() : SpaceObject(), radius(0.5f)
 
 Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass), radius(radius)
 {
-    this->greatestDistanceBetweenVertices = radius * 2;
     this->sphereMesh = new Mesh{};
 }
 
@@ -61,6 +60,11 @@ void Sphere::setWorldProperties(glm::mat4* model)
 void Sphere::setTexturePointer(Texture *texture)
 {
     this->texture = texture;
+}
+
+GLfloat Sphere::getCollisionDistance()
+{
+    return radius;
 }
 
 Sphere::~Sphere()

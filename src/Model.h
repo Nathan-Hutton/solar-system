@@ -27,6 +27,7 @@ class Model : public SpaceObject
         void render() override;
         void setWorldProperties(glm::mat4* model) override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
+        GLfloat getCollisionDistance() override;
         void clearModel();
 
         ~Model();
@@ -49,4 +50,5 @@ class Model : public SpaceObject
         // We'll create one of each texture and if a mesh uses the same texture 
         // as another, they'll just say which one it's using instead of remaking the texture
         std::vector<unsigned int> meshToTex {}; 
+        GLfloat greatestDistanceBetweenVertices {};
 };

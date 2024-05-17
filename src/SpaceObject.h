@@ -32,10 +32,7 @@ class SpaceObject
         virtual void render() = 0;
         virtual void setWorldProperties(glm::mat4* model) = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
-
-        // This is a shitty solution for not letting the objects' force get too strong
-        // since we have no collisions yet. Look at the getForce method for more info
-        GLfloat getGreatestDistanceBetweenVertices();
+        virtual GLfloat getCollisionDistance() = 0;
 
         ~SpaceObject();
 
@@ -48,6 +45,4 @@ class SpaceObject
         GLfloat angle {};
         GLfloat rotationSpeed {};
         Material *material {};
-
-        GLfloat greatestDistanceBetweenVertices {};
 };

@@ -204,5 +204,10 @@ void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformS
     shininessLocation           = uniformShininess;
 }
 
+GLfloat Model::getCollisionDistance()
+{
+    return greatestDistanceBetweenVertices;
+}
+
 Model::~Model()
 {}

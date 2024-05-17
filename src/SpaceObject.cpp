@@ -79,11 +79,6 @@ void SpaceObject::setRotationSpeed(GLfloat speed)
     this->rotationSpeed = speed;
 }
 
-GLfloat SpaceObject::getGreatestDistanceBetweenVertices()
-{
-    return greatestDistanceBetweenVertices;
-}
-
 void SpaceObject::setMaterialPointer(Material *material)
 {
     this->material = material;
