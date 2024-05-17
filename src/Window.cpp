@@ -84,11 +84,6 @@ namespace Window
         // Sets up the rectangular area of the window that OpenGL will draw to
         glViewport(0, 0, bufferWidth, bufferHeight);
 
-        // This makes it so that we can use the static handleKeys method on an instance of a window
-        // So the window will be able to point to it's owner basically
-        // Let's us use glfwGetWindowPointer and we'll get this instance of our Window back
-        glfwSetWindowUserPointer(mainWindow, nullptr);
-
         return 1;
     }
 
