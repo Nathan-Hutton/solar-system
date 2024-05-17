@@ -58,16 +58,6 @@ void Sphere::setWorldProperties(glm::mat4* model)
     *model = glm::rotate(*model, glm::radians(angle), rotation);
 }
 
-void Sphere::setMeshPointer(Mesh *sphereMesh)
-{
-    this->sphereMesh = sphereMesh;
-}
-
-Texture* Sphere::getTexturePointer()
-{
-    return texture;
-}
-
 void Sphere::setTexturePointer(Texture *texture)
 {
     this->texture = texture;

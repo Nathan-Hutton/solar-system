@@ -11,8 +11,6 @@ class Sphere : public SpaceObject
         Sphere(GLfloat radius, GLfloat mass, int stacks, int slices);
 
         virtual void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices);
-        void setMeshPointer(Mesh* sphereMesh);
-        Texture* getTexturePointer();
         void setTexturePointer(Texture* texture);
         virtual void render() override = 0;
         void setWorldProperties(glm::mat4* model) override;

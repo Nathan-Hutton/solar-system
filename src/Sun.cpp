@@ -11,6 +11,7 @@ Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) : Sphere(radius, 
     this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), false);
 }
 
+// This method is different from Sphere's version because we don't need normals
 void Sun::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices)
 {
     for (int i {0}; i <= stacks; ++i) {

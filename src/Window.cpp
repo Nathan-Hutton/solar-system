@@ -1,182 +1,161 @@
 #include "Window.h"
 
-Window::Window()
+namespace Window 
 {
-    width   = 800;
-    height  = 600;
+    GLFWwindow *mainWindow;
+    GLint width = 800;
+    GLint height = 600;
+    GLint bufferWidth = 0;
+    GLint bufferHeight = 0;
+    bool keys[1024] = {0};
+    GLfloat lastX = 0;
+    GLfloat lastY = 0;
+    GLfloat xChange = 0;
+    GLfloat yChange = 0;
+    GLfloat yScrollOffset = 0;
+    bool mouseFirstMoved = true;
 
-    for (size_t i {0}; i < 1024; ++i)
-        keys[i] = 0;
-
-    mouseFirstMoved = true;
-}
-
-Window::Window(GLint windowWidth, GLint windowHeight)
-{
-    width   = windowWidth;
-    height  = windowHeight;
-
-    for (size_t i {0}; i < 1024; ++i)
-        keys[i] = 0;
-    
-    mouseFirstMoved = true;
-}
-
-int Window::initialize()
-{
-    // Initialize GLFW, which is a window manager
-    // Must be called before any other GLFW functions
-    // Sets up things that are OS specific and sets up input handling
-    if (!glfwInit()) 
+    int initialize()
     {
-        std::cerr << "GLFW initialization failed\n";
-        glfwTerminate();
-        std::exit(EXIT_FAILURE);
+        // Initialize GLFW, which is a window manager
+        // Must be called before any other GLFW functions
+        // Sets up things that are OS specific and sets up input handling
+        if (!glfwInit()) 
+        {
+            std::cerr << "GLFW initialization failed\n";
+            glfwTerminate();
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Setup window properties. This is typically called multiple times before glfwCreateWindow
+        // OpenGL version
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        // Core profile = No Backwards Compatibility
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        // Allow Forward Compatibility
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+        // Create window and OpengGL context in our GLFW app. Allows for OpenGL input as well
+        mainWindow = glfwCreateWindow(width, height, "Solar System", NULL, NULL);
+        if (!mainWindow)
+        {
+            std::cerr << "GLFW window creation failed\n";
+            glfwTerminate();
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Get Buffer size information
+        glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
+
+        // Set the OpenGL context to be current. Directs OpenGL commands to this context.
+        // An OpenGL context is a complete set of OpenGL state variables. For OpenGL commands to work,
+        // a context must be current, so it needs to be attached to a thread because OpenGL is a state machine.
+        // We attach the context of the window to the current OpenGL thread. Then all OpenGL calls
+        // made by that thread will be directed to this context.
+        glfwMakeContextCurrent(mainWindow);
+
+        // Handle key and mouse input
+        createCallbacks();
+        
+        // Get the mouse off the screen
+        glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        // Allow modern extension features
+        glewExperimental = GL_TRUE;
+
+        // Query and load all OpenGL extensions allowed by your drivers
+        // Allows us to access features/extensions not in the core OpenGL specification
+        if(glewInit() != GLEW_OK)
+        {
+            std::cerr << "Glew initialization failed\n";
+            glfwDestroyWindow(mainWindow);
+            glfwTerminate();
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
+        glEnable(GL_DEPTH_TEST);
+
+        // Make sure that skybox passes depth test if depth is less than or equal to 1.0
+        glDepthFunc(GL_LEQUAL);
+
+        // Create viewport. This sets up the portion of the window that OpenGL will draw to
+        // Sets up the rectangular area of the window that OpenGL will draw to
+        glViewport(0, 0, bufferWidth, bufferHeight);
+
+        // This makes it so that we can use the static handleKeys method on an instance of a window
+        // So the window will be able to point to it's owner basically
+        // Let's us use glfwGetWindowPointer and we'll get this instance of our Window back
+        glfwSetWindowUserPointer(mainWindow, nullptr);
+
+        return 1;
     }
 
-    // Setup window properties. This is typically called multiple times before glfwCreateWindow
-    // OpenGL version
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    // Core profile = No Backwards Compatibility
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Allow Forward Compatibility
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    // Create window and OpengGL context in our GLFW app. Allows for OpenGL input as well
-    mainWindow = glfwCreateWindow(width, height, "Solar System", NULL, NULL);
-    if (!mainWindow)
+    void createCallbacks()
     {
-        std::cerr << "GLFW window creation failed\n";
-        glfwTerminate();
-        std::exit(EXIT_FAILURE);
+        glfwSetKeyCallback(mainWindow, handleKeys);
+        glfwSetCursorPosCallback(mainWindow, handleMouse);
+        glfwSetScrollCallback(mainWindow, handleScroll);
     }
 
-    // Get Buffer size information
-    glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-
-    // Set the OpenGL context to be current. Directs OpenGL commands to this context.
-    // An OpenGL context is a complete set of OpenGL state variables. For OpenGL commands to work,
-    // a context must be current, so it needs to be attached to a thread because OpenGL is a state machine.
-    // We attach the context of the window to the current OpenGL thread. Then all OpenGL calls
-    // made by that thread will be directed to this context.
-    glfwMakeContextCurrent(mainWindow);
-
-    // Handle key and mouse input
-    createCallbacks();
-    
-    // Get the mouse off the screen
-    glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Allow modern extension features
-    glewExperimental = GL_TRUE;
-
-    // Query and load all OpenGL extensions allowed by your drivers
-    // Allows us to access features/extensions not in the core OpenGL specification
-    if(glewInit() != GLEW_OK)
+    GLfloat getXChange()
     {
-        std::cerr << "Glew initialization failed\n";
-        glfwDestroyWindow(mainWindow);
-        glfwTerminate();
-        std::exit(EXIT_FAILURE);
+        const GLfloat theChange {xChange};
+        xChange = 0.0f;
+        return theChange;
     }
 
-    // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
-    glEnable(GL_DEPTH_TEST);
-
-    // Make sure that skybox passes depth test if depth is less than or equal to 1.0
-    glDepthFunc(GL_LEQUAL);
-
-    // Create viewport. This sets up the portion of the window that OpenGL will draw to
-    // Sets up the rectangular area of the window that OpenGL will draw to
-    glViewport(0, 0, bufferWidth, bufferHeight);
-
-    // This makes it so that we can use the static handleKeys method on an instance of a window
-    // So the window will be able to point to it's owner basically
-    // Let's us use glfwGetWindowPointer and we'll get this instance of our Window back
-    glfwSetWindowUserPointer(mainWindow, this);
-
-    return 1;
-}
-
-GLFWwindow* Window::getGlfwWindow()
-{
-    return mainWindow;
-}
-
-void Window::createCallbacks()
-{
-    glfwSetKeyCallback(mainWindow, handleKeys);
-    glfwSetCursorPosCallback(mainWindow, handleMouse);
-    glfwSetScrollCallback(mainWindow, handleScroll);
-}
-
-GLfloat Window::getXChange()
-{
-    const GLfloat theChange {xChange};
-    xChange = 0.0f;
-    return theChange;
-}
-
-GLfloat Window::getYChange()
-{
-    const GLfloat theChange {yChange};
-    yChange = 0.0f;
-    return theChange;
-}
-
-GLfloat Window::getYScrollOffset()
-{
-    const GLfloat theOffset {yScrollOffset};
-    yScrollOffset = 0.0f;
-    return theOffset;
-}
-
-void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
-{
-    Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
-
-    if (key < 0 || key >= 1024)
-        return;
-
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
-
-    if (action == GLFW_PRESS)
-        theWindow->keys[key] = true;
-    else if (action == GLFW_RELEASE)
-        theWindow->keys[key] = false;
-}
-
-void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
-{
-    Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
-
-    // This if will only pass a single time
-    if (theWindow->mouseFirstMoved)
+    GLfloat getYChange()
     {
-        theWindow->mouseFirstMoved = false;
-        theWindow->lastX = xPos;
-        theWindow->lastY = yPos;
+        const GLfloat theChange {yChange};
+        yChange = 0.0f;
+        return theChange;
     }
 
-    // Subtraction is in the opposite order for y to avoid inverted mouse movement
-    theWindow->xChange = xPos - theWindow->lastX;
-    theWindow->yChange = theWindow->lastY - yPos;
+    GLfloat getYScrollOffset()
+    {
+        const GLfloat theOffset {yScrollOffset};
+        yScrollOffset = 0.0f;
+        return theOffset;
+    }
 
-    theWindow->lastX = xPos;
-    theWindow->lastY = yPos;
-}
+    void handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
+    {
+        if (key < 0 || key >= 1024)
+            return;
 
-void Window::handleScroll(GLFWwindow* window, double xOffset, double yOffset)
-{
-    Window* theWindow {static_cast<Window*>(glfwGetWindowUserPointer(window))};
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, GL_TRUE);
 
-    theWindow->yScrollOffset = yOffset;
-}
+        if (action == GLFW_PRESS)
+            keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            keys[key] = false;
+    }
 
-Window::~Window()
-{
-    glfwDestroyWindow(mainWindow);
-    glfwTerminate();
+    void handleMouse(GLFWwindow* window, double xPos, double yPos)
+    {
+        // This if will only pass a single time
+        if (mouseFirstMoved)
+        {
+            mouseFirstMoved = false;
+            lastX = xPos;
+            lastY = yPos;
+        }
+
+        // Subtraction is in the opposite order for y to avoid inverted mouse movement
+        xChange = xPos - lastX;
+        yChange = lastY - yPos;
+
+        lastX = xPos;
+        lastY = yPos;
+    }
+
+    void handleScroll(GLFWwindow* window, double xOffset, double yOffset)
+    {
+        yScrollOffset = yOffset;
+    }
+
+    void swapBuffers() { glfwSwapBuffers(mainWindow); }
 }

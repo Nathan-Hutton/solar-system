@@ -26,7 +26,7 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
     *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
 }
 
-void setupScene(Window* mainWindow)
+void setupScene()
 {
     // Print out the controls
     std::cout << "**********\n";
@@ -56,7 +56,7 @@ void setupScene(Window* mainWindow)
     std::cin >> selectedScene;
     
     // If this isn't right here, we will get a segmentation fault
-    mainWindow->initialize();
+    Window::initialize();
     
     // Build scene based on user input
     switch (selectedScene)
@@ -80,13 +80,14 @@ void setupScene(Window* mainWindow)
 
 int main()
 {
-    Window mainWindow {1920, 1200};
-    setupScene(&mainWindow);
+    Window::width = 1920;
+    Window::height = 1200;
+    setupScene();
 
     // This is its own block so that projection will go out of scope and get off the stack
     {
         // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
-        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 1.0f, 400.0f)};
+        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(Window::bufferWidth) / static_cast<GLfloat>(Window::bufferHeight), 1.0f, 400.0f)};
         SceneHandler::setupSkybox(projection);
         SolarSystemRenderer::setup(projection);
     }
@@ -101,7 +102,7 @@ int main()
     GLfloat timeChange {1.0f};
     GLfloat timeStep {0.0f};
     GLfloat timeSinceLastVerlet {0.0f}; // Not relevant if we're using Euler for physics
-    while(!mainWindow.getShouldClose())
+    while(!glfwWindowShouldClose(Window::mainWindow))
     {
         now         = glfwGetTime();
         deltaTime   = now - lastFrame;
@@ -113,7 +114,7 @@ int main()
         if (counter == 30)
         {
             FPS_str = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
-            glfwSetWindowTitle(mainWindow.getGlfwWindow(), FPS_str.c_str());
+            glfwSetWindowTitle(Window::mainWindow, FPS_str.c_str());
             lastFPSUpdateTime = now;
             counter = 0;
         }
@@ -128,10 +129,10 @@ int main()
 
         // Get + handle user input
         glfwPollEvents();
-        bool* keys {mainWindow.getKeys()};
+        bool* keys {Window::keys};
         scene::camera.keyControl(keys, deltaTime);
-        scene::camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-        handleTimeChange(mainWindow.getYScrollOffset(), &timeChange);
+        scene::camera.mouseControl(Window::getXChange(), Window::getYChange());
+        handleTimeChange(Window::getYScrollOffset(), &timeChange);
 
         // Check for flashlight toggle
         if (keys[GLFW_KEY_L])
@@ -146,7 +147,7 @@ int main()
         SolarSystemRenderer::renderPass();
 
         glUseProgram(0);
-        mainWindow.swapBuffers();
+        Window::swapBuffers();
     }
 
     return 0;
