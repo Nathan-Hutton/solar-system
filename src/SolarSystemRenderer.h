@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Skybox.h"
 
 namespace SolarSystemRenderer
 {

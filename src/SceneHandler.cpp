@@ -38,8 +38,8 @@ void SceneHandler::setupSkybox(glm::mat4 projection)
 	skyboxFaces.push_back("../assets/textures/skybox/downImage.png");
 	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
 	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
-    scene::skybox = Skybox(skyboxFaces);
-    scene::skybox.setProjectionMatrix(projection);
+    skybox::setup(skyboxFaces);
+    skybox::setProjectionMatrix(projection);
 }
 
 void SceneHandler::createObjectsDefault()

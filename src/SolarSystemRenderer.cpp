@@ -314,7 +314,7 @@ namespace SolarSystemRenderer
         // ==============
         // RENDER SKYBOX
         // ==============
-        scene::skybox.drawSkybox(view);
+        skybox::drawSkybox(view);
     }
 
     void handleBloom()

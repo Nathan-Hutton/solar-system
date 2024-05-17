@@ -14,22 +14,16 @@
 #include "Mesh.h"
 #include "Shader.h"
 
-class Skybox
+namespace skybox
 {
-    public:
-        Skybox();
+    extern Mesh* skyMesh;
+    extern Shader* skyShader;
 
-        explicit Skybox(std::vector<std::string> faceLocations);
+    extern GLuint textureID;
+    extern GLuint uniformView;
+    extern GLuint uniformProjection;
 
-        void setProjectionMatrix(glm::mat4 projection);
-        void drawSkybox(glm::mat4 viewMatrix);
-
-        ~Skybox();
-
-    private:
-        Mesh* skyMesh {};
-        Shader* skyShader {};
-
-        GLuint textureID {};
-        GLuint uniformProjection {}, uniformView {};
+    void setup(std::vector<std::string> faceLocations);
+    void setProjectionMatrix(glm::mat4 projection);
+    void drawSkybox(glm::mat4 viewMatrix);
 };

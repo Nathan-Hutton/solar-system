@@ -17,6 +17,7 @@
 #include "OrbitalPhysics.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Skybox.h"
 
 namespace SceneHandler {
     void setOldPositions();
