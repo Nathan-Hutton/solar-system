@@ -7,11 +7,24 @@
 
 #include "SpotLight.h"
 
-class Camera 
-{
-public:
-    Camera();
-    Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLfloat startPitch, GLfloat startMoveSpeed, GLfloat startTurnSpeed);
+namespace camera {
+    extern glm::vec3 position;
+    extern glm::vec3 front;
+    extern glm::vec3 up;
+    extern glm::vec3 right;
+    extern glm::vec3 worldUp;
+
+    extern GLfloat yaw;
+    extern GLfloat oldYaw;
+    extern GLfloat pitch;
+    extern GLfloat oldPitch;
+    extern GLfloat oldRoll;
+    extern GLfloat roll;
+
+    extern GLfloat moveSpeed;
+    extern GLfloat turnSpeed;
+
+    extern SpotLight *spotLight;
 
     void keyControl(bool* keys, GLfloat deltaTime);
     void handleFlashlightKey(bool* keys);
@@ -24,31 +37,7 @@ public:
                     GLfloat xDir, GLfloat yDir, GLfloat zDir,
                     GLfloat exponential, GLfloat linear, GLfloat constant,
                     GLfloat edge);
-    SpotLight* getSpotLight();
 
-    glm::vec3 getPosition();
-    glm::vec3 getDirection();
     glm::mat4 calculateViewMatrix();
     void update();
-
-    ~Camera();
-
-private:
-    glm::vec3 position {};
-    glm::vec3 front {};
-    glm::vec3 up {};
-    glm::vec3 right {};
-    glm::vec3 worldUp {};
-
-    GLfloat yaw {};
-    GLfloat oldYaw {};
-    GLfloat pitch {};
-    GLfloat oldPitch {};
-    GLfloat oldRoll {};
-    GLfloat roll {};
-
-    GLfloat moveSpeed {};
-    GLfloat turnSpeed {};
-
-    SpotLight *spotLight {};
 };

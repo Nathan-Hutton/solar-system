@@ -1,6 +1,6 @@
 #include "Window.h"
 
-namespace Window 
+namespace window 
 {
     GLFWwindow *mainWindow;
     GLint width = 800;
@@ -151,6 +151,4 @@ namespace Window
     {
         yScrollOffset = yOffset;
     }
-
-    void swapBuffers() { glfwSwapBuffers(mainWindow); }
 }

@@ -3,6 +3,7 @@
 #include "CommonValues.h"
 #include "Shader.h"
 #include "Scene.h"
+#include "Camera.h"
 
 namespace SolarSystemRenderer
 {

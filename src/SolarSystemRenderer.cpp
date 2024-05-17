@@ -64,7 +64,7 @@ namespace SolarSystemRenderer
         shaders.mainShaders[1]->useShader();
         shaders.mainShaders[1]->setTexture(2);
         shaders.mainShaders[1]->validate();
-        shaders.mainShaders[1]->setSpotLight(scene::camera.getSpotLight(), true, 4+scene::pointLightCount, scene::pointLightCount);
+        shaders.mainShaders[1]->setSpotLight(camera::spotLight, true, 4+scene::pointLightCount, scene::pointLightCount);
         glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
         // texture, and the third is the texture(s) of the objects we're rendering
@@ -82,7 +82,7 @@ namespace SolarSystemRenderer
         shaders.mainShaders[0]->useShader();
         shaders.mainShaders[0]->setTexture(2);
         shaders.mainShaders[0]->validate();
-        shaders.mainShaders[0]->setSpotLight(scene::camera.getSpotLight(), false, 4+scene::pointLightCount, scene::pointLightCount);
+        shaders.mainShaders[0]->setSpotLight(camera::spotLight, false, 4+scene::pointLightCount, scene::pointLightCount);
         glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         shaders.mainShaders[0]->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
         glUniform1i(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "pointLightCount"), scene::pointLightCount);
@@ -254,7 +254,7 @@ namespace SolarSystemRenderer
 
         for (size_t i {0}; i < scene::pointLightCount; ++i)
             omniShadowMapPass(scene::pointLights[i]);
-        omniShadowMapPass(scene::camera.getSpotLight());
+        omniShadowMapPass(camera::spotLight);
     }
 
     void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel)
@@ -283,7 +283,7 @@ namespace SolarSystemRenderer
 
     void renderAllObjects()
     {
-        const glm::mat4 view = scene::camera.calculateViewMatrix();
+        const glm::mat4 view = camera::calculateViewMatrix();
 
         // ====================================
         // RENDER SUNS
@@ -303,10 +303,10 @@ namespace SolarSystemRenderer
         // =================================================
 
         shaders.mainShader->useShader();
-        shaders.mainShader->setSpotLightDirAndPos(scene::camera.getSpotLight(), shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
+        shaders.mainShader->setSpotLightDirAndPos(camera::spotLight, shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
 
         // Eye position is for specular lighting
-        glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(scene::camera.getPosition()));
+        glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera::position));
         glUniformMatrix4fv(uniformVariables.uniformViewPlanets, 1, GL_FALSE, glm::value_ptr(view));
 
         renderObjectsVector(scene::satellites, uniformVariables.uniformModelPlanets);

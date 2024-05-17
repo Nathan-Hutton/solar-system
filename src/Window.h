@@ -6,7 +6,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-namespace Window
+namespace window
 {
     extern GLFWwindow *mainWindow;
 
@@ -42,6 +42,4 @@ namespace Window
     GLfloat getXChange();
     GLfloat getYChange();
     GLfloat getYScrollOffset();
-
-    void swapBuffers();
 };

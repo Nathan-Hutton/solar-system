@@ -16,6 +16,7 @@
 #include "Material.h"
 #include "OrbitalPhysics.h"
 #include "Scene.h"
+#include "Camera.h"
 
 namespace SceneHandler {
     void setOldPositions();

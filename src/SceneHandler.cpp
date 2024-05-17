@@ -44,12 +44,14 @@ void SceneHandler::setupSkybox(glm::mat4 projection)
 
 void SceneHandler::createObjectsDefault()
 {
-    scene::camera = Camera(glm::vec3{0.0f, 0.0f, 110.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 25.0f, 0.3f);
-    scene::camera.setSpotLight(1024, 1024, 
+    camera::position  = glm::vec3{0.0f, 0.0f, 110.0f};
+    camera::moveSpeed = 25.0f;
+    camera::turnSpeed = 0.3f;
+    camera::setSpotLight(1024, 1024, 
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         scene::camera.getPosition().x, scene::camera.getPosition().y, scene::camera.getPosition().z,
+                         camera::position.x, camera::position.y, camera::position.z,
                          0.0f, -1.0f, 0.0f,
                          0.1f, 0.1f, 0.5f,
                          20.0f);
@@ -118,12 +120,14 @@ void SceneHandler::createObjectsDefault()
 
 void SceneHandler::createObjects1Sun1Planet()
 {
-    scene::camera = Camera{glm::vec3{0.0f, 0.0f, 50.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 10.0f, 0.3f};
-    scene::camera.setSpotLight(1024, 1024, 
+    camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
+    camera::moveSpeed = 10.0f;
+    camera::turnSpeed = 0.3f;
+    camera::setSpotLight(1024, 1024, 
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         scene::camera.getPosition().x, scene::camera.getPosition().y, scene::camera.getPosition().z,
+                         camera::position.x, camera::position.y, camera::position.z,
                          0.0f, -1.0f, 0.0f,
                          0.1f, 0.1f, 0.5f,
                          20.0f);
@@ -161,12 +165,14 @@ void SceneHandler::createObjects1Sun1Planet()
 
 void SceneHandler::createObjectsFigureEight()
 {
-    scene::camera = Camera{glm::vec3{0.0f, 0.0f, 50.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 10.0f, 0.3f};
-    scene::camera.setSpotLight(1024, 1024, 
+    camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
+    camera::moveSpeed = 10.0f;
+    camera::turnSpeed = 0.3f;
+    camera::setSpotLight(1024, 1024, 
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         scene::camera.getPosition().x, scene::camera.getPosition().y, scene::camera.getPosition().z,
+                         camera::position.x, camera::position.y, camera::position.z,
                          0.0f, -1.0f, 0.0f,
                          0.1f, 0.1f, 0.5f,
                          20.0f);
@@ -213,6 +219,19 @@ void SceneHandler::createObjectsFigureEight()
 
 void SceneHandler::createObjectsFancy()
 {
+
+    camera::position  = glm::vec3{0.0f, 0.0f, 150.0f};
+    camera::moveSpeed = 30.0f;
+    camera::turnSpeed = 0.3f;
+    camera::setSpotLight(1024, 1024, 
+                         0.01f, 100.0f,
+                         1.0f, 1.0f, 1.0f,
+                         0.0f, 10.0f,
+                         camera::position.x, camera::position.y, camera::position.z,
+                         0.0f, -1.0f, 0.0f,
+                         0.1f, 0.1f, 0.5f,
+                         20.0f);
+
     Texture *sunTexture {new Texture{"../assets/textures/sun2.jpg"}};
     sunTexture->loadTexture();
     Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
@@ -231,16 +250,6 @@ void SceneHandler::createObjectsFancy()
     cloudsTexture->loadTexture();
 
     Material *material {new Material{0.0f, 0}};
-
-    scene::camera = Camera{glm::vec3{0.0f, 0.0f, 150.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, -90.0f, 0.0f, 30.0f, 0.3f};
-    scene::camera.setSpotLight(1024, 1024, 
-                         0.01f, 100.0f,
-                         1.0f, 1.0f, 1.0f,
-                         0.0f, 10.0f,
-                         scene::camera.getPosition().x, scene::camera.getPosition().y, scene::camera.getPosition().z,
-                         0.0f, -1.0f, 0.0f,
-                         0.1f, 0.1f, 0.5f,
-                         20.0f);
 
     Sun *sun {new Sun{15.0f, 425.0f, 30, 30}};
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
