@@ -23,9 +23,6 @@ namespace window
     extern GLfloat yChange;
     extern GLfloat yScrollOffset;
 
-    // This is our callback function
-    void createCallbacks();
-    void setDimensions(GLint windowWidth, GLint windowHeight);
     int initialize();
 
     GLfloat getXChange();

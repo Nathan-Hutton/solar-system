@@ -9,7 +9,7 @@ namespace
     GLfloat lastX {0};
     GLfloat lastY {0};
 
-    // The callback function needs to have all 4 of these params or it won't work
+    // Callback functions needs to have all 4 of these params
     void handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
     {
         if (key < 0 || key >= 1024)
@@ -45,6 +45,13 @@ namespace
     void handleScroll(GLFWwindow* window, double xOffset, double yOffset)
     {
         window::yScrollOffset = yOffset;
+    }
+
+    void createCallbacks()
+    {
+        glfwSetKeyCallback(window::mainWindow, handleKeys);
+        glfwSetCursorPosCallback(window::mainWindow, handleMouse);
+        glfwSetScrollCallback(window::mainWindow, handleScroll);
     }
 }
 
@@ -130,13 +137,6 @@ namespace window
         glViewport(0, 0, bufferWidth, bufferHeight);
 
         return 1;
-    }
-
-    void createCallbacks()
-    {
-        glfwSetKeyCallback(mainWindow, handleKeys);
-        glfwSetCursorPosCallback(mainWindow, handleMouse);
-        glfwSetScrollCallback(mainWindow, handleScroll);
     }
 
     GLfloat getXChange()
