@@ -13,7 +13,6 @@ class Texture
 
         bool loadTexture();
         void useTexture();
-        void clearTexture();
 
         ~Texture();
 
@@ -22,4 +21,6 @@ class Texture
         int width {}, height {};
 
         std::string fileLocation {};
+
+        void clearTexture();
 };

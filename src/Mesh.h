@@ -14,7 +14,6 @@ class Mesh
                 bool hasNormals=true, bool threeVertices=true);
         void setMaterialPointer(Material *material);
         void render();
-        void clearMesh();
 
         ~Mesh();
 
@@ -23,4 +22,6 @@ class Mesh
         GLsizei indexCount {};
         Texture *texture {};
         Material *material {};
+
+        void clearMesh();
 };

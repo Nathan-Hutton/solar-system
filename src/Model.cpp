@@ -24,16 +24,6 @@ void Model::setScaleFactor(GLfloat sFactor)
     this->scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
 }
 
-GLfloat Model::getScaleFactor()
-{
-    return scaleFactor;
-}
-
-glm::vec3 Model::getScaleFactorVector()
-{
-    return scaleFactorVector;
-}
-
 void Model::loadModel(const std::string& fileName) {
     Assimp::Importer importer {};
     const aiScene *scene {importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices)};

@@ -19,9 +19,6 @@ class Model : public SpaceObject
         explicit Model(GLfloat mass);
 
         void setScaleFactor(GLfloat sFactor);
-        GLfloat getScaleFactor();
-        glm::vec3 getScaleFactorVector();
-
         void loadModel(const std::string& fileName);
         void render() override;
         void setWorldProperties(glm::mat4* model) override;

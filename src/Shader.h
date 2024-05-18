@@ -17,26 +17,15 @@ class Shader
 
         void validate();
 
-        std::string readFile(std::string_view fileLocation);
-
         GLuint getShaderID();
 
         GLuint getProjectionLocation();
         GLuint getModelLocation();
         GLuint getViewLocation();
 
-        GLuint getAmbientIntensityLocation();
-        GLuint getLightColorLocation();
-        GLuint getDiffuseIntensityLocation();
-        GLuint getDirectionLocation();
-
         GLuint getEyePositionLocation();
         GLuint getSpecularIntensityLocation();
         GLuint getShininessLocation();
-
-        GLuint getExponentialLocation();
-        GLuint getLinearLocation();
-        GLuint getConstantLocation();
 
         GLuint getOmniLightPosLocation();
         GLuint getFarPlaneLocation();
@@ -50,7 +39,6 @@ class Shader
         void setLightMatrices(std::vector<glm::mat4> lightMatrices);
 
         void useShader();
-        void clearShader();
 
         ~Shader();
 
@@ -94,7 +82,9 @@ class Shader
             GLuint farPlane {};
         } uniformOmniShadowMaps[1 + MAX_POINT_LIGHTS] {};
 
+        std::string readFile(std::string_view fileLocation);
         void compileShader(const std::string shader1Code, const std::string shader2Code, const std::string shader3Code = "");
         void addShader(GLuint theProgram, const std::string shaderCode, GLenum shaderType);
         void compileProgram();
+        void clearShader();
 };
