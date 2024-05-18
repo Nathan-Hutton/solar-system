@@ -1,7 +1,6 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 #include "Texture.h"
 #include "Material.h"
 
@@ -10,8 +9,8 @@ class Mesh
     public:
         Mesh();
 
-        void createMesh(GLfloat *vertices, unsigned int *indices, 
-                unsigned int numOfVertices, unsigned int numIndices,
+        void createMesh(GLfloat *vertices, GLuint *indices, 
+                GLuint numOfVertices, GLuint numIndices,
                 bool hasNormals=true, bool threeVertices=true);
         void setMaterialPointer(Material *material);
         void render();

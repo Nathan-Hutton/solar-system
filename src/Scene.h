@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "SpaceObject.h"
 #include "PointLight.h"
 #include "CommonValues.h"

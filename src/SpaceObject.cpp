@@ -1,5 +1,7 @@
 #include "SpaceObject.h"
 
+#include <vector>
+
 SpaceObject::SpaceObject() : mass(1.0f)
 {
     this->position  = glm::vec3{0.0f};

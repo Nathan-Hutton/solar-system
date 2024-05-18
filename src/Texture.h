@@ -2,9 +2,6 @@
 
 #include <GL/glew.h>
 #include <string>
-#include <memory>
-#include <iostream>
-#include "CommonValues.h"
 
 class Texture
 {

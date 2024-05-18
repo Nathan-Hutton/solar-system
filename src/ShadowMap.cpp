@@ -1,5 +1,7 @@
 #include "ShadowMap.h"
 
+#include <iostream>
+
 ShadowMap::ShadowMap() {}
 
 bool ShadowMap::init(GLuint width, GLuint height)

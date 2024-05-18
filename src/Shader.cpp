@@ -1,5 +1,11 @@
 #include "Shader.h"
 
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
+#include <glm/gtc/type_ptr.hpp>
+
 Shader::Shader() {}
 
 void Shader::createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3)

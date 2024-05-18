@@ -1,14 +1,13 @@
 #pragma once
 
-#include "SpaceObject.h"
-#include "Material.h"
-
 #include <string>
-#include <algorithm>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include "SpaceObject.h"
+#include "Mesh.h"
 
 // A mesh is a collection of vertices whereas a model is either a mesh or a collection
 // of meshes that represents a more advanced object

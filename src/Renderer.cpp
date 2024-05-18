@@ -1,4 +1,10 @@
 #include "Renderer.h"
+
+#include <iostream>
+
+#include <glm/gtc/type_ptr.hpp>
+
+#include "Mesh.h"
 #include "Skybox.h"
 #include "Shader.h"
 #include "Scene.h"

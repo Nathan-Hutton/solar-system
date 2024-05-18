@@ -1,15 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <filesystem>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "CommonValues.h"
 #include "SpotLight.h"

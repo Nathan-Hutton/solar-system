@@ -2,6 +2,15 @@
 
 namespace
 {
+    glm::vec3 worldUp {glm::vec3{0.0f, 1.0f, 0.0f}};
+    GLfloat yaw {-90.0f};
+    GLfloat pitch {0.0f};
+    GLfloat roll {0.0f};
+    
+    glm::vec3 front {glm::normalize(glm::vec3{0.0f, 0.0f, -1.0f})};
+    glm::vec3 right {glm::normalize(glm::cross(front, worldUp))};
+    glm::vec3 up {glm::normalize(glm::cross(right, front))};
+
     GLfloat oldYaw {-90.0f};
     GLfloat oldRoll {0.0f};
     GLfloat oldPitch {0.0f};
@@ -21,38 +30,29 @@ namespace
 
     void update()
     {
-        const glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - camera::yaw), camera::up)};
-        camera::front       = glm::normalize(glm::vec3{yawMatrix * glm::vec4{camera::front, 0.0f}});
-        oldYaw      = camera::yaw;
-        camera::right       = glm::normalize(glm::cross(camera::front, camera::up));
+        const glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
+        front       = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
+        oldYaw      = yaw;
+        right       = glm::normalize(glm::cross(front, up));
 
-        glm::mat4 pitchMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(camera::pitch - oldPitch), camera::right)};
-        camera::front       = glm::normalize(glm::vec3{pitchMatrix * glm::vec4{camera::front, 0.0f}});
-        oldPitch            = camera::pitch;
-        camera::up          = glm::normalize(glm::cross(camera::right, camera::front));
+        glm::mat4 pitchMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(pitch - oldPitch), right)};
+        front       = glm::normalize(glm::vec3{pitchMatrix * glm::vec4{front, 0.0f}});
+        oldPitch    = pitch;
+        up          = glm::normalize(glm::cross(right, front));
 
-        glm::mat4 rollMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(camera::roll - oldRoll), camera::front)};
-        camera::up          = glm::normalize(glm::vec3{rollMatrix * glm::vec4{camera::up, 0.0f}});
-        oldRoll     = camera::roll;
-        camera::right       = glm::normalize(glm::cross(camera::front, camera::up));
+        glm::mat4 rollMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(roll - oldRoll), front)};
+        up          = glm::normalize(glm::vec3{rollMatrix * glm::vec4{up, 0.0f}});
+        oldRoll     = roll;
+        right       = glm::normalize(glm::cross(front, up));
 
         // Update the flashlight position and direction
-        camera::spotLight->setFlash(camera::position, camera::front);
+        camera::spotLight->setFlash(camera::position, front);
     }
 }
 
 namespace camera
 {
     glm::vec3 position {glm::vec3{0.0f}};
-    glm::vec3 worldUp {glm::vec3{0.0f, 1.0f, 0.0f}};
-    GLfloat yaw {-90.0f};
-    GLfloat pitch {0.0f};
-    GLfloat roll {0.0f};
-    
-    glm::vec3 front {glm::normalize(glm::vec3{0.0f, 0.0f, -1.0f})};
-    glm::vec3 right {glm::normalize(glm::cross(front, worldUp))};
-    glm::vec3 up {glm::normalize(glm::cross(right, front))};
-
     GLfloat moveSpeed {5.0f};
     GLfloat turnSpeed {1.0f};
 

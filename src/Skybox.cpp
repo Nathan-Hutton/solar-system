@@ -1,4 +1,9 @@
 #include "Skybox.h"
+
+#include <iostream>
+
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Mesh.h"
 #include "Shader.h"
 

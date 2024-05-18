@@ -1,5 +1,7 @@
 #include "Sphere.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 Sphere::Sphere() : SpaceObject(), radius(0.5f)
 {
     this->sphereMesh = new Mesh{};

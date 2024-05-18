@@ -1,5 +1,11 @@
 #include "OrbitalPhysics.h"
 
+#include <vector>
+
+#include <GLFW/glfw3.h>
+
+#include "Scene.h"
+
 namespace OrbitalPhysics {
     bool verlet = false;
 }

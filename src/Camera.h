@@ -1,26 +1,14 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 
 #include "SpotLight.h"
 
 namespace camera {
     extern glm::vec3 position;
-    extern glm::vec3 front;
-    extern glm::vec3 up;
-    extern glm::vec3 right;
-    extern glm::vec3 worldUp;
-
-    extern GLfloat yaw;
-    extern GLfloat pitch;
-    extern GLfloat roll;
-
     extern GLfloat moveSpeed;
     extern GLfloat turnSpeed;
-
     extern SpotLight *spotLight;
 
     void keyControl(bool* keys, GLfloat deltaTime);

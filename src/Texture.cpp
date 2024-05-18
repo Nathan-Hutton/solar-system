@@ -1,5 +1,9 @@
 #include "Texture.h"
 
+#include <iostream>
+
+#include "stb_image.h"
+
 Texture::Texture() {}
 
 Texture::Texture(std::string fileLocation)

@@ -1,7 +1,8 @@
 #pragma once
-#include "Light.h"
+
 #include <vector>
-#include "OmniShadowMap.h"
+
+#include "Light.h"
 
 class PointLight : public Light {
     public:

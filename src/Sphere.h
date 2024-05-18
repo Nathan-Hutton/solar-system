@@ -1,8 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "SpaceObject.h"
-#include <cmath>
-#include <memory>
+#include "Mesh.h"
+#include "Texture.h"
 
 class Sphere : public SpaceObject
 {

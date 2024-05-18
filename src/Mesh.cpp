@@ -1,5 +1,4 @@
 #include "Mesh.h"
-#include <iostream>
 
 Mesh::Mesh()
 {
@@ -9,8 +8,8 @@ Mesh::Mesh()
     indexCount  = 0;
 }
 
-void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, 
-        unsigned int numOfVertices, unsigned int numOfIndices,
+void Mesh::createMesh(GLfloat *vertices, GLuint *indices, 
+        GLuint numOfVertices, GLuint numOfIndices,
         bool hasNormals, bool threeVertices)
 {
     indexCount = numOfIndices;
