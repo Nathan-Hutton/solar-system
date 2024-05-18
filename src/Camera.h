@@ -15,10 +15,7 @@ namespace camera {
     extern glm::vec3 worldUp;
 
     extern GLfloat yaw;
-    extern GLfloat oldYaw;
     extern GLfloat pitch;
-    extern GLfloat oldPitch;
-    extern GLfloat oldRoll;
     extern GLfloat roll;
 
     extern GLfloat moveSpeed;
@@ -27,7 +24,6 @@ namespace camera {
     extern SpotLight *spotLight;
 
     void keyControl(bool* keys, GLfloat deltaTime);
-    void handleFlashlightKey(bool* keys);
     void mouseControl(GLfloat xChange, GLfloat yChange);
     void setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
@@ -39,5 +35,4 @@ namespace camera {
                     GLfloat edge);
 
     glm::mat4 calculateViewMatrix();
-    void update();
 };

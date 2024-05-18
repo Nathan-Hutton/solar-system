@@ -1,14 +1,18 @@
 #include "Skybox.h"
+#include "Mesh.h"
+#include "Shader.h"
+
+namespace
+{
+    Mesh* skyMesh {};
+    GLuint textureID {};
+    Shader* skyShader {};
+    GLuint uniformView {};
+    GLuint uniformProjection {};
+}
 
 namespace skybox
 {
-    Mesh* skyMesh {};
-    Shader* skyShader {};
-
-    GLuint textureID {};
-    GLuint uniformView {};
-    GLuint uniformProjection {};
-
     void setup(std::vector<std::string> faceLocations)
     {
         // Shader setup

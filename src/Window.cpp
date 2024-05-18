@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <iostream>
 
 namespace
 {
@@ -8,6 +9,11 @@ namespace
     // Every time we move the mouse, we want to see how much it's changed since it's last location
     GLfloat lastX {0};
     GLfloat lastY {0};
+
+    // For mouse movement
+    GLfloat xChange {0};
+    GLfloat yChange {0};
+    GLfloat yScrollOffset {0};
 
     // Callback functions needs to have all 4 of these params
     void handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
@@ -35,8 +41,8 @@ namespace
         }
 
         // Subtraction is in the opposite order for y to avoid inverted mouse movement
-        window::xChange = xPos - lastX;
-        window::yChange = lastY - yPos;
+        xChange = xPos - lastX;
+        yChange = lastY - yPos;
 
         lastX = xPos;
         lastY = yPos;
@@ -44,7 +50,7 @@ namespace
 
     void handleScroll(GLFWwindow* window, double xOffset, double yOffset)
     {
-        window::yScrollOffset = yOffset;
+        yScrollOffset = yOffset;
     }
 
     void createCallbacks()
@@ -63,9 +69,6 @@ namespace window
     GLint bufferWidth = 0;
     GLint bufferHeight = 0;
     bool keys[1024] = {0};
-    GLfloat xChange = 0;
-    GLfloat yChange = 0;
-    GLfloat yScrollOffset = 0;
 
     int initialize()
     {

@@ -18,6 +18,7 @@
 #include "Window.h"
 #include "SceneHandler.h"
 #include "Camera.h"
+#include "OrbitalPhysics.h"
 
 void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 {

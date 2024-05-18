@@ -1,4 +1,12 @@
 #include "SceneHandler.h"
+#include "OrbitalPhysics.h"
+#include "Sun.h"
+#include "Planet.h"
+#include "Model.h"
+#include "Material.h"
+#include "Scene.h"
+#include "Camera.h"
+#include "Skybox.h"
 
 namespace {
     // This method will set old positions for all satellites in case we're using Verlet numerical integration
