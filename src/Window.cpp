@@ -1,5 +1,53 @@
 #include "Window.h"
 
+namespace
+{
+    // When we start the scene, the mouse will go somewhere and we don't want that to be counted as movement
+    bool mouseFirstMoved {true};
+
+    // Every time we move the mouse, we want to see how much it's changed since it's last location
+    GLfloat lastX {0};
+    GLfloat lastY {0};
+
+    // The callback function needs to have all 4 of these params or it won't work
+    void handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
+    {
+        if (key < 0 || key >= 1024)
+            return;
+
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, GL_TRUE);
+
+        if (action == GLFW_PRESS)
+            window::keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            window::keys[key] = false;
+    }
+
+    void handleMouse(GLFWwindow* window, double xPos, double yPos)
+    {
+        // This if will only pass a single time
+        if (mouseFirstMoved)
+        {
+            mouseFirstMoved = false;
+            lastX = xPos;
+            lastY = yPos;
+        }
+
+        // Subtraction is in the opposite order for y to avoid inverted mouse movement
+        window::xChange = xPos - lastX;
+        window::yChange = lastY - yPos;
+
+        lastX = xPos;
+        lastY = yPos;
+    }
+
+    void handleScroll(GLFWwindow* window, double xOffset, double yOffset)
+    {
+        window::yScrollOffset = yOffset;
+    }
+}
+
 namespace window 
 {
     GLFWwindow *mainWindow;
@@ -8,12 +56,9 @@ namespace window
     GLint bufferWidth = 0;
     GLint bufferHeight = 0;
     bool keys[1024] = {0};
-    GLfloat lastX = 0;
-    GLfloat lastY = 0;
     GLfloat xChange = 0;
     GLfloat yChange = 0;
     GLfloat yScrollOffset = 0;
-    bool mouseFirstMoved = true;
 
     int initialize()
     {
@@ -113,42 +158,5 @@ namespace window
         const GLfloat theOffset {yScrollOffset};
         yScrollOffset = 0.0f;
         return theOffset;
-    }
-
-    void handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
-    {
-        if (key < 0 || key >= 1024)
-            return;
-
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, GL_TRUE);
-
-        if (action == GLFW_PRESS)
-            keys[key] = true;
-        else if (action == GLFW_RELEASE)
-            keys[key] = false;
-    }
-
-    void handleMouse(GLFWwindow* window, double xPos, double yPos)
-    {
-        // This if will only pass a single time
-        if (mouseFirstMoved)
-        {
-            mouseFirstMoved = false;
-            lastX = xPos;
-            lastY = yPos;
-        }
-
-        // Subtraction is in the opposite order for y to avoid inverted mouse movement
-        xChange = xPos - lastX;
-        yChange = lastY - yPos;
-
-        lastX = xPos;
-        lastY = yPos;
-    }
-
-    void handleScroll(GLFWwindow* window, double xOffset, double yOffset)
-    {
-        yScrollOffset = yOffset;
     }
 }

@@ -4,11 +4,9 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Camera.h"
-#include "Skybox.h"
 
-namespace SolarSystemRenderer
+namespace renderer
 {
-
     struct PostProcessingResources {
         GLuint halfFBO {};
         GLuint halfTexture {};
@@ -47,18 +45,8 @@ namespace SolarSystemRenderer
     };
     extern Shaders shaders;
 
-    extern bool shadowsEnabled;
-
     void toggleShadows();
-    void createShaders(glm::mat4 projection);
-    void setLightUniformVariables();
-    void setupPostProcessingObjects();
     void setup(const glm::mat4 projection);
-    void omniShadowMapPass(PointLight* light);
     void omniShadowMapPasses();
-    void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel);
-    void renderAllObjects();
-    void handleBloom();
-    void renderToScreen();
     void renderPass();
 };

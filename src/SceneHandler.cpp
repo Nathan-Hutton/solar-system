@@ -1,31 +1,33 @@
 #include "SceneHandler.h"
 
-// This method will set old positions for all satellites in case we're using Verlet numerical integration
-void SceneHandler::setOldPositions()
-{
-    glm::vec3 acceleration {};
-    glm::vec3 velocity {};
-    glm::vec3 position {};
-    
-    // Apply forces to all planets and moons
-    for (int i {0}; i < scene::satellites.size(); ++i) 
+namespace {
+    // This method will set old positions for all satellites in case we're using Verlet numerical integration
+    void setOldPositions()
     {
-        glm::vec3 force {0};
+        glm::vec3 acceleration {};
+        glm::vec3 velocity {};
+        glm::vec3 position {};
         
-        // Add up forces from stars
-        for (SpaceObject *star : scene::stars)
-            force += OrbitalPhysics::getForce(scene::satellites[i], star);
-            
-        // Add up forces for other satellites
-        for (int j {0}; j < scene::satellites.size(); ++j) 
+        // Apply forces to all planets and moons
+        for (int i {0}; i < scene::satellites.size(); ++i) 
         {
-            if (i == j) continue;
-            force += OrbitalPhysics::getForce(scene::satellites[i], scene::satellites[j]);
-        }
+            glm::vec3 force {0};
+            
+            // Add up forces from stars
+            for (SpaceObject *star : scene::stars)
+                force += OrbitalPhysics::getForce(scene::satellites[i], star);
+                
+            // Add up forces for other satellites
+            for (int j {0}; j < scene::satellites.size(); ++j) 
+            {
+                if (i == j) continue;
+                force += OrbitalPhysics::getForce(scene::satellites[i], scene::satellites[j]);
+            }
 
-        acceleration    = force / scene::satellites[i]->getMass();
-        velocity        = scene::satellites[i]->getVelocity() + acceleration * 0.005f;
-        scene::satellites[i]->setOldPosition(scene::satellites[i]->getPosition() - velocity * 0.005f);
+            acceleration    = force / scene::satellites[i]->getMass();
+            velocity        = scene::satellites[i]->getVelocity() + acceleration * 0.005f;
+            scene::satellites[i]->setOldPosition(scene::satellites[i]->getPosition() - velocity * 0.005f);
+        }
     }
 }
 

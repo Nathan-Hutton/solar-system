@@ -20,7 +20,6 @@
 #include "Skybox.h"
 
 namespace SceneHandler {
-    void setOldPositions();
     void setupSkybox(const glm::mat4 projection);
     void createObjectsDefault();
     void createObjectsFigureEight();

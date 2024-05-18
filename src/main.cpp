@@ -14,7 +14,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "SolarSystemRenderer.h"
+#include "Renderer.h"
 #include "Window.h"
 #include "SceneHandler.h"
 #include "Camera.h"
@@ -29,6 +29,9 @@ void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
 
 void setupScene()
 {
+    window::width = 1920;
+    window::height = 1200;
+
     // Print out the controls
     std::cout << "**********\n";
     std::cout << "\033[92m" << "Controls" << "\033[0m\n";
@@ -77,25 +80,20 @@ void setupScene()
         default:
             break;
     }
+
+    // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
+    const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
+    SceneHandler::setupSkybox(projection);
+    renderer::setup(projection);
 }
 
 int main()
 {
-    window::width = 1920;
-    window::height = 1200;
     setupScene();
-
-    // This is its own block so that projection will go out of scope and get off the stack
-    {
-        // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
-        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
-        SceneHandler::setupSkybox(projection);
-        SolarSystemRenderer::setup(projection);
-    }
 
     // Loop until window is closed
     GLfloat now {};
-    std::string FPS_str {};
+    std::string frameRateStr {};
     unsigned int counter {0};
     double lastFPSUpdateTime {glfwGetTime()};
     GLfloat lastFrame {0.0f};
@@ -114,8 +112,8 @@ int main()
         // Update FPS counter
         if (counter == 30)
         {
-            FPS_str = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
-            glfwSetWindowTitle(window::mainWindow, FPS_str.c_str());
+            frameRateStr = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
+            glfwSetWindowTitle(window::mainWindow, frameRateStr.c_str());
             lastFPSUpdateTime = now;
             counter = 0;
         }
@@ -141,11 +139,11 @@ int main()
             // Setting this to false means it won't trigger multiple times when we press it once
             keys[GLFW_KEY_L] = false;
 
-            SolarSystemRenderer::toggleShadows();
+            renderer::toggleShadows();
         }
 
-        SolarSystemRenderer::omniShadowMapPasses();
-        SolarSystemRenderer::renderPass();
+        renderer::omniShadowMapPasses();
+        renderer::renderPass();
 
         glUseProgram(0);
         glfwSwapBuffers(window::mainWindow);
