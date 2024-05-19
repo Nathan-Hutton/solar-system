@@ -7,12 +7,16 @@ Sphere::Sphere() : SpaceObject(), radius(0.5f)
     this->sphereMesh = new Mesh{};
 }
 
-Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices) : SpaceObject(mass), radius(radius)
+Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) : SpaceObject(mass), radius(radius)
 {
     this->sphereMesh = new Mesh{};
+    std::vector<GLfloat> vertices {};
+    std::vector<GLuint> indices {};
+    generateSphereData(vertices, indices, stacks, slices, usingNormals);
+    this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), usingNormals);
 }
 
-void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices)
+void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices, bool usingNormals)
 {
     for (int i {0}; i <= stacks; ++i) {
         const float V {i / static_cast<float>(stacks)};
@@ -34,11 +38,14 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
             vertices.push_back(U);
             vertices.push_back(V);
 
-            glm::vec3 normal{x,y,z};
-            normal = glm::normalize(normal);
-            vertices.push_back(normal.x);
-            vertices.push_back(normal.y);
-            vertices.push_back(normal.z);
+            if (usingNormals)
+            {
+                glm::vec3 normal{x,y,z};
+                normal = glm::normalize(normal);
+                vertices.push_back(normal.x);
+                vertices.push_back(normal.y);
+                vertices.push_back(normal.z);
+            }
         }
     }
 

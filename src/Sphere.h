@@ -10,7 +10,7 @@ class Sphere : public SpaceObject
 {
     public:
         Sphere();
-        Sphere(GLfloat radius, GLfloat mass, int stacks, int slices);
+        Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals=true);
 
         void setTexturePointer(Texture* texture);
         virtual void render() override = 0;
@@ -21,7 +21,7 @@ class Sphere : public SpaceObject
         ~Sphere();
 
     protected:
-        virtual void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices);
+        virtual void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices, bool usingNormals=true);
         const GLfloat radius {};
         Mesh *sphereMesh {};
         Texture *texture {};

@@ -20,6 +20,5 @@ class Sun: public Sphere
         ~Sun();
 
     private:
-        void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices) override;
         PointLight *light {};
 };
