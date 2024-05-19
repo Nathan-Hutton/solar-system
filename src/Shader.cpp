@@ -110,7 +110,7 @@ void Shader::compileProgram()
 
     // Point lights
     std::stringstream ss {};
-    for (size_t i {0}; i < MAX_POINT_LIGHTS; ++i)
+    for (size_t i {0}; i < scene::MAX_POINT_LIGHTS; ++i)
     {
         // Base color
         ss << "pointLights[" << i << "].base.color";
@@ -184,7 +184,7 @@ void Shader::compileProgram()
         ss.clear(); // Clear error flags
     }
 
-    for (size_t i {0}; i < MAX_POINT_LIGHTS + 1; ++i)
+    for (size_t i {0}; i < scene::MAX_POINT_LIGHTS + 1; ++i)
     {
         // Shadowmap
         ss << "omniShadowMaps[" << i << "].shadowMap";
@@ -272,7 +272,7 @@ GLuint Shader::getFarPlaneLocation()
 void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount)
 {
     // Clamp the number of lights allowed
-    if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
+    if (lightCount > scene::MAX_POINT_LIGHTS) lightCount =  scene::MAX_POINT_LIGHTS;
 
     for (size_t i {0}; i < lightCount; ++i)
     {
@@ -285,7 +285,7 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
 void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
 {
     // Clamp the number of lights allowed
-    if (lightCount > MAX_POINT_LIGHTS) lightCount =  MAX_POINT_LIGHTS;
+    if (lightCount > scene::MAX_POINT_LIGHTS) lightCount =  scene::MAX_POINT_LIGHTS;
 
     for (size_t i {0}; i < lightCount; ++i)
     {

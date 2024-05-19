@@ -15,72 +15,75 @@
 #include "Camera.h"
 #include "OrbitalPhysics.h"
 
-void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
+namespace
 {
-    if (yScrollOffset == 0.0f) return;
-
-    const GLfloat amountChange = yScrollOffset * 0.1f;
-    *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
-}
-
-void setupScene()
-{
-    window::width = 1920;
-    window::height = 1200;
-
-    // Print out the controls
-    std::cout << "**********\n";
-    std::cout << "\033[92m" << "Controls" << "\033[0m\n";
-    std::cout << "**********\n";
-    std::cout << "\nMouse: Look around\n\n";
-    std::cout << "W: Move forward\n";
-    std::cout << "S: Move backwards\n";
-    std::cout << "A: Move left\n";
-    std::cout << "D: Move right\n\n";
-    std::cout << "Q: Roll left\n";
-    std::cout << "E: Roll right\n\n";
-    std::cout << "Space: Move up\n";
-    std::cout << "Shift: Move down\n\n";
-    std::cout << "F: Toggle flashlight\n";
-    std::cout << "L: Toggle shadows\n\n\n";
-
-    // Promp user to select a numerical integration scheme
-    std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m\n";
-    std::cout << "0: Euler method\n1: Verlet method \n>";
-    std::cin >> OrbitalPhysics::verlet;
-
-    // Prompt user to select scene
-    int selectedScene {};
-    std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
-    std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
-    std::cin >> selectedScene;
-    
-    // If this isn't right here, we will get a segmentation fault
-    window::initialize();
-    
-    // Build scene based on user input
-    switch (selectedScene)
+    void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
     {
-        case (1):
-            SceneHandler::createObjects1Sun1Planet();
-            break;
-        case (2):
-            SceneHandler::createObjectsDefault();
-            break;
-        case (3):
-            SceneHandler::createObjectsFigureEight();
-            break;
-        case (4):
-            SceneHandler::createObjectsFancy();
-            break;
-        default:
-            break;
+        if (yScrollOffset == 0.0f) return;
+
+        const GLfloat amountChange = yScrollOffset * 0.1f;
+        *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
     }
 
-    // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
-    const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
-    SceneHandler::setupSkybox(projection);
-    renderer::setup(projection);
+    void setupScene()
+    {
+        window::width = 1920;
+        window::height = 1200;
+
+        // Print out the controls
+        std::cout << "**********\n";
+        std::cout << "\033[92m" << "Controls" << "\033[0m\n";
+        std::cout << "**********\n";
+        std::cout << "\nMouse: Look around\n\n";
+        std::cout << "W: Move forward\n";
+        std::cout << "S: Move backwards\n";
+        std::cout << "A: Move left\n";
+        std::cout << "D: Move right\n\n";
+        std::cout << "Q: Roll left\n";
+        std::cout << "E: Roll right\n\n";
+        std::cout << "Space: Move up\n";
+        std::cout << "Shift: Move down\n\n";
+        std::cout << "F: Toggle flashlight\n";
+        std::cout << "L: Toggle shadows\n\n\n";
+
+        // Promp user to select a numerical integration scheme
+        std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m\n";
+        std::cout << "0: Euler method\n1: Verlet method \n>";
+        std::cin >> OrbitalPhysics::verlet;
+
+        // Prompt user to select scene
+        int selectedScene {};
+        std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
+        std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
+        std::cin >> selectedScene;
+        
+        // If this isn't right here, we will get a segmentation fault
+        window::initialize();
+        
+        // Build scene based on user input
+        switch (selectedScene)
+        {
+            case 1:
+                SceneHandler::createObjects1Sun1Planet();
+                break;
+            case 2:
+                SceneHandler::createObjectsDefault();
+                break;
+            case 3:
+                SceneHandler::createObjectsFigureEight();
+                break;
+            case 4:
+                SceneHandler::createObjectsFancy();
+                break;
+            default:
+                break;
+        }
+
+        // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
+        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
+        SceneHandler::setupSkybox(projection);
+        renderer::setup(projection);
+    }
 }
 
 int main()

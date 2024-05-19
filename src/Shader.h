@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include "CommonValues.h"
+#include "Scene.h"
 #include "SpotLight.h"
 
 class Shader
@@ -61,7 +61,7 @@ class Shader
             GLuint uniformExponential {};
             GLuint uniformLinear {};
             GLuint uniformConstant {};
-        } uniformPointLights[MAX_POINT_LIGHTS] {};
+        } uniformPointLights[scene::MAX_POINT_LIGHTS] {};
 
         struct {
             GLuint uniformColor {};
@@ -80,7 +80,7 @@ class Shader
         struct {
             GLuint shadowMap {};
             GLuint farPlane {};
-        } uniformOmniShadowMaps[1 + MAX_POINT_LIGHTS] {};
+        } uniformOmniShadowMaps[1 + scene::MAX_POINT_LIGHTS] {};
 
         std::string readFile(std::string_view fileLocation);
         void compileShader(const std::string shader1Code, const std::string shader2Code, const std::string shader3Code = "");

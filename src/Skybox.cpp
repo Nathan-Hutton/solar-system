@@ -6,6 +6,8 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "stb_image.h"
+
 
 namespace
 {

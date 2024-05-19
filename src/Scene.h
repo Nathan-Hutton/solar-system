@@ -4,10 +4,10 @@
 
 #include "SpaceObject.h"
 #include "PointLight.h"
-#include "CommonValues.h"
 
 namespace scene
 {
+    inline constexpr int MAX_POINT_LIGHTS {3};
     extern std::vector<SpaceObject*> satellites;
     extern std::vector<SpaceObject*> stars;
     extern PointLight* pointLights[MAX_POINT_LIGHTS];
