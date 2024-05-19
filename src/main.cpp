@@ -63,20 +63,23 @@ namespace
         // Build scene based on user input
         switch (selectedScene)
         {
-            case 1:
-                SceneHandler::createObjects1Sun1Planet();
-                break;
-            case 2:
-                SceneHandler::createObjectsDefault();
-                break;
-            case 3:
-                SceneHandler::createObjectsFigureEight();
-                break;
-            case 4:
-                SceneHandler::createObjectsFancy();
-                break;
-            default:
-                break;
+        case 1:
+            SceneHandler::createObjects1Sun1Planet();
+            break;
+        case 2:
+            SceneHandler::createObjectsDefault();
+            break;
+        case 3:
+            SceneHandler::createObjectsFigureEight();
+            break;
+        case 4:
+            SceneHandler::createObjectsFancy();
+            break;
+        default:
+            std::cout << "\033[91m" << "Invalid input" << "\033[0m\n\n";
+            glfwDestroyWindow(window::mainWindow);
+            setupScene();
+            return;
         }
 
         // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
