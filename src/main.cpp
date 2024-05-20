@@ -25,12 +25,8 @@ namespace
         *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
     }
 
-    void setupScene()
+    void printControls()
     {
-        window::width = 1920;
-        window::height = 1200;
-
-        // Print out the controls
         std::cout << "**********\n";
         std::cout << "\033[92m" << "Controls" << "\033[0m\n";
         std::cout << "**********\n";
@@ -45,18 +41,74 @@ namespace
         std::cout << "Shift: Move down\n\n";
         std::cout << "F: Toggle flashlight\n";
         std::cout << "L: Toggle shadows\n\n\n";
+    }
 
+    bool clearFailedExtraction()
+    {
+        if (!std::cin || (!std::cin.eof() && std::cin.peek() != '\n'))
+        {
+            std::cin.clear();
+            std::cin.ignore(1000, '\n');
+            return true;
+        }
+
+        // User probably hit Ctrl D
+        if (std::cin.eof())
+            exit(0);
+
+        return false;
+    }
+
+    void setNumericalScheme()
+    {
         // Promp user to select a numerical integration scheme
-        std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m\n";
-        std::cout << "0: Euler method\n1: Verlet method \n>";
-        std::cin >> OrbitalPhysics::verlet;
+        while (true)
+        {
+            std::cout << "\033[92m" << "Choose a numerical integration method" << "\033[0m\n";
+            std::cout << "0: Euler method\n1: Verlet method \n>";
+            int verletInput {};
+            std::cin >> verletInput;
 
+            if (clearFailedExtraction() || (verletInput != 0 && verletInput != 1))
+            {
+                std::cout << "\033[91m" << "Invalid input" << "\033[0m\n\n";
+                continue;
+            }
+
+            OrbitalPhysics::verlet = verletInput;
+            return;
+        }
+    }
+
+    int getSelectedScene()
+    {
         // Prompt user to select scene
-        int selectedScene {};
-        std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
-        std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
-        std::cin >> selectedScene;
-        
+        while (true)
+        {
+            std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
+            std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
+            int selectedScene {};
+            std::cin >> selectedScene;
+
+            if (clearFailedExtraction() || (selectedScene < 1 || selectedScene > 4))
+            {
+                std::cout << "\033[91m" << "Invalid input" << "\033[0m\n";
+                continue;
+            }
+
+            return selectedScene;
+        }
+    }
+
+    void setupScene()
+    {
+        window::width = 1920;
+        window::height = 1200;
+
+        printControls();
+        setNumericalScheme();
+        int selectedScene { getSelectedScene() };
+
         // If this isn't right here, we will get a segmentation fault
         window::initialize();
         
@@ -75,11 +127,6 @@ namespace
         case 4:
             SceneHandler::createObjectsFancy();
             break;
-        default:
-            std::cout << "\033[91m" << "Invalid input" << "\033[0m\n\n";
-            glfwDestroyWindow(window::mainWindow);
-            setupScene();
-            return;
         }
 
         // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
