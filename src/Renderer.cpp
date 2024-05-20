@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#include <iostream>
+#include <stdexcept>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -177,10 +177,7 @@ namespace
 
         GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
         if (status != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cerr << "Framebuffer error: " << status << '\n';
-            std::exit(EXIT_FAILURE);
-        }
+            throw std::runtime_error("Framebuffer error in Renderer namespace when trying to make RenderBuffer");
 
         const unsigned int attachments[2] {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
         glDrawBuffers(2, attachments);
@@ -201,10 +198,7 @@ namespace
 
             const GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
             if (status != GL_FRAMEBUFFER_COMPLETE)
-            {
-                std::cerr << "Framebuffer Error: " << status << '\n';
-                std::exit(EXIT_FAILURE);
-            }
+                throw std::runtime_error("Framebuffer error in Renderer namespace when trying to make PingPong buffers");
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -230,10 +224,7 @@ namespace
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingResources.halfTexture, 0);
         status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (status != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cerr << "Framebuffer Error: " << status << '\n';
-            std::exit(EXIT_FAILURE);
-        }
+            throw std::runtime_error("Framebuffer error in Renderer namespace when trying to make postProcessingResources FBO");
     }
 
 

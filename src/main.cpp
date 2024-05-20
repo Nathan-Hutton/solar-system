@@ -94,27 +94,23 @@ int main()
     setupScene();
 
     // Loop until window is closed
-    GLfloat now {};
-    std::string frameRateStr {};
-    unsigned int counter {0};
+    int counter {0};
     double lastFPSUpdateTime {glfwGetTime()};
     GLfloat lastFrame {0.0f};
-    GLfloat deltaTime {0.0f};
     GLfloat timeChange {1.0f};
-    GLfloat timeStep {0.0f};
     GLfloat timeSinceLastVerlet {0.0f}; // Not relevant if we're using Euler for physics
     while(!glfwWindowShouldClose(window::mainWindow))
     {
-        now         = glfwGetTime();
-        deltaTime   = now - lastFrame;
-        lastFrame   = now;
-        timeStep    = deltaTime * timeChange;
+        GLfloat now         = glfwGetTime();
+        GLfloat deltaTime   = now - lastFrame;
+        lastFrame           = now;
+        GLfloat timeStep    = deltaTime * timeChange;
         ++counter;
 
         // Update FPS counter
         if (counter == 30)
         {
-            frameRateStr = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
+            std::string frameRateStr = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
             glfwSetWindowTitle(window::mainWindow, frameRateStr.c_str());
             lastFPSUpdateTime = now;
             counter = 0;

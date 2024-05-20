@@ -1,6 +1,6 @@
 #include "ShadowMap.h"
 
-#include <iostream>
+#include <stdexcept>
 
 ShadowMap::ShadowMap() {}
 
@@ -44,10 +44,7 @@ bool ShadowMap::init(GLuint width, GLuint height)
     const GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cerr << "Framebuffer error: " << status << '\n';
-        std::exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Framebuffer error in ShadowMap init method");
 
     // Unbind by going back to default framebuffer (the main one that renders)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

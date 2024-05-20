@@ -1,6 +1,6 @@
 #include "OmniShadowMap.h"
 
-#include <iostream>
+#include <stdexcept>
 
 OmniShadowMap::OmniShadowMap() : ShadowMap() {}
 
@@ -41,10 +41,7 @@ bool OmniShadowMap::init(GLuint width, GLuint height)
     const GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cerr << "Framebuffer Error: " << status << '\n';
-        std::exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Framebuffer error in OmniShadowMap init method");
 
     return true;
 }

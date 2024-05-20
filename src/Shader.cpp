@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <stdexcept>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -18,10 +19,8 @@ std::string Shader::readFile(std::string_view fileLocation)
     std::string content {};
     std::ifstream fileStream{std::filesystem::path{fileLocation}};
 
-    if (!fileStream.is_open()) {
-        std::cerr << "Failed to read" << fileLocation << " File doesn't exist.\n";
-        std::exit(EXIT_FAILURE);
-    }
+    if (!fileStream.is_open())
+        throw std::runtime_error("Failed to read " + std::string(fileLocation) + " File doesn't exist");
 
     std::string line {""};
     std::string fileContents {""};
@@ -39,10 +38,8 @@ void Shader::compileShader(const std::string shader1Code, const std::string shad
     // For rendering graphics. Creates container which we attach shaders to.
     shaderID = glCreateProgram();
 
-    if (!shaderID) {
-        std::cerr << "Error creating shader program\n";
-        std::exit(EXIT_FAILURE);
-    }
+    if (!shaderID)
+        throw std::runtime_error("Error creating shader program");
 
     // We'll always have a vertex shader
     addShader(shaderID, shader1Code, GL_VERTEX_SHADER);
@@ -71,8 +68,7 @@ void Shader::validate()
     glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error validating program: " << eLog << '\n';
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("Error validating program: " + std::string(eLog));
     }
 }
 
@@ -90,8 +86,7 @@ void Shader::compileProgram()
     glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error linking program: " << eLog << '\n';
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("Error linking program: " + std::string(eLog));
     }
 
     // Uniform variables let us pass info from the CPU to the GPU.
@@ -200,6 +195,20 @@ void Shader::compileProgram()
     }
 }
 
+std::string Shader::getShaderTypeString(GLenum shaderType)
+{
+    switch (shaderType)
+    {
+        case (GL_VERTEX_SHADER):
+            return "GL_VERTEX_SHADER";
+        case (GL_FRAGMENT_SHADER):
+            return "GL_FRAGMENT_SHADER";
+        case (GL_GEOMETRY_SHADER):
+            return "GL_GEOMETRY_SHADER";
+    }
+    return "";
+}
+
 void Shader::addShader(GLuint theProgram, const std::string shaderCode, GLenum shaderType)
 {
     // Makes a shader object
@@ -223,8 +232,7 @@ void Shader::addShader(GLuint theProgram, const std::string shaderCode, GLenum s
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result) {
         glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-        std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << '\n';
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("Error compiling the " + getShaderTypeString(shaderType) + " shader: " + std::string(eLog));
     }
 
     // Attach the now compiled shader to the OpenGL program
