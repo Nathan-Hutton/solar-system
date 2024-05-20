@@ -1,6 +1,6 @@
 #include "Model.h"
 
-#include <iostream>
+#include <stdexcept>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -29,10 +29,7 @@ void Model::loadModel(const std::string& fileName) {
     const aiScene *scene {importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices)};
 
     if (!scene)
-    {
-        std::cerr << "Model " << fileName << " failed to load " << importer.GetErrorString() << '\n';
-        std::exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Model " + fileName + " failed to load " + importer.GetErrorString());
 
     // Load the first node in the scene, and call that recursively on all nodes
     loadNode(scene->mRootNode, scene);
@@ -177,9 +174,9 @@ void Model::loadMaterials(const aiScene *scene)
 
             if (!textureList[i]->loadTexture())
             {
-                std::cerr << "Failed to laod teture at " << textPath << '\n';
                 delete textureList[i];
                 textureList[i] = nullptr;
+                throw std::runtime_error("Failed to load texture at " + textPath);
             }
         }
 

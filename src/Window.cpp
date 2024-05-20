@@ -76,7 +76,10 @@ namespace window
         // Must be called before any other GLFW functions
         // Sets up things that are OS specific and sets up input handling
         if (!glfwInit()) 
+        {
+            glfwTerminate();
             throw std::runtime_error("GLFW initialization failed");
+        }
 
         // Setup window properties. This is typically called multiple times before glfwCreateWindow
         // OpenGL version
@@ -90,7 +93,11 @@ namespace window
         // Create window and OpengGL context in our GLFW app. Allows for OpenGL input as well
         mainWindow = glfwCreateWindow(width, height, "Solar System", NULL, NULL);
         if (!mainWindow)
+        {
+            glfwDestroyWindow(mainWindow);
+            glfwTerminate();
             throw std::runtime_error("GLFW window creation failed");
+        }
 
         // Get Buffer size information
         glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
@@ -114,7 +121,11 @@ namespace window
         // Query and load all OpenGL extensions allowed by your drivers
         // Allows us to access features/extensions not in the core OpenGL specification
         if(glewInit() != GLEW_OK)
+        {
+            glfwDestroyWindow(mainWindow);
+            glfwTerminate();
             throw std::runtime_error("Glew initialization failed");
+        }
 
         // Gives us a z-buffer so that we don't render surfaces that are blocked by other surfaces
         glEnable(GL_DEPTH_TEST);

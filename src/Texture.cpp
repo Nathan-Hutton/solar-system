@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-#include <iostream>
+#include <stdexcept>
 
 #include "stb_image.h"
 
@@ -23,10 +23,7 @@ bool Texture::loadTexture()
     int bitDepth {};
     unsigned char *textData {stbi_load(fileLocation.c_str(), &width, &height, &bitDepth, 0)};
     if (!textData)
-    {
-        std::cerr << "Failed to find " << fileLocation << '\n';
-        return false;
-    }
+        throw std::runtime_error("Failed to find " + fileLocation + '\n');
 
     // Create 1 texture object and store its name (ID) in an array which textureID points to
     glGenTextures(1, &textureID);

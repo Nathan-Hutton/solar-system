@@ -1,6 +1,6 @@
 #include "Skybox.h"
 
-#include <iostream>
+#include <stdexcept>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -39,10 +39,7 @@ namespace skybox
         {
             unsigned char *textData {stbi_load(faceLocations[i].c_str(), &width, &height, &bitDepth, STBI_rgb)};
             if (!textData)
-            {
-                std::cerr << "Failed to find " << faceLocations[i].c_str() << '\n';
-                std::exit(EXIT_FAILURE);
-            }
+                throw std::runtime_error("Failed to find " + faceLocations[i]);
 
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
         }
