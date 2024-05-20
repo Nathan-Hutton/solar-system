@@ -45,16 +45,16 @@ namespace
 
     bool clearFailedExtraction()
     {
-        if (!std::cin || (!std::cin.eof() && std::cin.peek() != '\n'))
+        // User probably hit Ctrl D
+        if (std::cin.eof())
+            exit(0);
+
+        if (!std::cin || std::cin.peek() != '\n')
         {
             std::cin.clear();
             std::cin.ignore(1000, '\n');
             return true;
         }
-
-        // User probably hit Ctrl D
-        if (std::cin.eof())
-            exit(0);
 
         return false;
     }
