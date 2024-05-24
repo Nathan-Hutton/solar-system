@@ -60,10 +60,10 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
     }
 }
 
-void Sphere::setWorldProperties(glm::mat4* model)
+void Sphere::setWorldProperties(glm::mat4& model)
 {
-    *model = glm::translate(*model, position);
-    *model = glm::rotate(*model, glm::radians(angle), rotation);
+    model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(angle), rotation);
 }
 
 void Sphere::setTexturePointer(Texture *texture)

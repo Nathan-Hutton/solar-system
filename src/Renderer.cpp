@@ -256,7 +256,7 @@ namespace
         for (SpaceObject *object : objects)
         {
             glm::mat4 model {1.0f};
-            object->setWorldProperties(&model);
+            object->setWorldProperties(model);
             glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
             object->render();
         }

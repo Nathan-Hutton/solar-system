@@ -27,7 +27,7 @@ class SpaceObject
         void setMaterialPointer(Material* material);
         Material* getMaterialPointer();
         virtual void render() = 0;
-        virtual void setWorldProperties(glm::mat4* model) = 0;
+        virtual void setWorldProperties(glm::mat4& model) = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
         virtual GLfloat getCollisionDistance() = 0;
 

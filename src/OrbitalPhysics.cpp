@@ -85,13 +85,13 @@ void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
         updatePositionsEuler(timeStep - MAX_TIME_STEP);
 }
 
-void OrbitalPhysics::updatePositionsVerlet(GLfloat* timeSinceLastUpdate)
+void OrbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
 {
     // Only do these calculations it's been a whole 0.005f seconds since the last time we ran this
-    if (glfwGetTime() - *timeSinceLastUpdate < MAX_TIME_STEP)
+    if (glfwGetTime() - timeSinceLastUpdate < MAX_TIME_STEP)
         return;
 
-    (*timeSinceLastUpdate) += MAX_TIME_STEP;
+    timeSinceLastUpdate += MAX_TIME_STEP;
 
     std::vector<glm::vec3> newSatellitePositions {};
     glm::vec3 acceleration {};

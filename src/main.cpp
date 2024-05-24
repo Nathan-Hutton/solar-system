@@ -17,12 +17,12 @@
 
 namespace
 {
-    void handleTimeChange(GLfloat yScrollOffset, GLfloat* timeChange)
+    void handleTimeChange(GLfloat yScrollOffset, GLfloat& timeChange)
     {
         if (yScrollOffset == 0.0f) return;
 
         const GLfloat amountChange = yScrollOffset * 0.1f;
-        *timeChange += (*timeChange + amountChange > 3.0f || *timeChange + amountChange < -0.1f) ? 0 : amountChange;
+        timeChange += (timeChange + amountChange > 3.0f || timeChange + amountChange < -0.1f) ? 0 : amountChange;
     }
 
     void printControls()
@@ -167,7 +167,7 @@ int main()
 
         // Update our object's positions based on our chosen numerical scheme
         if (OrbitalPhysics::verlet)
-            OrbitalPhysics::updatePositionsVerlet(&timeSinceLastVerlet);
+            OrbitalPhysics::updatePositionsVerlet(timeSinceLastVerlet);
         else
             OrbitalPhysics::updatePositionsEuler(timeStep);
 
@@ -176,7 +176,7 @@ int main()
         bool* keys {window::keys};
         camera::keyControl(keys, deltaTime);
         camera::mouseControl(window::getXChange(), window::getYChange());
-        handleTimeChange(window::getYScrollOffset(), &timeChange);
+        handleTimeChange(window::getYScrollOffset(), timeChange);
 
         // Check for flashlight toggle
         if (keys[GLFW_KEY_L])

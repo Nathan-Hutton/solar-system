@@ -21,7 +21,7 @@ class Model : public SpaceObject
         void setScaleFactor(GLfloat sFactor);
         void loadModel(const std::string& fileName);
         void render() override;
-        void setWorldProperties(glm::mat4* model) override;
+        void setWorldProperties(glm::mat4& model) override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         GLfloat getCollisionDistance() override;
         void clearModel();

@@ -51,11 +51,11 @@ void Model::render()
     }
 }
 
-void Model::setWorldProperties(glm::mat4* model)
+void Model::setWorldProperties(glm::mat4& model)
 {
-    *model = glm::translate(*model, position);
-    *model = glm::rotate(*model, glm::radians(angle), rotation);
-    *model = glm::scale(*model, scaleFactorVector);
+    model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(angle), rotation);
+    model = glm::scale(model, scaleFactorVector);
 }
 
 void Model::clearModel()

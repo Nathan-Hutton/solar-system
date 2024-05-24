@@ -14,7 +14,7 @@ class Sphere : public SpaceObject
 
         void setTexturePointer(Texture* texture);
         virtual void render() override = 0;
-        void setWorldProperties(glm::mat4* model) override;
+        void setWorldProperties(glm::mat4& model) override;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
         GLfloat getCollisionDistance() override;
 
