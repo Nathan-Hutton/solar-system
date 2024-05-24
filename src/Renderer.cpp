@@ -53,7 +53,7 @@ namespace
 
 namespace 
 {
-    void createShaders(const glm::mat4 projection)
+    void createShaders(const glm::mat4& projection)
     {
         // Shader for the suns (no lighting or shadows)
         shaders.sunShader = new Shader{};
@@ -293,7 +293,7 @@ namespace
 
     void renderAllObjects()
     {
-        const glm::mat4 view = camera::calculateViewMatrix();
+        glm::mat4 view = camera::calculateViewMatrix();
 
         // ====================================
         // RENDER SUNS
@@ -393,7 +393,7 @@ namespace renderer
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
 
-    void setup(glm::mat4 projection)
+    void setup(const glm::mat4& projection)
     {
         createShaders(projection);
         setupPostProcessingObjects();

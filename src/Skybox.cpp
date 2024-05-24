@@ -89,18 +89,19 @@ namespace skybox
         skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36, false);
     }
 
-    void setProjectionMatrix(const glm::mat4 projection)
+    void setProjectionMatrix(const glm::mat4& projection)
     {
         skyShader->useShader();
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
     }
 
-    void drawSkybox(glm::mat4 viewMatrix)
+    void drawSkybox(glm::mat4& viewMatrix)
     {
         // We only want to use the rotation values. All of the transformation values
-        // are stored in the 4th column of the viewMatrix, so we'll remove that column
-        // by converting it to a 3x3 then a 4x4 again
-        viewMatrix = glm::mat4{glm::mat3{viewMatrix}};
+        // are stored in the 4th column of the viewMatrix, so we'll set that column to all zeros
+        viewMatrix[3][0] = 0.0f;
+        viewMatrix[3][1] = 0.0f;
+        viewMatrix[3][2] = 0.0f;
         skyShader->useShader();
 
         glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));

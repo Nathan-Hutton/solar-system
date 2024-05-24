@@ -39,7 +39,7 @@ namespace {
     }
 }
 
-void SceneHandler::setupSkybox(glm::mat4 projection)
+void SceneHandler::setupSkybox(const glm::mat4& projection)
 {
 	std::vector<std::string> skyboxFaces {};
 	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
