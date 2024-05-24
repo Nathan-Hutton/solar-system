@@ -20,7 +20,7 @@ namespace
 
 namespace skybox
 {
-    void setup(std::vector<std::string> faceLocations)
+    void setup(const std::vector<std::string>& faceLocations)
     {
         // Shader setup
         skyShader = new Shader{};

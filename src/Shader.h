@@ -36,7 +36,7 @@ class Shader
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
 
         void setTexture(GLuint textureUnit);
-        void setLightMatrices(std::vector<glm::mat4> lightMatrices);
+        void setLightMatrices(const std::vector<glm::mat4>& lightMatrices);
 
         void useShader();
 
@@ -83,8 +83,8 @@ class Shader
         } uniformOmniShadowMaps[1 + scene::MAX_POINT_LIGHTS] {};
 
         std::string readFile(std::string_view fileLocation);
-        void compileShader(const std::string shader1Code, const std::string shader2Code, const std::string shader3Code = "");
-        void addShader(GLuint theProgram, const std::string shaderCode, GLenum shaderType);
+        void compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code = "");
+        void addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType);
         void compileProgram();
         std::string getShaderTypeString(GLenum shaderType);
         void clearShader();

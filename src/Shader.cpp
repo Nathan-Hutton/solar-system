@@ -31,7 +31,7 @@ std::string Shader::readFile(std::string_view fileLocation)
     return fileContents;
 }
 
-void Shader::compileShader(const std::string shader1Code, const std::string shader2Code, const std::string shader3Code)
+void Shader::compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code)
 {
     // Create a new OpenGL program object. Is the final linked version of multiple
     // shaders combined. Shaders are written in GLSL (OpenGL shading language) and run on the GPU
@@ -209,7 +209,7 @@ std::string Shader::getShaderTypeString(GLenum shaderType)
     return "";
 }
 
-void Shader::addShader(GLuint theProgram, const std::string shaderCode, GLenum shaderType)
+void Shader::addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType)
 {
     // Makes a shader object
     GLuint theShader {glCreateShader(shaderType)};
@@ -352,7 +352,7 @@ void Shader::setTexture(GLuint textureUnit)
     glUniform1i(uniformTexture, textureUnit);
 }
 
-void Shader::setLightMatrices(std::vector<glm::mat4> lightMatrices)
+void Shader::setLightMatrices(const std::vector<glm::mat4>& lightMatrices)
 {
     for (size_t i {0}; i < 6; ++i)
         glUniformMatrix4fv(uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));

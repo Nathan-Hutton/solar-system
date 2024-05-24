@@ -8,7 +8,8 @@
 #include "Camera.h"
 #include "Skybox.h"
 
-namespace {
+namespace 
+{
     // This method will set old positions for all satellites in case we're using Verlet numerical integration
     void setOldPositions()
     {
