@@ -1,6 +1,7 @@
 #include "Texture.h"
 
 #include <stdexcept>
+#include <iostream>
 
 #include "stb_image.h"
 
