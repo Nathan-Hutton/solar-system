@@ -116,9 +116,9 @@ namespace camera
                             edge};
     }
 
-    glm::mat4 calculateViewMatrix()
+    void calculateViewMatrix(glm::mat4& viewMatrix)
     {
         // Args are where the camera is, what the camera is looking at, and what its up is
-        return glm::lookAt(position, position + front, up);
+        viewMatrix = glm::lookAt(position, position + front, up);
     }
 }

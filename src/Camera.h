@@ -22,5 +22,5 @@ namespace camera {
                     GLfloat exponential, GLfloat linear, GLfloat constant,
                     GLfloat edge);
 
-    glm::mat4 calculateViewMatrix();
+    void calculateViewMatrix(glm::mat4& viewMatrix);
 };

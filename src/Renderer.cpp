@@ -250,13 +250,12 @@ namespace
 
         // Model matrix positions and orients objects in the world.
         // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
-        glm::mat4 model {};
 
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
         for (SpaceObject *object : objects)
         {
-            model = glm::mat4{1.0f};
+            glm::mat4 model {1.0f};
             object->setWorldProperties(&model);
             glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
             object->render();
@@ -293,7 +292,8 @@ namespace
 
     void renderAllObjects()
     {
-        glm::mat4 view = camera::calculateViewMatrix();
+        glm::mat4 view;
+        camera::calculateViewMatrix(view);
 
         // ====================================
         // RENDER SUNS
