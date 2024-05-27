@@ -12,7 +12,7 @@ class Light
             GLfloat red, GLfloat green, GLfloat blue, 
             GLfloat ambientIntensity, GLfloat diffuseIntensity);
 
-        ShadowMap* getShadowMap() { return shadowMap; }
+        ShadowMap* getShadowMap() const { return shadowMap; }
 
         ~Light();
 

@@ -32,7 +32,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
 
 void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,
                          GLuint colorLocation, GLuint positionLocation,
-                         GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation)
+                         GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation) const
 {
     glUniform1f(ambientIntensityLocation, ambientIntensity);
     glUniform1f(diffuseIntensityLocation, diffuseIntensity);
@@ -44,7 +44,7 @@ void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensi
     glUniform1f(constantLocation, constant);
 }
 
-std::vector<glm::mat4> PointLight::calculateLightTransform()
+std::vector<glm::mat4> PointLight::calculateLightTransform() const
 {
     std::vector<glm::mat4> lightMatrices {};
     // +x, -x
@@ -62,12 +62,12 @@ std::vector<glm::mat4> PointLight::calculateLightTransform()
     return lightMatrices;
 }
 
-GLfloat PointLight::getFarPlane()
+GLfloat PointLight::getFarPlane() const
 {
     return farPlane;
 }
 
-glm::vec3 PointLight::getPosition()
+glm::vec3 PointLight::getPosition() const
 {
     return position;
 }

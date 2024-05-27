@@ -11,7 +11,7 @@ class SpaceObject
         SpaceObject();
         explicit SpaceObject(GLfloat mass);
 
-        GLfloat getMass();
+        GLfloat getMass() const;
         glm::vec3 getOldPosition() const;
         void setOldPosition(glm::vec3 oldPos);
         glm::vec3 getPosition() const;
@@ -20,16 +20,16 @@ class SpaceObject
         void setVelocity(glm::vec3 velocity);
         glm::vec3 getRotation() const;
         void setRotation(glm::vec3 rotation);
-        GLfloat getAngle();
+        GLfloat getAngle() const;
         void setAngle(GLfloat angle);
-        GLfloat getRotationSpeed();
+        GLfloat getRotationSpeed() const;
         void setRotationSpeed(GLfloat speed);
         void setMaterialPointer(Material* material);
-        Material* getMaterialPointer();
-        virtual void render() = 0;
+        Material* getMaterialPointer() const;
+        virtual void render() const = 0;
         virtual void setWorldProperties(glm::mat4& model) = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
-        virtual GLfloat getCollisionDistance() = 0;
+        virtual GLfloat getCollisionDistance() const = 0;
 
         ~SpaceObject();
 

@@ -46,7 +46,7 @@ bool OmniShadowMap::init(GLuint width, GLuint height)
     return true;
 }
 
-void OmniShadowMap::read(GLenum textureUnit)
+void OmniShadowMap::read(GLenum textureUnit) const
 {
     glActiveTexture(textureUnit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMap);

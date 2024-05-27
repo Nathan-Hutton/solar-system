@@ -71,7 +71,7 @@ void Sphere::setTexturePointer(Texture *texture)
     this->texture = texture;
 }
 
-GLfloat Sphere::getCollisionDistance()
+GLfloat Sphere::getCollisionDistance() const
 {
     return radius;
 }

@@ -173,7 +173,6 @@ void SceneHandler::createObjects1Sun1Planet()
         setOldPositions();
 }
 
-
 void SceneHandler::createObjectsFigureEight()
 {
     camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};

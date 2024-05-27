@@ -230,7 +230,7 @@ namespace
 
     void setLightUniformVariables()
     {
-        for (SpaceObject *satellite : scene::satellites)
+        for (SpaceObject* satellite : scene::satellites)
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
 }
@@ -389,7 +389,7 @@ namespace renderer
         uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
         uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
 
-        for (SpaceObject *satellite : scene::satellites)
+        for (SpaceObject* satellite : scene::satellites)
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
 

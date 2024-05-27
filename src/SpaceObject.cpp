@@ -16,7 +16,7 @@ SpaceObject::SpaceObject(GLfloat mass) : mass(mass)
     this->rotation  = glm::vec3{0.0f};
 }
 
-GLfloat SpaceObject::getMass()
+GLfloat SpaceObject::getMass() const
 {
     return mass;
 }
@@ -61,7 +61,7 @@ void SpaceObject::setRotation(glm::vec3 rotation)
     this->rotation = rotation;
 }
 
-GLfloat SpaceObject::getAngle()
+GLfloat SpaceObject::getAngle() const
 {
     return angle;
 }
@@ -71,7 +71,7 @@ void SpaceObject::setAngle(GLfloat angle)
     this->angle = angle;
 }
 
-GLfloat SpaceObject::getRotationSpeed()
+GLfloat SpaceObject::getRotationSpeed() const
 {
     return rotationSpeed;
 }
@@ -86,7 +86,7 @@ void SpaceObject::setMaterialPointer(Material *material)
     this->material = material;
 }
 
-Material* SpaceObject::getMaterialPointer()
+Material* SpaceObject::getMaterialPointer() const
 {
     return material;
 }

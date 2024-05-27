@@ -12,7 +12,7 @@ Texture::Texture(std::string fileLocation)
     this->fileLocation = fileLocation;
 }
 
-std::string Texture::getFileLocation()
+std::string Texture::getFileLocation() const
 {
     return fileLocation;
 }
@@ -62,7 +62,7 @@ bool Texture::loadTexture()
     return true;
 }
 
-void Texture::useTexture()
+void Texture::useTexture() const
 {
     // Specify which texture unit we'll be using for texture operations.
     // We'll only have 1 active at a time.

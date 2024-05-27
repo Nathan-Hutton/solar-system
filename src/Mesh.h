@@ -9,11 +9,10 @@ class Mesh
     public:
         Mesh();
 
-        void createMesh(GLfloat *vertices, GLuint *indices, 
+        void createMesh(const GLfloat* const vertices, const GLuint* const indices, 
                 GLuint numOfVertices, GLuint numIndices,
                 bool hasNormals=true, bool threeVertices=true);
-        void setMaterialPointer(Material *material);
-        void render();
+        void render() const;
 
         ~Mesh();
 
@@ -21,7 +20,6 @@ class Mesh
         GLuint VAO {}, VBO {}, IBO {};
         GLsizei indexCount {};
         Texture *texture {};
-        Material *material {};
 
         void clearMesh();
 };

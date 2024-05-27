@@ -24,7 +24,8 @@ void Model::setScaleFactor(GLfloat sFactor)
     this->scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
 }
 
-void Model::loadModel(const std::string& fileName) {
+void Model::loadModel(const std::string& fileName) 
+{
     Assimp::Importer importer {};
     const aiScene *scene {importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices)};
 
@@ -36,7 +37,7 @@ void Model::loadModel(const std::string& fileName) {
     loadMaterials(scene);
 }
 
-void Model::render()
+void Model::render() const
 {
     for (size_t i {0}; i < meshList.size(); ++i)
     {
@@ -79,7 +80,7 @@ void Model::clearModel()
     }
 }
 
-void Model::loadNode(aiNode *node, const aiScene *scene)
+void Model::loadNode(aiNode* node, const aiScene* scene)
 {
     // Load meshes for the node
     for(size_t i {0}; i < node->mNumMeshes; ++i)
@@ -95,7 +96,7 @@ void Model::loadNode(aiNode *node, const aiScene *scene)
     }
 }
 
-void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
+void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 {
     // Each vertex will contain 3 float values
     std::vector<GLfloat> vertices {};
@@ -143,7 +144,7 @@ void Model::loadMesh(aiMesh *mesh, const aiScene *scene)
     meshToTex.push_back(mesh->mMaterialIndex);
 }
 
-void Model::loadMaterials(const aiScene *scene)
+void Model::loadMaterials(const aiScene* scene)
 {
     textureList.resize(scene->mNumMaterials);
 
@@ -194,7 +195,7 @@ void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformS
     shininessLocation           = uniformShininess;
 }
 
-GLfloat Model::getCollisionDistance()
+GLfloat Model::getCollisionDistance() const
 {
     return greatestDistanceBetweenVertices;
 }

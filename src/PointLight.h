@@ -17,13 +17,13 @@ class PointLight : public Light {
         
         void useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,
                     GLuint colorLocation, GLuint positionLocation,
-                    GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation);
+                    GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation) const;
 
-        std::vector<glm::mat4> calculateLightTransform();
+        std::vector<glm::mat4> calculateLightTransform() const;
 
-        GLfloat getFarPlane();
+        GLfloat getFarPlane() const;
 
-        glm::vec3 getPosition();
+        glm::vec3 getPosition() const;
 
         ~PointLight();
 

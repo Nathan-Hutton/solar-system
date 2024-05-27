@@ -8,7 +8,7 @@ Mesh::Mesh()
     indexCount  = 0;
 }
 
-void Mesh::createMesh(GLfloat *vertices, GLuint *indices, 
+void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices, 
         GLuint numOfVertices, GLuint numOfIndices,
         bool hasNormals, bool threeVertices)
 {
@@ -80,7 +80,7 @@ void Mesh::createMesh(GLfloat *vertices, GLuint *indices,
     glBindVertexArray(0);
 }
 
-void Mesh::render()
+void Mesh::render() const
 {
     // Bind the VAO and IBO
     glBindVertexArray(VAO);

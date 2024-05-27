@@ -13,7 +13,7 @@ namespace OrbitalPhysics {
 constexpr float MAX_TIME_STEP {0.005f};
 constexpr float gForce {-100.0f};
 
-glm::vec3 OrbitalPhysics::getForce(SpaceObject *object1, SpaceObject *object2)
+glm::vec3 OrbitalPhysics::getForce(const SpaceObject* const object1, const SpaceObject* const object2)
 {
     const glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
     const float displacementVectorLength {glm::length(displacementVector)};

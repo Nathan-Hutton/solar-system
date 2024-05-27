@@ -5,7 +5,7 @@
 
 namespace window
 {
-    extern GLFWwindow *mainWindow;
+    extern GLFWwindow* mainWindow;
 
     extern GLint width;
     extern GLint height;

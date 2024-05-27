@@ -58,7 +58,7 @@ void ShadowMap::write()
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 }
 
-void ShadowMap::read(GLenum textureUnit)
+void ShadowMap::read(GLenum textureUnit) const
 {
     glActiveTexture(textureUnit);
     // 2D is for directional lighting

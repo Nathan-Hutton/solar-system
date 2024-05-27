@@ -9,10 +9,10 @@ class Texture
         Texture();
         explicit Texture(std::string fileLocation);
 
-        std::string getFileLocation();
+        std::string getFileLocation() const;
 
         bool loadTexture();
-        void useTexture();
+        void useTexture() const;
 
         ~Texture();
 

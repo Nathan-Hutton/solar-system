@@ -12,7 +12,7 @@ Material::Material(GLfloat specularIntensity, GLfloat shine)
     this->shininess         = shine;
 }
 
-void Material::useMaterial(GLuint specularIntensityLocation, GLuint shininessLocation)
+void Material::useMaterial(GLuint specularIntensityLocation, GLuint shininessLocation) const
 {
     glUniform1f(specularIntensityLocation, specularIntensity);
     glUniform1f(shininessLocation, shininess);

@@ -14,7 +14,7 @@ void Shader::createFromFiles(std::string_view file1, std::string_view file2, std
     compileShader(readFile(file1), readFile(file2), (file3 == "") ? "" : readFile(file3));
 }
 
-std::string Shader::readFile(std::string_view fileLocation)
+std::string Shader::readFile(std::string_view fileLocation) const
 {
     std::string content {};
     std::ifstream fileStream{std::filesystem::path{fileLocation}};
@@ -94,14 +94,14 @@ void Shader::compileProgram()
     // for them every frame
 
     // Camera/Window
-    uniformModel                = glGetUniformLocation(shaderID, "model");
-    uniformProjection           = glGetUniformLocation(shaderID, "projection");
-    uniformView                 = glGetUniformLocation(shaderID, "view");
+    uniformVariables.uniformModel                = glGetUniformLocation(shaderID, "model");
+    uniformVariables.uniformProjection           = glGetUniformLocation(shaderID, "projection");
+    uniformVariables.uniformView                 = glGetUniformLocation(shaderID, "view");
 
     // Specular
-    uniformEyePosition          = glGetUniformLocation(shaderID, "eyePosition");
-    uniformSpecularIntensity    = glGetUniformLocation(shaderID, "material.specularIntensity");
-    uniformShininess            = glGetUniformLocation(shaderID, "material.shininess");
+    uniformVariables.uniformEyePosition          = glGetUniformLocation(shaderID, "eyePosition");
+    uniformVariables.uniformSpecularIntensity    = glGetUniformLocation(shaderID, "material.specularIntensity");
+    uniformVariables.uniformShininess            = glGetUniformLocation(shaderID, "material.shininess");
 
     // Point lights
     std::stringstream ss {};
@@ -151,7 +151,7 @@ void Shader::compileProgram()
     }
     
     // Spot lights
-    uniformFlashLightOn                         = glGetUniformLocation(shaderID, "flashLightOn");
+    uniformVariables.uniformFlashLightOn  = glGetUniformLocation(shaderID, "flashLightOn");
     uniformSpotLight.uniformColor               = glGetUniformLocation(shaderID, "spotLight.base.base.color");
     uniformSpotLight.uniformAmbientIntensity    = glGetUniformLocation(shaderID, "spotLight.base.base.ambientIntensity");
     uniformSpotLight.uniformDiffuseIntensity    = glGetUniformLocation(shaderID, "spotLight.base.base.diffuseIntensity");
@@ -164,11 +164,11 @@ void Shader::compileProgram()
     uniformSpotLight.uniformDirection           = glGetUniformLocation(shaderID, "spotLight.direction");
     uniformSpotLight.uniformEdge                = glGetUniformLocation(shaderID, "spotLight.edge");
 
-    uniformTexture = glGetUniformLocation(shaderID, "theTexture");
+    uniformVariables.uniformTexture             = glGetUniformLocation(shaderID, "theTexture");
 
     // Point light shadow maps. Values in the omni_shadow_map shaders
-    uniformOmniLightPos = glGetUniformLocation(shaderID, "lightPos");
-    uniformFarPlane = glGetUniformLocation(shaderID, "farPlane");
+    uniformVariables.uniformOmniLightPos        = glGetUniformLocation(shaderID, "lightPos");
+    uniformVariables.uniformFarPlane            = glGetUniformLocation(shaderID, "farPlane");
 
     // Light matrices
     for (size_t i {0}; i < 6; ++i)
@@ -195,7 +195,7 @@ void Shader::compileProgram()
     }
 }
 
-std::string Shader::getShaderTypeString(GLenum shaderType)
+std::string Shader::getShaderTypeString(GLenum shaderType) const
 {
     switch (shaderType)
     {
@@ -209,7 +209,7 @@ std::string Shader::getShaderTypeString(GLenum shaderType)
     return "";
 }
 
-void Shader::addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType)
+void Shader::addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType) const
 {
     // Makes a shader object
     GLuint theShader {glCreateShader(shaderType)};
@@ -239,45 +239,45 @@ void Shader::addShader(GLuint theProgram, const std::string& shaderCode, GLenum 
     glAttachShader(theProgram, theShader);
 }
 
-GLuint Shader::getShaderID()
+GLuint Shader::getShaderID() const
 {
     return shaderID;
 }
 
-GLuint Shader::getProjectionLocation()
+GLuint Shader::getProjectionLocation() const
 {
-    return uniformProjection;
+    return uniformVariables.uniformProjection;
 }
-GLuint Shader::getModelLocation()
+GLuint Shader::getModelLocation() const
 {
-    return uniformModel;
+    return uniformVariables.uniformModel;
 }
-GLuint Shader::getViewLocation()
+GLuint Shader::getViewLocation() const
 {
-    return uniformView;
+    return uniformVariables.uniformView;
 }
-GLuint Shader::getEyePositionLocation()
+GLuint Shader::getEyePositionLocation() const
 {
-    return uniformEyePosition;
+    return uniformVariables.uniformEyePosition;
 }
-GLuint Shader::getSpecularIntensityLocation()
+GLuint Shader::getSpecularIntensityLocation() const
 {
-    return uniformSpecularIntensity;
+    return uniformVariables.uniformSpecularIntensity;
 }
-GLuint Shader::getShininessLocation()
+GLuint Shader::getShininessLocation() const
 {
-    return uniformShininess;
+    return uniformVariables.uniformShininess;
 }
-GLuint Shader::getOmniLightPosLocation()
+GLuint Shader::getOmniLightPosLocation() const
 {
-    return uniformOmniLightPos;
+    return uniformVariables.uniformOmniLightPos;
 }
-GLuint Shader::getFarPlaneLocation()
+GLuint Shader::getFarPlaneLocation() const
 {
-    return uniformFarPlane;
+    return uniformVariables.uniformFarPlane;
 }
 
-void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount)
+void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount) const
 {
     // Clamp the number of lights allowed
     if (lightCount > scene::MAX_POINT_LIGHTS) lightCount =  scene::MAX_POINT_LIGHTS;
@@ -290,7 +290,7 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
     }
 }
 
-void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset)
+void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const
 {
     // Clamp the number of lights allowed
     if (lightCount > scene::MAX_POINT_LIGHTS) lightCount =  scene::MAX_POINT_LIGHTS;
@@ -311,9 +311,9 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
 }
 
 // We'll only call this once since nothing but the position and shadow map will change
-void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
+void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const
 {
-    glUniform1i(uniformFlashLightOn, sLight->isOn());
+    glUniform1i(uniformVariables.uniformFlashLightOn, sLight->isOn());
     sLight->useLight(uniformSpotLight.uniformAmbientIntensity, uniformSpotLight.uniformDiffuseIntensity,
                         uniformSpotLight.uniformColor, uniformSpotLight.uniformPosition, uniformSpotLight.uniformDirection,
                         uniformSpotLight.uniformExponential, uniformSpotLight.uniformLinear, uniformSpotLight.uniformConstant,
@@ -330,9 +330,9 @@ void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int t
 }
 
 // Called every frame
-void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset)
+void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const
 {
-    glUniform1i(uniformFlashLightOn, sLight->isOn());
+    glUniform1i(uniformVariables.uniformFlashLightOn, sLight->isOn());
 
     // No need to set all of these values if the spotlight isn't even on
     if (!sLight->isOn())
@@ -347,18 +347,18 @@ void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsig
     glUniform1i(uniformOmniShadowMaps[offset].shadowMap, textureUnit);
 }
 
-void Shader::setTexture(GLuint textureUnit)
+void Shader::setTexture(GLuint textureUnit) const
 {
-    glUniform1i(uniformTexture, textureUnit);
+    glUniform1i(uniformVariables.uniformTexture, textureUnit);
 }
 
-void Shader::setLightMatrices(const std::vector<glm::mat4>& lightMatrices)
+void Shader::setLightMatrices(const std::vector<glm::mat4>& lightMatrices) const
 {
     for (size_t i {0}; i < 6; ++i)
         glUniformMatrix4fv(uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
 }
 
-void Shader::useShader()
+void Shader::useShader() const
 {
     // Set the active shader program for subsequent rendering operations
     glUseProgram(shaderID);
@@ -372,8 +372,8 @@ void Shader::clearShader()
         shaderID = 0;
     }
 
-    uniformModel        = 0;
-    uniformProjection   = 0;
+    uniformVariables.uniformModel        = 0;
+    uniformVariables.uniformProjection   = 0;
 }
 
 Shader::~Shader()

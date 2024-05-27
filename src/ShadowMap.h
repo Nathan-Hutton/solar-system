@@ -13,10 +13,10 @@ class ShadowMap
         virtual void write();
 
         // Put the shadowMap in the shaders in the main render pass
-        virtual void read(GLenum textureUnit);
+        virtual void read(GLenum textureUnit) const;
 
-        GLuint getShadowWidth() {return shadowWidth;}
-        GLuint getShadowHeight() {return shadowHeight;}
+        GLuint getShadowWidth() const { return shadowWidth; }
+        GLuint getShadowHeight() const { return shadowHeight; }
 
         ~ShadowMap();
     protected:

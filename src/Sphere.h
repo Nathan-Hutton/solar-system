@@ -13,10 +13,10 @@ class Sphere : public SpaceObject
         Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals=true);
 
         void setTexturePointer(Texture* texture);
-        virtual void render() override = 0;
+        virtual void render() const override = 0;
         void setWorldProperties(glm::mat4& model) override;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
-        GLfloat getCollisionDistance() override;
+        GLfloat getCollisionDistance() const override;
 
         ~Sphere();
 

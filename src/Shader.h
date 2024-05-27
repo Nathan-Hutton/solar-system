@@ -17,40 +17,49 @@ class Shader
 
         void validate();
 
-        GLuint getShaderID();
+        GLuint getShaderID() const;
 
-        GLuint getProjectionLocation();
-        GLuint getModelLocation();
-        GLuint getViewLocation();
+        GLuint getProjectionLocation() const;
+        GLuint getModelLocation() const;
+        GLuint getViewLocation() const;
 
-        GLuint getEyePositionLocation();
-        GLuint getSpecularIntensityLocation();
-        GLuint getShininessLocation();
+        GLuint getEyePositionLocation() const;
+        GLuint getSpecularIntensityLocation() const;
+        GLuint getShininessLocation() const;
 
-        GLuint getOmniLightPosLocation();
-        GLuint getFarPlaneLocation();
+        GLuint getOmniLightPosLocation() const;
+        GLuint getFarPlaneLocation() const;
 
-        void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount);
-        void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
-        void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
-        void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset);
+        void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount) const;
+        void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const;
+        void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
+        void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
 
-        void setTexture(GLuint textureUnit);
-        void setLightMatrices(const std::vector<glm::mat4>& lightMatrices);
+        void setTexture(GLuint textureUnit) const;
+        void setLightMatrices(const std::vector<glm::mat4>& lightMatrices) const;
 
-        void useShader();
+        void useShader() const;
 
         ~Shader();
 
     private:
         int pointLightCount;
-
-        GLuint shaderID {}, uniformProjection {}, uniformModel {}, uniformView {}, 
-        uniformEyePosition {}, uniformSpecularIntensity {}, uniformShininess {},
-        uniformTexture {}, uniformPointLightCount {}, uniformFlashLightOn {},
-        uniformOmniLightPos {}, uniformFarPlane {};
-
         GLuint uniformLightMatrices[6] {};
+        GLuint shaderID {}; 
+
+        struct {
+            GLuint uniformProjection {}; 
+            GLuint uniformModel {};
+            GLuint uniformView {}; 
+            GLuint uniformEyePosition {};
+            GLuint uniformSpecularIntensity {};
+            GLuint uniformShininess {};
+            GLuint uniformTexture {}; 
+            GLuint uniformPointLightCount {};
+            GLuint uniformFlashLightOn {};
+            GLuint uniformOmniLightPos {};
+            GLuint uniformFarPlane {};
+        } uniformVariables {};
 
         struct {
             GLuint uniformColor {};
@@ -82,10 +91,10 @@ class Shader
             GLuint farPlane {};
         } uniformOmniShadowMaps[1 + scene::MAX_POINT_LIGHTS] {};
 
-        std::string readFile(std::string_view fileLocation);
+        std::string readFile(std::string_view fileLocation) const;
         void compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code = "");
-        void addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType);
+        void addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType) const;
         void compileProgram();
-        std::string getShaderTypeString(GLenum shaderType);
+        std::string getShaderTypeString(GLenum shaderType) const;
         void clearShader();
 };
