@@ -13,6 +13,6 @@ class Material
         ~Material();
 
     private:
-        GLfloat specularIntensity {}; // How much specular light there should be on the object
-        GLfloat shininess {}; // How smooth the surface looks
+        GLfloat m_specularIntensity {}; // How much specular light there should be on the object
+        GLfloat m_shininess {}; // How smooth the surface looks
 };

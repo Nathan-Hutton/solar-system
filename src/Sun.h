@@ -20,5 +20,5 @@ class Sun: public Sphere
         ~Sun();
 
     private:
-        PointLight *light {};
+        PointLight *m_light {};
 };

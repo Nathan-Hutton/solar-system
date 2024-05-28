@@ -6,15 +6,15 @@ OmniShadowMap::OmniShadowMap() : ShadowMap() {}
 
 bool OmniShadowMap::init(GLuint width, GLuint height)
 {
-    shadowWidth     = width;
-    shadowHeight    = height;
+    m_shadowWidth     = width;
+    m_shadowHeight    = height;
 
     // Make the framebuffer and texture
-    glGenFramebuffers(1, &FBO);
-    glGenTextures(1, &shadowMap);
+    glGenFramebuffers(1, &m_FBO);
+    glGenTextures(1, &m_shadowMap);
 
     // Bind our texture to the GL_TEXTURE_CUBE_MAP target
-    glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMap);
 
     // Initialize the 6 textures of the cubemap
     // These enums represent integers
@@ -28,9 +28,9 @@ bool OmniShadowMap::init(GLuint width, GLuint height)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     // Bind the framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
     // Attach the texture to the FBO
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMap, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_shadowMap, 0);
 
     // No color, just the depth
     glDrawBuffer(GL_NONE);
@@ -49,7 +49,7 @@ bool OmniShadowMap::init(GLuint width, GLuint height)
 void OmniShadowMap::read(GLenum textureUnit) const
 {
     glActiveTexture(textureUnit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMap);
 }
 
 OmniShadowMap::~OmniShadowMap()

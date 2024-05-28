@@ -43,9 +43,9 @@ class Shader
         ~Shader();
 
     private:
-        int pointLightCount;
-        GLuint uniformLightMatrices[6] {};
-        GLuint shaderID {}; 
+        int m_pointLightCount;
+        GLuint m_uniformLightMatrices[6] {};
+        GLuint m_shaderID {}; 
 
         struct {
             GLuint uniformProjection {}; 
@@ -59,7 +59,7 @@ class Shader
             GLuint uniformFlashLightOn {};
             GLuint uniformOmniLightPos {};
             GLuint uniformFarPlane {};
-        } uniformVariables {};
+        } m_uniformVariables {};
 
         struct {
             GLuint uniformColor {};
@@ -70,7 +70,7 @@ class Shader
             GLuint uniformExponential {};
             GLuint uniformLinear {};
             GLuint uniformConstant {};
-        } uniformPointLights[scene::MAX_POINT_LIGHTS] {};
+        } m_uniformPointLights[scene::MAX_POINT_LIGHTS] {};
 
         struct {
             GLuint uniformColor {};
@@ -84,12 +84,12 @@ class Shader
 
             GLuint uniformDirection {};
             GLuint uniformEdge {};
-        } uniformSpotLight {};
+        } m_uniformSpotLight {};
 
         struct {
             GLuint shadowMap {};
             GLuint farPlane {};
-        } uniformOmniShadowMaps[1 + scene::MAX_POINT_LIGHTS] {};
+        } m_uniformOmniShadowMaps[1 + scene::MAX_POINT_LIGHTS] {};
 
         std::string readFile(std::string_view fileLocation) const;
         void compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code = "");

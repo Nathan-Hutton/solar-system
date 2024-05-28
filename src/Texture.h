@@ -17,10 +17,10 @@ class Texture
         ~Texture();
 
     private:
-        GLuint textureID {};
-        int width {}, height {};
+        GLuint m_textureID {};
+        int m_width {}, m_height {};
 
-        std::string fileLocation {};
+        std::string m_fileLocation {};
 
         void clearTexture();
 };

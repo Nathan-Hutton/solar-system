@@ -2,18 +2,18 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Sphere::Sphere() : SpaceObject(), radius(0.5f)
+Sphere::Sphere() : SpaceObject(), m_radius(0.5f)
 {
-    this->sphereMesh = new Mesh{};
+    m_sphereMesh = new Mesh{};
 }
 
-Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) : SpaceObject(mass), radius(radius)
+Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) : SpaceObject(mass), m_radius(radius)
 {
-    this->sphereMesh = new Mesh{};
+    m_sphereMesh = new Mesh{};
     std::vector<GLfloat> vertices {};
     std::vector<GLuint> indices {};
     generateSphereData(vertices, indices, stacks, slices, usingNormals);
-    this->sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), usingNormals);
+    m_sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), usingNormals);
 }
 
 void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices, bool usingNormals)
@@ -26,9 +26,9 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
             const float U {j / static_cast<float>(slices)};
             const float theta {U * glm::pi<float>() * 2};
 
-            const float x {cosf(theta) * sinf(phi) * radius};
-            const float y {cosf(phi) * radius};
-            const float z {sinf(theta) * sinf(phi) * radius};
+            const float x {cosf(theta) * sinf(phi) * m_radius};
+            const float y {cosf(phi) * m_radius};
+            const float z {sinf(theta) * sinf(phi) * m_radius};
 
             vertices.push_back(x);
             vertices.push_back(y);
@@ -62,21 +62,21 @@ void Sphere::generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLui
 
 void Sphere::setWorldProperties(glm::mat4& model)
 {
-    model = glm::translate(model, position);
-    model = glm::rotate(model, glm::radians(angle), rotation);
+    model = glm::translate(model, m_position);
+    model = glm::rotate(model, glm::radians(m_angle), m_rotation);
 }
 
 void Sphere::setTexturePointer(Texture *texture)
 {
-    this->texture = texture;
+    m_texture = texture;
 }
 
 GLfloat Sphere::getCollisionDistance() const
 {
-    return radius;
+    return m_radius;
 }
 
 Sphere::~Sphere()
 {
-    delete sphereMesh;
+    delete m_sphereMesh;
 }

@@ -11,6 +11,4 @@ class OmniShadowMap : public ShadowMap
         void read(GLenum textureUnit) const override;
 
         ~OmniShadowMap();
-
-    private:
 };

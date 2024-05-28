@@ -9,12 +9,12 @@ Texture::Texture() {}
 
 Texture::Texture(std::string fileLocation)
 {
-    this->fileLocation = fileLocation;
+    m_fileLocation = fileLocation;
 }
 
 std::string Texture::getFileLocation() const
 {
-    return fileLocation;
+    return m_fileLocation;
 }
 
 // Load the texture at fileLocation
@@ -22,19 +22,19 @@ bool Texture::loadTexture()
 {
     // 1 char is equal to one byte, so this is an array of bytes really
     int bitDepth {};
-    unsigned char *textData {stbi_load(fileLocation.c_str(), &width, &height, &bitDepth, 0)};
+    unsigned char *textData {stbi_load(m_fileLocation.c_str(), &m_width, &m_height, &bitDepth, 0)};
     if (!textData)
-        throw std::runtime_error("Failed to find " + fileLocation + '\n');
+        throw std::runtime_error("Failed to find " + m_fileLocation + '\n');
 
     // Create 1 texture object and store its name (ID) in an array which textureID points to
-    glGenTextures(1, &textureID);
+    glGenTextures(1, &m_textureID);
     
     // Bind texture to a texture target so that when we call methods on that target, it's applied to it.
     // The target in our case is GL_TEXTURE_2D.
     // Means that all subsequent calls to that texture target will be applied to our texture.
     // This is due to the fact that OpenGL works as a state machine, so commands affect the
     // currently bound object
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
 
     // Apply params to our texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -44,9 +44,9 @@ bool Texture::loadTexture()
 
     // Specify our texture.
     if (bitDepth == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
     else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
 
     // Mipmaps are smaller versions of textures used for rendering at different distances.
     // Imporves performance and reduces artifacts (look at some of the imported models, for example)
@@ -68,16 +68,16 @@ void Texture::useTexture() const
     // We'll only have 1 active at a time.
 
     // Bind our texture for draw operations
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
 }
 
 void Texture::clearTexture()
 {
-    glDeleteTextures(1, &textureID);
-    textureID       = 0;
-    width           = 0;
-    height          = 0;
-    fileLocation    = "";
+    glDeleteTextures(1, &m_textureID);
+    m_textureID       = 0;
+    m_width           = 0;
+    m_height          = 0;
+    m_fileLocation    = "";
 }
 
 Texture::~Texture()

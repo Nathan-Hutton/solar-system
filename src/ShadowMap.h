@@ -15,13 +15,14 @@ class ShadowMap
         // Put the shadowMap in the shaders in the main render pass
         virtual void read(GLenum textureUnit) const;
 
-        GLuint getShadowWidth() const { return shadowWidth; }
-        GLuint getShadowHeight() const { return shadowHeight; }
+        GLuint getShadowWidth() const { return m_shadowWidth; }
+        GLuint getShadowHeight() const { return m_shadowHeight; }
 
         ~ShadowMap();
     protected:
-        GLuint FBO {}, shadowMap {};
+        GLuint m_FBO {}; 
+        GLuint m_shadowMap {};
         // Want to make sure that the viewport is the same size as the shadowmap texture 
         // so that we have a 1 to 1 relationship with the FBO and the ShadowMap
-        GLuint shadowWidth {}, shadowHeight {};
+        GLuint m_shadowWidth {}, m_shadowHeight {};
 };

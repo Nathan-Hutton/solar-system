@@ -2,9 +2,9 @@
 
 SpotLight::SpotLight() : PointLight()
 {
-    direction   = glm::vec3{1.0f, 0.0f, 0.0f};
-    edge        = 1.0f;
-    procEdge    = cosf(glm::radians(edge));
+    m_direction   = glm::vec3{1.0f, 0.0f, 0.0f};
+    m_edge        = 1.0f;
+    m_procEdge    = cosf(glm::radians(m_edge));
 }
 
 SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -17,15 +17,15 @@ SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat edge) 
     : PointLight(shadowWidth, shadowHeight, near, far, red, green, blue, ambientIntensity, diffuseIntensity, xPos, yPos, zPos, exponential, linear, constant)
 {
-    direction   = glm::normalize(glm::vec3{xDir, yDir, zDir});
-    this->edge  = edge;
-    procEdge    = cosf(glm::radians(edge));
+    m_direction     = glm::normalize(glm::vec3{xDir, yDir, zDir});
+    m_edge          = edge;
+    m_procEdge      = cosf(glm::radians(m_edge));
 }
 
 void SpotLight::setFlash(glm::vec3 pos, glm::vec3 dir)
 {
-    position    = pos;
-    direction   = dir;
+    m_position    = pos;
+    m_direction   = dir;
 }
 
 void SpotLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,
@@ -33,43 +33,43 @@ void SpotLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensit
                          GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation,
                          GLuint edgeLocation) const
 {
-    glUniform1f(ambientIntensityLocation, ambientIntensity);
-    glUniform1f(diffuseIntensityLocation, diffuseIntensity);
-    glUniform3f(colorLocation, color.x, color.y, color.z);
+    glUniform1f(ambientIntensityLocation, m_ambientIntensity);
+    glUniform1f(diffuseIntensityLocation, m_diffuseIntensity);
+    glUniform3f(colorLocation, m_color.x, m_color.y, m_color.z);
 
-    glUniform3f(positionLocation, position.x, position.y, position.z);
-    glUniform1f(exponentialLocation, exponential);
-    glUniform1f(linearLocation, linear);
-    glUniform1f(constantLocation, constant);
+    glUniform3f(positionLocation, m_position.x, m_position.y, m_position.z);
+    glUniform1f(exponentialLocation, m_exponential);
+    glUniform1f(linearLocation, m_linear);
+    glUniform1f(constantLocation, m_constant);
 
-    glUniform3f(directionLocation, direction.x, direction.y, direction.z);
-    glUniform1f(edgeLocation, procEdge);
+    glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
+    glUniform1f(edgeLocation, m_procEdge);
 }
 
 void SpotLight::setPosAndDir(GLuint positionLocation, GLuint directionLocation) const
 {
-    glUniform3f(positionLocation, position.x, position.y, position.z);
-    glUniform3f(directionLocation, direction.x, direction.y, direction.z);
+    glUniform3f(positionLocation, m_position.x, m_position.y, m_position.z);
+    glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
 }
 
 glm::vec3 SpotLight::getPosition() const
 {
-    return position;
+    return m_position;
 }
 
 glm::vec3 SpotLight::getDirection() const
 {
-    return direction;
+    return m_direction;
 }
 
 bool SpotLight::isOn() const
 {
-    return on;
+    return m_on;
 }
 
 void SpotLight::toggle()
 {
-    on = !on;
+    m_on = !m_on;
 }
 
 SpotLight::~SpotLight()

@@ -6,22 +6,22 @@
 
 Model::Model() : SpaceObject()
 {
-    this->material          = nullptr;
-    this->scaleFactor       = 1.0f;
-    this->scaleFactorVector = glm::vec3{1.0f};
+    m_material          = nullptr;
+    m_scaleFactor       = 1.0f;
+    m_scaleFactorVector = glm::vec3{1.0f};
 }
 
 Model::Model(GLfloat mass) : SpaceObject(mass)
 {
-    this->material          = nullptr;
-    this->scaleFactor       = 1.0f;
-    this->scaleFactorVector = glm::vec3{1.0f};
+    m_material          = nullptr;
+    m_scaleFactor       = 1.0f;
+    m_scaleFactorVector = glm::vec3{1.0f};
 }
 
 void Model::setScaleFactor(GLfloat sFactor)
 {
-    this->scaleFactor       = sFactor;
-    this->scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
+    m_scaleFactor       = sFactor;
+    m_scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
 }
 
 void Model::loadModel(const std::string& fileName) 
@@ -39,43 +39,43 @@ void Model::loadModel(const std::string& fileName)
 
 void Model::render() const
 {
-    for (size_t i {0}; i < meshList.size(); ++i)
+    for (size_t i {0}; i < m_meshList.size(); ++i)
     {
-        const unsigned int materialIndex {meshToTex[i]};
+        const unsigned int materialIndex {m_meshToTex[i]};
 
         // Check if it's possible for the material to be inside the textureList
         // Then check if that index is null
-        if (materialIndex < textureList.size() && textureList[materialIndex])
-            textureList[materialIndex]->useTexture();
+        if (materialIndex < m_textureList.size() && m_textureList[materialIndex])
+            m_textureList[materialIndex]->useTexture();
 
-        meshList[i]->render();
+        m_meshList[i]->render();
     }
 }
 
 void Model::setWorldProperties(glm::mat4& model)
 {
-    model = glm::translate(model, position);
-    model = glm::rotate(model, glm::radians(angle), rotation);
-    model = glm::scale(model, scaleFactorVector);
+    model = glm::translate(model, m_position);
+    model = glm::rotate(model, glm::radians(m_angle), m_rotation);
+    model = glm::scale(model, m_scaleFactorVector);
 }
 
 void Model::clearModel()
 {
-    for (size_t i {0}; i < meshList.size(); ++i)
+    for (size_t i {0}; i < m_meshList.size(); ++i)
     {
-        if (meshList[i])
+        if (m_meshList[i])
         {
-            delete meshList[i];
-            meshList[i] = nullptr;
+            delete m_meshList[i];
+            m_meshList[i] = nullptr;
         }
     }
 
-    for (size_t i {0}; i < textureList.size(); ++i)
+    for (size_t i {0}; i < m_textureList.size(); ++i)
     {
-        if (textureList[i])
+        if (m_textureList[i])
         {
-            delete textureList[i];
-            textureList[i] = nullptr;
+            delete m_textureList[i];
+            m_textureList[i] = nullptr;
         }
     }
 }
@@ -134,25 +134,25 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
         {
             const glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
             const GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
-            greatestDistanceBetweenVertices = std::max(greatestDistanceBetweenVertices, displacementVectorLength);
+            m_greatestDistanceBetweenVertices = std::max(m_greatestDistanceBetweenVertices, displacementVectorLength);
         }
     }
 
     Mesh *newMesh {new Mesh()};
     newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
-    meshList.push_back(newMesh);
-    meshToTex.push_back(mesh->mMaterialIndex);
+    m_meshList.push_back(newMesh);
+    m_meshToTex.push_back(mesh->mMaterialIndex);
 }
 
 void Model::loadMaterials(const aiScene* scene)
 {
-    textureList.resize(scene->mNumMaterials);
+    m_textureList.resize(scene->mNumMaterials);
 
     for (size_t i {0}; i < scene->mNumMaterials; ++i)
     {
         aiMaterial* material {scene->mMaterials[i]};
 
-        textureList[i] = nullptr;
+        m_textureList[i] = nullptr;
 
         // Diffuse is the standard texture
         if(material->GetTextureCount(aiTextureType_DIFFUSE))
@@ -171,33 +171,33 @@ void Model::loadMaterials(const aiScene* scene)
             const std::string filename {std::string(path.data).substr(idx + 1)};
 
             const std::string textPath {"../assets/textures/" + filename};
-            textureList[i] = new Texture{textPath};
+            m_textureList[i] = new Texture{textPath};
 
-            if (!textureList[i]->loadTexture())
+            if (!m_textureList[i]->loadTexture())
             {
-                delete textureList[i];
-                textureList[i] = nullptr;
+                delete m_textureList[i];
+                m_textureList[i] = nullptr;
                 throw std::runtime_error("Failed to load texture at " + textPath);
             }
         }
 
-        if (!textureList[i])
+        if (!m_textureList[i])
         {
-            textureList[i] = new Texture{"../assets/textures/plain.png"};
-            textureList[i]->loadTexture();
+            m_textureList[i] = new Texture{"../assets/textures/plain.png"};
+            m_textureList[i]->loadTexture();
         }
     }
 }
 
 void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess)
 {
-    specularIntensityLocation   = uniformSpecularIntensity;
-    shininessLocation           = uniformShininess;
+    m_specularIntensityLocation   = uniformSpecularIntensity;
+    m_shininessLocation           = uniformShininess;
 }
 
 GLfloat Model::getCollisionDistance() const
 {
-    return greatestDistanceBetweenVertices;
+    return m_greatestDistanceBetweenVertices;
 }
 
 Model::~Model()

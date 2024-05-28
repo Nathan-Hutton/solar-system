@@ -7,8 +7,8 @@ Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) : Sphere(radius, 
 // This method is different from Sphere's version because we don't need normals
 void Sun::render() const
 {
-    texture->useTexture();
-    sphereMesh->render();
+    m_texture->useTexture();
+    m_sphereMesh->render();
 }
 
 void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -17,11 +17,11 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat ambientIntensity, GLfloat diffuseIntensity,
     GLfloat exponential, GLfloat linear, GLfloat constant)
 {
-    this->light = new PointLight{shadowWidth, shadowHeight,
+    m_light = new PointLight{shadowWidth, shadowHeight,
             near, far,
             red, green, blue, 
             ambientIntensity, diffuseIntensity,
-            position.x, position.y, position.z, 
+            m_position.x, m_position.y, m_position.z, 
             exponential, linear, constant};
 }
 
@@ -30,10 +30,10 @@ void Sun::setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShi
 
 PointLight* Sun::getPointLight() const
 {
-    return light;
+    return m_light;
 }
 
 Sun::~Sun()
 {
-    delete sphereMesh, light;
+    delete m_sphereMesh, m_light;
 }

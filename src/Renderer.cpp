@@ -18,9 +18,9 @@ namespace
         GLuint postProcessingFBO {};
         GLuint postProcessingTexture {};
         GLuint textureToBlur {};
-        Mesh* framebufferQuad {};
         unsigned int pingPongFBO[2] {};
         unsigned int pingPongBuffer[2] {};
+        Mesh* framebufferQuad {};
     };
     PostProcessingResources postProcessingResources {};
 

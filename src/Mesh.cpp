@@ -2,17 +2,17 @@
 
 Mesh::Mesh()
 {
-    VAO         = 0;
-    VBO         = 0;
-    IBO         = 0;
-    indexCount  = 0;
+    m_VAO         = 0;
+    m_VBO         = 0;
+    m_IBO         = 0;
+    m_indexCount  = 0;
 }
 
 void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices, 
         GLuint numOfVertices, GLuint numOfIndices,
         bool hasNormals, bool threeVertices)
 {
-    indexCount = numOfIndices;
+    m_indexCount = numOfIndices;
 
     // VBOs store the vertex data itself whereas VAOs are like the instructions for how to interpret that data.
     // A single VAO can reference multiple VBOs.
@@ -20,22 +20,22 @@ void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices
     // Create ID for VAO. VAOs cache all the state needed for vertex input, reducing number of state
     // changes and function calls to render objects, improving performance.
     // Once the VAO is binded, you can bind VBOs and IBOs and they'll all work together
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
 
     // Generate buffer object ID, which stores an array of unformatted memory allocated by OpenGL context.
     // Stores vertex data, pixel data, etc. that the GPU needs.
     // Gives an efficient way to transfer data between CPU and GPU
 
     // Store the index data in an index buffer object so we can do an indexed draw (reuse vertices)
-    glGenBuffers(1, &IBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+    glGenBuffers(1, &m_IBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numOfIndices, indices, GL_STATIC_DRAW);
 
     // Store the vertex data in a vertex buffer object.
     // VBO stores vertex data, texture coordinates, normals, and other per-vertex data
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenBuffers(1, &m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numOfVertices, vertices, GL_STATIC_DRAW);
 
     // For glVertexAttribPointer:
@@ -83,8 +83,8 @@ void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices
 void Mesh::render() const
 {
     // Bind the VAO and IBO
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+    glBindVertexArray(m_VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
 
     // ==========================================================
     // Summary of each major component of the rendering pipeline:
@@ -122,7 +122,7 @@ void Mesh::render() const
     processing effects.
     */
 
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
 
     // Unbind VOA and IBO
     glBindVertexArray(0);
@@ -131,22 +131,22 @@ void Mesh::render() const
 
 void Mesh::clearMesh()
 {
-    if (IBO =! 0) {
-        glDeleteBuffers(1, &IBO);
-        IBO = 0;
+    if (m_IBO =! 0) {
+        glDeleteBuffers(1, &m_IBO);
+        m_IBO = 0;
     }
 
-    if (VBO =! 0) {
-        glDeleteBuffers(1, &VBO);
-        VBO = 0;
+    if (m_VBO =! 0) {
+        glDeleteBuffers(1, &m_VBO);
+        m_VBO = 0;
     }
 
-    if (VAO =! 0) {
-        glDeleteVertexArrays(1, &VAO);
-        VAO = 0;
+    if (m_VAO =! 0) {
+        glDeleteVertexArrays(1, &m_VAO);
+        m_VAO = 0;
     }
 
-    indexCount = 0;
+    m_indexCount = 0;
 }
 
 Mesh::~Mesh()

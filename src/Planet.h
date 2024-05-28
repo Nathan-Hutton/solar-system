@@ -12,5 +12,5 @@ class Planet : public Sphere
         ~Planet();
 
     private:
-        GLuint specularIntensityLocation {}, shininessLocation {};
+        GLuint m_specularIntensityLocation {}, m_shininessLocation {};
 };

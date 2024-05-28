@@ -22,7 +22,7 @@ class Sphere : public SpaceObject
 
     protected:
         virtual void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices, bool usingNormals=true);
-        const GLfloat radius {};
-        Mesh *sphereMesh {};
-        Texture *texture {};
+        const GLfloat m_radius {};
+        Mesh *m_sphereMesh {};
+        Texture *m_texture {};
 };

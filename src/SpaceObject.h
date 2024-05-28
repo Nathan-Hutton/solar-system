@@ -34,12 +34,12 @@ class SpaceObject
         ~SpaceObject();
 
     protected:
-        const GLfloat mass {};
-        glm::vec3 oldPosition {};
-        glm::vec3 position {};
-        glm::vec3 velocity {};
-        glm::vec3 rotation {};
-        GLfloat angle {};
-        GLfloat rotationSpeed {};
-        Material *material {};
+        const GLfloat m_mass {};
+        glm::vec3 m_oldPosition {};
+        glm::vec3 m_position {};
+        glm::vec3 m_velocity {};
+        glm::vec3 m_rotation {};
+        GLfloat m_angle {};
+        GLfloat m_rotationSpeed {};
+        Material *m_material {};
 };

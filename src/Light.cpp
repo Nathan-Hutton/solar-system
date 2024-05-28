@@ -2,21 +2,21 @@
 
 Light::Light()
 {
-    this->color             = glm::vec3{1.0f};
-    this->ambientIntensity  = 1.0f;
-    this->diffuseIntensity  = 0.0f;
+    m_color             = glm::vec3{1.0f};
+    m_ambientIntensity  = 1.0f;
+    m_diffuseIntensity  = 0.0f;
 }
 
 Light::Light(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat red, GLfloat green, GLfloat blue,
     GLfloat ambientIntensity, GLfloat diffuseIntensity)
 {
-    this->shadowMap = new ShadowMap{};
-    shadowMap->init(shadowWidth, shadowHeight);
+    m_shadowMap = new ShadowMap{};
+    m_shadowMap->init(shadowWidth, shadowHeight);
 
-    this->color             = glm::vec3{red, green, blue};
-    this->ambientIntensity  = ambientIntensity;
-    this->diffuseIntensity  = diffuseIntensity;
+    m_color             = glm::vec3{red, green, blue};
+    m_ambientIntensity  = ambientIntensity;
+    m_diffuseIntensity  = diffuseIntensity;
 }
 
 Light::~Light()

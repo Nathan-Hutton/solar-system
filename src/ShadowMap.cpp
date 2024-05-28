@@ -6,18 +6,18 @@ ShadowMap::ShadowMap() {}
 
 bool ShadowMap::init(GLuint width, GLuint height)
 {
-    shadowWidth     = width;
-    shadowHeight    = height;
+    m_shadowWidth     = width;
+    m_shadowHeight    = height;
 
     // A framebuffer is like a screen.
     // We're making another one that won't be rendered to the screen and we'll draw to it.
     // This framebuffer will render to a texture.
-    glGenFramebuffers(1, &FBO);
+    glGenFramebuffers(1, &m_FBO);
 
     // Initialize a bunch of depth values at zero
     // Everytime the FBO is updated it will output the depth value to a texture
-    glGenTextures(1, &shadowMap);
-    glBindTexture(GL_TEXTURE_2D, shadowMap);
+    glGenTextures(1, &m_shadowMap);
+    glBindTexture(GL_TEXTURE_2D, m_shadowMap);
     // GL_DEPTH_COMPONENT specifies a single float instead of RGB which specifies 3. 
     // Depth will be between 0 and 1
     // This initializes an empty texture that we'll later fill in (why we use NULL)
@@ -31,11 +31,11 @@ bool ShadowMap::init(GLuint width, GLuint height)
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bColor);
 
     // Bind the framebuffer so that the next operations apply to the framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 
     // Whenever our framebuffer renders, it will render to our texture.
     // We will only write the depth values to the texture
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMap, 0);
 
     // Specify that we don't want the buffer to write anything to the color
     glDrawBuffer(GL_NONE);
@@ -55,21 +55,21 @@ bool ShadowMap::init(GLuint width, GLuint height)
 void ShadowMap::write()
 {
     // Draw to a framebuffer that is off-screen
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 }
 
 void ShadowMap::read(GLenum textureUnit) const
 {
     glActiveTexture(textureUnit);
     // 2D is for directional lighting
-    glBindTexture(GL_TEXTURE_2D, shadowMap);
+    glBindTexture(GL_TEXTURE_2D, m_shadowMap);
 }
 
 ShadowMap::~ShadowMap()
 {
-    if(FBO)
-        glDeleteFramebuffers(1, &FBO);
+    if(m_FBO)
+        glDeleteFramebuffers(1, &m_FBO);
     
-    if(shadowMap)
-        glDeleteTextures(1, &shadowMap);
+    if(m_shadowMap)
+        glDeleteTextures(1, &m_shadowMap);
 }
