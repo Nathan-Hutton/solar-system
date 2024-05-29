@@ -49,14 +49,17 @@ namespace
     }
 }
 
-Sphere::Sphere() : SpaceObject(), m_radius { 0.5f }
-{
-    m_sphereMesh = new Mesh{};
-}
+Sphere::Sphere() 
+    : SpaceObject {}
+    , m_radius { 0.5f }
+    , m_sphereMesh { new Mesh{} }
+{}
 
-Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) : SpaceObject(mass), m_radius(radius)
+Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) 
+    : SpaceObject(mass)
+    , m_radius(radius)
+    , m_sphereMesh { new Mesh{} }
 {
-    m_sphereMesh = new Mesh{};
     std::vector<GLfloat> vertices {};
     std::vector<GLuint> indices {};
     generateSphereData(vertices, indices, stacks, slices, radius, usingNormals);

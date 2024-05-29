@@ -2,13 +2,13 @@
 
 #include <stdexcept>
 
-OmniShadowMap::OmniShadowMap() {}
+OmniShadowMap::OmniShadowMap(GLuint width, GLuint height)
+    : m_shadowWidth { width }
+    , m_shadowHeight { height }
+{}
 
-bool OmniShadowMap::init(GLuint width, GLuint height)
+bool OmniShadowMap::init()
 {
-    m_shadowWidth     = width;
-    m_shadowHeight    = height;
-
     // Make the framebuffer and texture
     glGenFramebuffers(1, &m_FBO);
     glGenTextures(1, &m_shadowMap);
@@ -19,7 +19,7 @@ bool OmniShadowMap::init(GLuint width, GLuint height)
     // Initialize the 6 textures of the cubemap
     // These enums represent integers
     for (size_t i {0}; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, m_shadowWidth, m_shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

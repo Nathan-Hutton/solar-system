@@ -5,12 +5,12 @@
 class OmniShadowMap
 {
     public:
-        OmniShadowMap();
+        OmniShadowMap(GLuint width, GLuint height);
 
         GLuint getShadowWidth() const { return m_shadowWidth; }
         GLuint getShadowHeight() const { return m_shadowHeight; }
 
-        bool init(GLuint width, GLuint height);
+        bool init();
         void write() const;
         void read(GLenum textureUnit) const;
 

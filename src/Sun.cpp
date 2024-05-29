@@ -1,8 +1,12 @@
 #include "Sun.h"
 
-Sun::Sun() : Sphere() {}
+Sun::Sun() 
+    : Sphere() 
+{}
 
-Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) : Sphere(radius, mass, stacks, slices, false) {}
+Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) 
+    : Sphere(radius, mass, stacks, slices, false) 
+{}
 
 // This method is different from Sphere's version because we don't need normals
 void Sun::render() const

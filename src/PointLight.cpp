@@ -16,7 +16,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
-    : m_shadowMap { new OmniShadowMap{} }
+    : m_shadowMap { new OmniShadowMap{ shadowWidth, shadowHeight } }
     , m_color { red, green, blue }
     , m_ambientIntensity { ambientIntensity }
     , m_diffuseIntensity { diffuseIntensity }
@@ -26,7 +26,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
     , m_constant { constant }
     , m_farPlane { far}
 {
-    m_shadowMap->init(shadowWidth, shadowHeight);
+    m_shadowMap->init();
 
     const float aspectRatio {(float)shadowWidth / (float)shadowHeight};
 

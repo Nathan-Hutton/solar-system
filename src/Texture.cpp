@@ -8,9 +8,8 @@
 Texture::Texture() {}
 
 Texture::Texture(std::string fileLocation)
-{
-    m_fileLocation = fileLocation;
-}
+    : m_fileLocation { fileLocation }
+{}
 
 // Load the texture at fileLocation
 bool Texture::loadTexture()

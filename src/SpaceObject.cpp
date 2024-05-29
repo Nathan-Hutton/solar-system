@@ -2,21 +2,21 @@
 
 #include <vector>
 
-SpaceObject::SpaceObject() : m_mass { 1.0f }
-{
-    m_material = nullptr;
-    m_position = glm::vec3{0.0f};
-    m_velocity = glm::vec3{0.0f};
-    m_rotation = glm::vec3{0.0f};
-}
+SpaceObject::SpaceObject() 
+    : m_mass { 1.0f }
+    , m_material { nullptr }
+    , m_position { 0.0f }
+    , m_velocity { 0.0f }
+    , m_rotation { 0.0f }
+{}
 
-SpaceObject::SpaceObject(GLfloat mass) : m_mass { mass }
-{
-    m_material = nullptr;
-    m_position = glm::vec3{0.0f};
-    m_velocity = glm::vec3{0.0f};
-    m_rotation = glm::vec3{0.0f};
-}
+SpaceObject::SpaceObject(GLfloat mass) 
+    : m_mass { mass }
+    , m_material { nullptr }
+    , m_position { 0.0f }
+    , m_velocity { 0.0f }
+    , m_rotation { 0.0f }
+{}
 
 GLfloat SpaceObject::getMass() const
 {
