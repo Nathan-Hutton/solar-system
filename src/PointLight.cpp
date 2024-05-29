@@ -2,11 +2,11 @@
 
 #include "OmniShadowMap.h"
 
-PointLight::PointLight() : Light()
-{
-    m_position    = glm::vec3{0.0f, -1.0f, 0.0f};
-    m_constant    = 1.0f; // Don't want to divide by 0 since we have reciprocal function
-}
+PointLight::PointLight() 
+    : Light {}
+    , m_position { 0.0f, -1.0f, 0.0f }
+    , m_constant { 1.0f }
+{}
 
 PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
@@ -14,14 +14,13 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
-    : Light(1024, 1024, red, green, blue, ambientIntensity, diffuseIntensity)
+    : Light { 1024, 1024, red, green, blue, ambientIntensity, diffuseIntensity }
+    , m_position { xPos, yPos, zPos }
+    , m_exponential { exponential }
+    , m_linear { linear }
+    , m_constant { constant }
+    , m_farPlane { far}
 {
-    m_position      = glm::vec3{xPos, yPos, zPos};
-    m_exponential   = exponential;
-    m_linear        = linear;
-    m_constant      = constant;
-    m_farPlane      = far;
-
     const float aspectRatio {(float)shadowWidth / (float)shadowHeight};
     // A bunch of 90 degree angles together makes a cube
     m_lightProj = glm::perspective(glm::radians(90.0f), aspectRatio, near, far);

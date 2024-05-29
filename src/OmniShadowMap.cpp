@@ -2,7 +2,9 @@
 
 #include <stdexcept>
 
-OmniShadowMap::OmniShadowMap() : ShadowMap() {}
+OmniShadowMap::OmniShadowMap() 
+    : ShadowMap {}
+{}
 
 bool OmniShadowMap::init(GLuint width, GLuint height)
 {

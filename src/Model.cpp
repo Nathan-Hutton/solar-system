@@ -4,19 +4,17 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Model::Model() : SpaceObject()
-{
-    m_material          = nullptr;
-    m_scaleFactor       = 1.0f;
-    m_scaleFactorVector = glm::vec3{1.0f};
-}
+Model::Model() 
+    : SpaceObject {}
+    , m_scaleFactor { 1.0f }
+    , m_scaleFactorVector { 1.0f }
+{}
 
-Model::Model(GLfloat mass) : SpaceObject(mass)
-{
-    m_material          = nullptr;
-    m_scaleFactor       = 1.0f;
-    m_scaleFactorVector = glm::vec3{1.0f};
-}
+Model::Model(GLfloat mass) 
+    : SpaceObject { mass }
+    , m_scaleFactor { 1.0f }
+    , m_scaleFactorVector { 1.0f }
+{}
 
 void Model::setScaleFactor(GLfloat sFactor)
 {
