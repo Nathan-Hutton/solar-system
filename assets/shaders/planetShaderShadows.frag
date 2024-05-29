@@ -133,7 +133,6 @@ vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 		}
 	}
 
-
 	return ambientColor + (1.0f - shadowFactor) * (diffuseColor + specularColor);
 }
 

@@ -3,7 +3,9 @@
 #include "OmniShadowMap.h"
 
 PointLight::PointLight() 
-    : Light {}
+    : m_color { 1.0f }
+    , m_ambientIntensity { 1.0f }
+    , m_diffuseIntensity { 0.0f }
     , m_position { 0.0f, -1.0f, 0.0f }
     , m_constant { 1.0f }
 {}
@@ -14,19 +16,22 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
-    : Light { 1024, 1024, red, green, blue, ambientIntensity, diffuseIntensity }
+    : m_shadowMap { new OmniShadowMap{} }
+    , m_color { red, green, blue }
+    , m_ambientIntensity { ambientIntensity }
+    , m_diffuseIntensity { diffuseIntensity }
     , m_position { xPos, yPos, zPos }
     , m_exponential { exponential }
     , m_linear { linear }
     , m_constant { constant }
     , m_farPlane { far}
 {
+    m_shadowMap->init(shadowWidth, shadowHeight);
+
     const float aspectRatio {(float)shadowWidth / (float)shadowHeight};
+
     // A bunch of 90 degree angles together makes a cube
     m_lightProj = glm::perspective(glm::radians(90.0f), aspectRatio, near, far);
-
-    m_shadowMap = new OmniShadowMap{};
-    m_shadowMap->init(shadowWidth, shadowHeight);
 }
 
 void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,

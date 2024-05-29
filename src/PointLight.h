@@ -2,19 +2,22 @@
 
 #include <vector>
 
-#include "Light.h"
+#include <glm/gtc/matrix_transform.hpp>
 
-class PointLight : public Light {
+#include "OmniShadowMap.h"
+
+class PointLight 
+{
     public:
-        PointLight();
 
+        PointLight();
         PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
                     GLfloat red, GLfloat green, GLfloat blue, 
-                    GLfloat ambientIntensity, GLfloat diffuseIntensity, 
+                    GLfloat ambientIntensity, GLfloat diffuseIntensity,
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat exponential, GLfloat linear, GLfloat constant);
-        
+
         void useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,
                     GLuint colorLocation, GLuint positionLocation,
                     GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation) const;
@@ -25,6 +28,11 @@ class PointLight : public Light {
 
         const glm::vec3& getPosition() const;
 
+        GLfloat getShadowMapWidth() const { return m_shadowMap->getShadowWidth(); }
+        GLfloat getShadowMapHeight() const { return m_shadowMap->getShadowHeight(); }
+        void shadowMapWrite() const { m_shadowMap->write(); }
+        void shadowMapRead(GLenum textureUnit) const { m_shadowMap->read(textureUnit); }
+
         ~PointLight();
 
     protected:
@@ -33,4 +41,13 @@ class PointLight : public Light {
         
         // How far we want shadows to go. The farther they go, the lower resolution they are.
         GLfloat m_farPlane {};
+
+        glm::vec3 m_color {};
+        GLfloat m_ambientIntensity {};
+        GLfloat m_diffuseIntensity {};
+
+        // How the light can see. This will be different for directional and point lights
+        glm::mat4 m_lightProj {};
+
+        OmniShadowMap* m_shadowMap {};
 };
