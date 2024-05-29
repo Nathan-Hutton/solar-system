@@ -20,8 +20,8 @@ class SpotLight : public PointLight {
                     GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation,
                     GLuint edgeLocation) const;
         void setPosAndDir(GLuint positionLocation, GLuint directionLocation) const;
-        glm::vec3 getPosition() const;
-        glm::vec3 getDirection() const;
+        const glm::vec3& getPosition() const;
+        const glm::vec3& getDirection() const;
 
         void setFlash(glm::vec3 pos, glm::vec3 dir);
         bool isOn() const;

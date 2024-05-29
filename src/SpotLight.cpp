@@ -52,12 +52,12 @@ void SpotLight::setPosAndDir(GLuint positionLocation, GLuint directionLocation) 
     glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
 }
 
-glm::vec3 SpotLight::getPosition() const
+const glm::vec3& SpotLight::getPosition() const
 {
     return m_position;
 }
 
-glm::vec3 SpotLight::getDirection() const
+const glm::vec3& SpotLight::getDirection() const
 {
     return m_direction;
 }

@@ -2,14 +2,14 @@
 
 #include <vector>
 
-SpaceObject::SpaceObject() : m_mass(1.0f)
+SpaceObject::SpaceObject() : m_mass { 1.0f }
 {
     m_position = glm::vec3{0.0f};
     m_velocity = glm::vec3{0.0f};
     m_rotation = glm::vec3{0.0f};
 }
 
-SpaceObject::SpaceObject(GLfloat mass) : m_mass(mass)
+SpaceObject::SpaceObject(GLfloat mass) : m_mass { mass }
 {
     m_position = glm::vec3{0.0f};
     m_velocity = glm::vec3{0.0f};
@@ -21,7 +21,7 @@ GLfloat SpaceObject::getMass() const
     return m_mass;
 }
 
-glm::vec3 SpaceObject::getOldPosition() const
+const glm::vec3& SpaceObject::getOldPosition() const
 {
     return m_oldPosition;
 }
@@ -31,7 +31,7 @@ void SpaceObject::setOldPosition(glm::vec3 oldPos)
     m_oldPosition = oldPos;
 }
 
-glm::vec3 SpaceObject::getPosition() const
+const glm::vec3& SpaceObject::getPosition() const
 {
     return m_position;
 }
@@ -41,7 +41,7 @@ void SpaceObject::setPosition(glm::vec3 position)
     m_position = position;
 }
 
-glm::vec3 SpaceObject::getVelocity() const
+const glm::vec3& SpaceObject::getVelocity() const
 {
     return m_velocity;
 }
@@ -51,7 +51,7 @@ void SpaceObject::setVelocity(glm::vec3 velocity)
     m_velocity = velocity;
 }
 
-glm::vec3 SpaceObject::getRotation() const
+const glm::vec3& SpaceObject::getRotation() const
 {
     return m_rotation;
 }
@@ -84,11 +84,6 @@ void SpaceObject::setRotationSpeed(GLfloat speed)
 void SpaceObject::setMaterialPointer(Material *material)
 {
     m_material = material;
-}
-
-Material* SpaceObject::getMaterialPointer() const
-{
-    return m_material;
 }
 
 SpaceObject::~SpaceObject()

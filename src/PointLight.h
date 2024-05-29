@@ -23,7 +23,7 @@ class PointLight : public Light {
 
         GLfloat getFarPlane() const;
 
-        glm::vec3 getPosition() const;
+        const glm::vec3& getPosition() const;
 
         ~PointLight();
 

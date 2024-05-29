@@ -9,8 +9,6 @@ class Texture
         Texture();
         explicit Texture(std::string fileLocation);
 
-        std::string getFileLocation() const;
-
         bool loadTexture();
         void useTexture() const;
 
@@ -21,6 +19,4 @@ class Texture
         int m_width {}, m_height {};
 
         std::string m_fileLocation {};
-
-        void clearTexture();
 };

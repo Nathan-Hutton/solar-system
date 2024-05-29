@@ -267,11 +267,11 @@ namespace
         shaders.omniShadowShader->useShader();
 
         // Make the viewport the same dimenstions as the FBO
-        glViewport(0, 0, light->getShadowMap()->getShadowWidth(), light->getShadowMap()->getShadowHeight());
+        glViewport(0, 0, light->getShadowMapWidth(), light->getShadowMapHeight());
 
         // Bind our framebuffer so that the shader output goes to it
         // Every draw call after this will go to that framebuffer
-        light->getShadowMap()->write();
+        light->shadowMapWrite();
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // Get the uniformModel and lightTransform for the shader

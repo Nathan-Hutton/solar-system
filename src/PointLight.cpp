@@ -67,7 +67,7 @@ GLfloat PointLight::getFarPlane() const
     return m_farPlane;
 }
 
-glm::vec3 PointLight::getPosition() const
+const glm::vec3& PointLight::getPosition() const
 {
     return m_position;
 }

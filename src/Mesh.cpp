@@ -129,7 +129,7 @@ void Mesh::render() const
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::clearMesh()
+Mesh::~Mesh()
 {
     if (m_IBO =! 0) {
         glDeleteBuffers(1, &m_IBO);
@@ -147,9 +147,4 @@ void Mesh::clearMesh()
     }
 
     m_indexCount = 0;
-}
-
-Mesh::~Mesh()
-{
-    clearMesh();
 }

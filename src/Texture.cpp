@@ -12,11 +12,6 @@ Texture::Texture(std::string fileLocation)
     m_fileLocation = fileLocation;
 }
 
-std::string Texture::getFileLocation() const
-{
-    return m_fileLocation;
-}
-
 // Load the texture at fileLocation
 bool Texture::loadTexture()
 {
@@ -71,16 +66,11 @@ void Texture::useTexture() const
     glBindTexture(GL_TEXTURE_2D, m_textureID);
 }
 
-void Texture::clearTexture()
+Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureID);
     m_textureID       = 0;
     m_width           = 0;
     m_height          = 0;
     m_fileLocation    = "";
-}
-
-Texture::~Texture()
-{
-    clearTexture();
 }

@@ -12,7 +12,10 @@ class Light
             GLfloat red, GLfloat green, GLfloat blue, 
             GLfloat ambientIntensity, GLfloat diffuseIntensity);
 
-        ShadowMap* getShadowMap() const { return m_shadowMap; }
+        GLfloat getShadowMapWidth() const { return m_shadowMap->getShadowWidth(); }
+        GLfloat getShadowMapHeight() const { return m_shadowMap->getShadowHeight(); }
+        void shadowMapWrite() const { m_shadowMap->write(); }
+        void shadowMapRead(GLenum textureUnit) const { m_shadowMap->read(textureUnit); }
 
         ~Light();
 

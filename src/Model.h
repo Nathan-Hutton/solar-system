@@ -24,7 +24,7 @@ class Model : public SpaceObject
         void setWorldProperties(glm::mat4& model) override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         GLfloat getCollisionDistance() const override;
-        void clearModel();
+        //void clearModel();
 
         ~Model();
 

@@ -7,28 +7,72 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+namespace
+{
+    std::string getShaderTypeString(GLenum shaderType)
+    {
+        switch (shaderType)
+        {
+            case (GL_VERTEX_SHADER):   return "GL_VERTEX_SHADER";
+            case (GL_FRAGMENT_SHADER): return "GL_FRAGMENT_SHADER";
+            case (GL_GEOMETRY_SHADER): return "GL_GEOMETRY_SHADER";
+        }
+        return "";
+    }
+
+    std::string readFile(std::string_view fileLocation)
+    {
+        std::string content {};
+        std::ifstream fileStream{std::filesystem::path{fileLocation}};
+
+        if (!fileStream.is_open())
+            throw std::runtime_error("Failed to read " + std::string(fileLocation) + " File doesn't exist");
+
+        std::string line {""};
+        std::string fileContents {""};
+        while (getline(fileStream, line))
+            fileContents += line + '\n';
+
+        fileStream.close();
+        return fileContents;
+    }
+
+    void addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType)
+    {
+        // Makes a shader object
+        GLuint theShader {glCreateShader(shaderType)};
+
+        // Sort the code in a way OpenGL can understand
+        const GLchar* theCode[1];
+        theCode[0] = shaderCode.c_str();
+        GLint codeLength[1];
+        codeLength[0] = std::ssize(shaderCode);
+
+        // Give the source code to the shader 
+        glShaderSource(theShader, 1, theCode, codeLength);
+        // Compile the shader source code
+        glCompileShader(theShader);
+
+        GLint result {0};
+        GLchar eLog[1024] { 0 };
+
+        // Check for compilation errors
+        glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
+        if (!result) {
+            glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
+            throw std::runtime_error("Error compiling the " + getShaderTypeString(shaderType) + " shader: " + std::string(eLog));
+        }
+
+        // Attach the now compiled shader to the OpenGL program
+        glAttachShader(theProgram, theShader);
+    }
+}
+
 Shader::Shader() {}
 
 void Shader::createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3)
 {
     compileShader(readFile(file1), readFile(file2), (file3 == "") ? "" : readFile(file3));
-}
-
-std::string Shader::readFile(std::string_view fileLocation) const
-{
-    std::string content {};
-    std::ifstream fileStream{std::filesystem::path{fileLocation}};
-
-    if (!fileStream.is_open())
-        throw std::runtime_error("Failed to read " + std::string(fileLocation) + " File doesn't exist");
-
-    std::string line {""};
-    std::string fileContents {""};
-    while (getline(fileStream, line))
-        fileContents += line + '\n';
-
-    fileStream.close();
-    return fileContents;
 }
 
 void Shader::compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code)
@@ -195,47 +239,6 @@ void Shader::compileProgram()
     }
 }
 
-std::string Shader::getShaderTypeString(GLenum shaderType) const
-{
-    switch (shaderType)
-    {
-        case (GL_VERTEX_SHADER):   return "GL_VERTEX_SHADER";
-        case (GL_FRAGMENT_SHADER): return "GL_FRAGMENT_SHADER";
-        case (GL_GEOMETRY_SHADER): return "GL_GEOMETRY_SHADER";
-    }
-    return "";
-}
-
-void Shader::addShader(GLuint theProgram, const std::string& shaderCode, GLenum shaderType) const
-{
-    // Makes a shader object
-    GLuint theShader {glCreateShader(shaderType)};
-
-    // Sort the code in a way OpenGL can understand
-    const GLchar* theCode[1];
-    theCode[0] = shaderCode.c_str();
-    GLint codeLength[1];
-    codeLength[0] = std::ssize(shaderCode);
-
-    // Give the source code to the shader 
-    glShaderSource(theShader, 1, theCode, codeLength);
-    // Compile the shader source code
-    glCompileShader(theShader);
-
-    GLint result {0};
-    GLchar eLog[1024] { 0 };
-
-    // Check for compilation errors
-    glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
-    if (!result) {
-        glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error compiling the " + getShaderTypeString(shaderType) + " shader: " + std::string(eLog));
-    }
-
-    // Attach the now compiled shader to the OpenGL program
-    glAttachShader(theProgram, theShader);
-}
-
 GLuint Shader::getShaderID() const
 {
     return m_shaderID;
@@ -299,7 +302,7 @@ void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsi
                             m_uniformPointLights[i].uniformExponential, m_uniformPointLights[i].uniformLinear, m_uniformPointLights[i].uniformConstant);
 
         // We need the GL_TEXTURE0 since it needs to be an enum type
-        pLights[i]->getShadowMap()->read(GL_TEXTURE0 + textureUnit + i);
+        pLights[i]->shadowMapRead(GL_TEXTURE0 + textureUnit + i);
         // Offset for point lights will usually just be 0.
         // The offset is to take into account that the shadowmaps are all 1 array in the shader
         glUniform1i(m_uniformOmniShadowMaps[i + offset].shadowMap, textureUnit + i);
@@ -320,7 +323,7 @@ void Shader::setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int t
         return;
 
     // We need the GL_TEXTURE0 since it needs to be an enum type
-    sLight->getShadowMap()->read(GL_TEXTURE0 + textureUnit);
+    sLight->shadowMapRead(GL_TEXTURE0 + textureUnit);
     // The offset is to take into account that the shadowmaps are all 1 array in the shader
     glUniform1i(m_uniformOmniShadowMaps[offset].shadowMap, textureUnit);
     glUniform1f(m_uniformOmniShadowMaps[offset].farPlane, sLight->getFarPlane());
@@ -361,7 +364,7 @@ void Shader::useShader() const
     glUseProgram(m_shaderID);
 }
 
-void Shader::clearShader()
+Shader::~Shader()
 {
     if (m_shaderID != 0)
     {
@@ -371,9 +374,4 @@ void Shader::clearShader()
 
     m_uniformVariables.uniformModel        = 0;
     m_uniformVariables.uniformProjection   = 0;
-}
-
-Shader::~Shader()
-{
-    clearShader();
 }
