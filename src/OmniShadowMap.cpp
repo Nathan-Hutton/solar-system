@@ -2,9 +2,7 @@
 
 #include <stdexcept>
 
-OmniShadowMap::OmniShadowMap() 
-    : ShadowMap {}
-{}
+OmniShadowMap::OmniShadowMap() {}
 
 bool OmniShadowMap::init(GLuint width, GLuint height)
 {
@@ -48,6 +46,12 @@ bool OmniShadowMap::init(GLuint width, GLuint height)
     return true;
 }
 
+void OmniShadowMap::write() const
+{
+    // Draw to a framebuffer that is off-screen
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+}
+
 void OmniShadowMap::read(GLenum textureUnit) const
 {
     glActiveTexture(textureUnit);
@@ -56,4 +60,9 @@ void OmniShadowMap::read(GLenum textureUnit) const
 
 OmniShadowMap::~OmniShadowMap()
 {
+    if(m_FBO)
+        glDeleteFramebuffers(1, &m_FBO);
+    
+    if(m_shadowMap)
+        glDeleteTextures(1, &m_shadowMap);
 }

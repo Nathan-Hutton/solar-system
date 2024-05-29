@@ -1,14 +1,25 @@
 #pragma once
 
-#include "ShadowMap.h"
+#include <GL/glew.h>
 
-class OmniShadowMap : public ShadowMap
+class OmniShadowMap
 {
     public:
         OmniShadowMap();
 
+        GLuint getShadowWidth() const { return m_shadowWidth; }
+        GLuint getShadowHeight() const { return m_shadowHeight; }
+
         bool init(GLuint width, GLuint height);
-        void read(GLenum textureUnit) const override;
+        void write() const;
+        void read(GLenum textureUnit) const;
 
         ~OmniShadowMap();
+
+    private:
+        GLuint m_FBO {}; 
+        GLuint m_shadowMap {};
+        // Want to make sure that the viewport is the same size as the shadowmap texture 
+        // so that we have a 1 to 1 relationship with the FBO and the ShadowMap
+        GLuint m_shadowWidth {}, m_shadowHeight {};
 };
