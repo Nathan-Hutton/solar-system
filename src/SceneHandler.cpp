@@ -78,7 +78,7 @@ void sceneHandler::createObjectsDefault()
 
     Material *material {new Material{0.0f, 0}};
 
-    Sun *sun {new Sun{429.3f, material, 7.0f, 25, 25}};
+    Sun *sun {new Sun{429.3f, 7.0f, 25, 25}};
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
     sun->setPointLight(1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 0.2f, 15.0f, 0.0f, 0.001f, 1.0f);
     sun->setTexturePointer(sunTexture);
@@ -146,7 +146,7 @@ void sceneHandler::createObjects1Sun1Planet()
 
     Material *material {new Material{0.0f, 0}};
 
-    Sun *sun = new Sun{225.0f, material, 5.0f, 25, 25};
+    Sun *sun = new Sun{225.0f, 5.0f, 25, 25};
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
     sun->setTexturePointer(sunTexture);
     sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 5.0f, 300.0f, 0.1f, 0.1f, 0.01f);
@@ -189,7 +189,7 @@ void sceneHandler::createObjectsFigureEight()
 
     Material *material {new Material{0.0f, 0}};
 
-    Sun *sun1 {new Sun{67.0f, material, 2.0f, 25, 25}};
+    Sun *sun1 {new Sun{67.0f, 2.0f, 25, 25}};
     sun1->setPosition(glm::vec3{-15.0f, 0.0f, -2.5f});
     sun1->setTexturePointer(sunTexture);
     sun1->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 20.0f, 0.005f, 0.001f, 0.01f);
@@ -199,7 +199,7 @@ void sceneHandler::createObjectsFigureEight()
     scene::stars.push_back(sun1);
     scene::pointLights[scene::pointLightCount++] = sun1->getPointLight();
 
-    Sun *sun2 {new Sun{67.0f, material, 2.0f, 25, 25}};
+    Sun *sun2 {new Sun{67.0f, 2.0f, 25, 25}};
     sun2->setPosition(glm::vec3{15.0f, 0.0f, -2.5f});
     sun2->setTexturePointer(sunTexture);
     sun2->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 20.0f, 0.005f, 0.001f, 0.01f);
@@ -255,7 +255,7 @@ void sceneHandler::createObjectsFancy()
 
     Material *material {new Material{0.0f, 0}};
 
-    Sun *sun {new Sun{425.0f, material, 15.0f, 30, 30}};
+    Sun *sun {new Sun{425.0f, 15.0f, 30, 30}};
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
     sun->setPointLight(1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 0.2f, 15.0f, 0.0f, 0.001f, 1.0f);
     sun->setTexturePointer(sunTexture);

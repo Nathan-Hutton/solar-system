@@ -10,7 +10,6 @@ class SpaceObject
     public:
         explicit SpaceObject(GLfloat mass=1.0f, Material* material = new Material{}) 
             : m_mass { mass }
-            , m_material { material }
             , m_position { 0.0f }
             , m_velocity { 0.0f }
             , m_rotation { 0.0f }
@@ -36,7 +35,6 @@ class SpaceObject
 
     protected:
         const GLfloat m_mass {};
-        Material *m_material {};
         glm::vec3 m_position {};
         glm::vec3 m_velocity {};
         glm::vec3 m_rotation {};

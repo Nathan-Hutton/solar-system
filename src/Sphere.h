@@ -9,7 +9,7 @@
 class Sphere : public SpaceObject
 {
     public:
-        explicit Sphere(GLfloat mass=1.0f, Material* material = new Material{}, GLfloat radius=0.5f, int stacks=15, int slices=15, bool usingNormals=true);
+        explicit Sphere(GLfloat mass=1.0f, GLfloat radius=0.5f, int stacks=15, int slices=15, bool usingNormals=true);
 
         void setTexturePointer(Texture* texture) { m_texture = texture; }
         virtual void render() const override = 0;

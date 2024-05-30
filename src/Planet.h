@@ -11,5 +11,6 @@ class Planet : public Sphere
         ~Planet() { delete m_sphereMesh, m_material; }
 
     private:
+        Material *m_material {};
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};
 };

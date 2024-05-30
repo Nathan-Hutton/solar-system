@@ -26,6 +26,7 @@ class Model : public SpaceObject
         //void clearModel();
 
     private:
+        Material* m_material {};
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};
         // Since this isn't a sphere where we just set the radius, we may want to use a glm::scale
         GLfloat m_scaleFactor {};
