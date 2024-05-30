@@ -9,16 +9,15 @@
 class Sphere : public SpaceObject
 {
     public:
-        Sphere();
-        Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals=true);
+        explicit Sphere(GLfloat radius=0.5f, GLfloat mass=1.0f, int stacks=15, int slices=15, bool usingNormals=true);
 
-        void setTexturePointer(Texture* texture);
+        void setTexturePointer(Texture* texture) { m_texture = texture; }
         virtual void render() const override = 0;
         void setWorldProperties(glm::mat4& model) override;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
-        GLfloat getCollisionDistance() const override;
+        GLfloat getCollisionDistance() const override { return m_radius; }
 
-        ~Sphere();
+        ~Sphere() { delete m_sphereMesh; }
 
     protected:
         const GLfloat m_radius {};

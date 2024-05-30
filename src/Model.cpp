@@ -4,14 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Model::Model() 
-    : SpaceObject {}
-    , m_scaleFactor { 1.0f }
-    , m_scaleFactorVector { 1.0f }
-{}
-
 Model::Model(GLfloat mass) 
-    : SpaceObject { mass }
+    : SpaceObject{ mass }
     , m_scaleFactor { 1.0f }
     , m_scaleFactorVector { 1.0f }
 {}
@@ -162,11 +156,11 @@ void Model::loadMaterials(const aiScene* scene)
 
             // Chop off the parts of the path that don't matter
             // This is complicated because they may be on linux or windows
-            int idx             = std::string(path.data).rfind("\\");
-            const int idx1      = std::string(path.data).rfind("/");
+            int idx             = std::string{path.data}.rfind("\\");
+            const int idx1      = std::string{path.data}.rfind("/");
             idx                 = std::max(idx, idx1);
 
-            const std::string filename {std::string(path.data).substr(idx + 1)};
+            const std::string filename {std::string{path.data}.substr(idx + 1)};
 
             const std::string textPath {"../assets/textures/" + filename};
             m_textureList[i] = new Texture{textPath};
@@ -192,11 +186,3 @@ void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformS
     m_specularIntensityLocation   = uniformSpecularIntensity;
     m_shininessLocation           = uniformShininess;
 }
-
-GLfloat Model::getCollisionDistance() const
-{
-    return m_greatestDistanceBetweenVertices;
-}
-
-Model::~Model()
-{}

@@ -2,10 +2,6 @@
 
 #include <vector>
 
-Planet::Planet() 
-    : Sphere() 
-{}
-
 Planet::Planet(float radius, GLfloat mass, int stacks, int slices) 
     : Sphere { radius, mass, stacks, slices } 
 {}
@@ -21,9 +17,4 @@ void Planet::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniform
 {
     m_specularIntensityLocation   = uniformSpecularIntensity;
     m_shininessLocation           = uniformShininess;
-}
-
-Planet::~Planet()
-{
-    delete m_sphereMesh, m_material;
 }

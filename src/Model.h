@@ -15,18 +15,15 @@
 class Model : public SpaceObject
 {
     public:
-        Model();
-        explicit Model(GLfloat mass);
+        explicit Model(GLfloat mass=1.0f);
 
         void setScaleFactor(GLfloat sFactor);
         void loadModel(const std::string& fileName);
         void render() const override;
         void setWorldProperties(glm::mat4& model) override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
-        GLfloat getCollisionDistance() const override;
+        GLfloat getCollisionDistance() const override { return m_greatestDistanceBetweenVertices; }
         //void clearModel();
-
-        ~Model();
 
     private:
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};

@@ -49,12 +49,6 @@ namespace
     }
 }
 
-Sphere::Sphere() 
-    : SpaceObject {}
-    , m_radius { 0.5f }
-    , m_sphereMesh { new Mesh{} }
-{}
-
 Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) 
     : SpaceObject(mass)
     , m_radius(radius)
@@ -70,19 +64,4 @@ void Sphere::setWorldProperties(glm::mat4& model)
 {
     model = glm::translate(model, m_position);
     model = glm::rotate(model, glm::radians(m_angle), m_rotation);
-}
-
-void Sphere::setTexturePointer(Texture *texture)
-{
-    m_texture = texture;
-}
-
-GLfloat Sphere::getCollisionDistance() const
-{
-    return m_radius;
-}
-
-Sphere::~Sphere()
-{
-    delete m_sphereMesh;
 }

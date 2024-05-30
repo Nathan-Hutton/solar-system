@@ -26,7 +26,7 @@ namespace
         std::ifstream fileStream{std::filesystem::path{fileLocation}};
 
         if (!fileStream.is_open())
-            throw std::runtime_error("Failed to read " + std::string(fileLocation) + " File doesn't exist");
+            throw std::runtime_error("Failed to read " + std::string{fileLocation} + " File doesn't exist");
 
         std::string line {""};
         std::string fileContents {""};
@@ -60,7 +60,7 @@ namespace
         glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
         if (!result) {
             glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-            throw std::runtime_error("Error compiling the " + getShaderTypeString(shaderType) + " shader: " + std::string(eLog));
+            throw std::runtime_error("Error compiling the " + getShaderTypeString(shaderType) + " shader: " + std::string{eLog});
         }
 
         // Attach the now compiled shader to the OpenGL program
@@ -112,7 +112,7 @@ void Shader::validate()
     glGetProgramiv(m_shaderID, GL_VALIDATE_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(m_shaderID, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error validating program: " + std::string(eLog));
+        throw std::runtime_error("Error validating program: " + std::string{eLog});
     }
 }
 
@@ -130,7 +130,7 @@ void Shader::compileProgram()
     glGetProgramiv(m_shaderID, GL_LINK_STATUS, &result);
     if (!result) {
         glGetProgramInfoLog(m_shaderID, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error linking program: " + std::string(eLog));
+        throw std::runtime_error("Error linking program: " + std::string{eLog});
     }
 
     // Uniform variables let us pass info from the CPU to the GPU.
@@ -239,44 +239,6 @@ void Shader::compileProgram()
     }
 }
 
-GLuint Shader::getShaderID() const
-{
-    return m_shaderID;
-}
-
-GLuint Shader::getProjectionLocation() const
-{
-    return m_uniformVariables.uniformProjection;
-}
-GLuint Shader::getModelLocation() const
-{
-    return m_uniformVariables.uniformModel;
-}
-GLuint Shader::getViewLocation() const
-{
-    return m_uniformVariables.uniformView;
-}
-GLuint Shader::getEyePositionLocation() const
-{
-    return m_uniformVariables.uniformEyePosition;
-}
-GLuint Shader::getSpecularIntensityLocation() const
-{
-    return m_uniformVariables.uniformSpecularIntensity;
-}
-GLuint Shader::getShininessLocation() const
-{
-    return m_uniformVariables.uniformShininess;
-}
-GLuint Shader::getOmniLightPosLocation() const
-{
-    return m_uniformVariables.uniformOmniLightPos;
-}
-GLuint Shader::getFarPlaneLocation() const
-{
-    return m_uniformVariables.uniformFarPlane;
-}
-
 void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount) const
 {
     // Clamp the number of lights allowed
@@ -347,21 +309,10 @@ void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsig
     glUniform1i(m_uniformOmniShadowMaps[offset].shadowMap, textureUnit);
 }
 
-void Shader::setTexture(GLuint textureUnit) const
-{
-    glUniform1i(m_uniformVariables.uniformTexture, textureUnit);
-}
-
 void Shader::setLightMatrices(const std::vector<glm::mat4>& lightMatrices) const
 {
     for (size_t i {0}; i < 6; ++i)
         glUniformMatrix4fv(m_uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
-}
-
-void Shader::useShader() const
-{
-    // Set the active shader program for subsequent rendering operations
-    glUseProgram(m_shaderID);
 }
 
 Shader::~Shader()

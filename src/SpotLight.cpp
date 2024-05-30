@@ -1,10 +1,8 @@
 #include "SpotLight.h"
 
 SpotLight::SpotLight() 
-    : PointLight()
-    , m_direction { 1.0f, 0.0f, 0.0f }
-    , m_edge { 1.0f }
-    , m_procEdge { cosf(glm::radians(m_edge)) }
+    : SpotLight{ 1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 1.0f }
 {}
 
 SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -49,28 +47,4 @@ void SpotLight::setPosAndDir(GLuint positionLocation, GLuint directionLocation) 
 {
     glUniform3f(positionLocation, m_position.x, m_position.y, m_position.z);
     glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
-}
-
-const glm::vec3& SpotLight::getPosition() const
-{
-    return m_position;
-}
-
-const glm::vec3& SpotLight::getDirection() const
-{
-    return m_direction;
-}
-
-bool SpotLight::isOn() const
-{
-    return m_on;
-}
-
-void SpotLight::toggle()
-{
-    m_on = !m_on;
-}
-
-SpotLight::~SpotLight()
-{
 }

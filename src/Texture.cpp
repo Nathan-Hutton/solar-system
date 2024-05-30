@@ -5,12 +5,6 @@
 
 #include "stb_image.h"
 
-Texture::Texture() {}
-
-Texture::Texture(std::string fileLocation)
-    : m_fileLocation { fileLocation }
-{}
-
 // Load the texture at fileLocation
 bool Texture::loadTexture()
 {
@@ -54,15 +48,6 @@ bool Texture::loadTexture()
     // since the data has been copied to the glTextImage2D we don't need the raw data anymore so we free it
     stbi_image_free(textData);
     return true;
-}
-
-void Texture::useTexture() const
-{
-    // Specify which texture unit we'll be using for texture operations.
-    // We'll only have 1 active at a time.
-
-    // Bind our texture for draw operations
-    glBindTexture(GL_TEXTURE_2D, m_textureID);
 }
 
 Texture::~Texture()

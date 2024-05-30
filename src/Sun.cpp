@@ -1,9 +1,5 @@
 #include "Sun.h"
 
-Sun::Sun() 
-    : Sphere() 
-{}
-
 Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) 
     : Sphere(radius, mass, stacks, slices, false) 
 {}
@@ -31,13 +27,3 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
 
 // This is here so we can throw a vector of suns into the same methods that planets and models use
 void Sun::setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess){}
-
-PointLight* Sun::getPointLight() const
-{
-    return m_light;
-}
-
-Sun::~Sun()
-{
-    delete m_sphereMesh, m_light;
-}

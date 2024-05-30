@@ -5,13 +5,16 @@
 class OmniShadowMap
 {
     public:
-        OmniShadowMap(GLuint width, GLuint height);
+        explicit OmniShadowMap(GLuint width=1024, GLuint height=1024);
 
         GLuint getShadowWidth() const { return m_shadowWidth; }
         GLuint getShadowHeight() const { return m_shadowHeight; }
 
         bool init();
-        void write() const;
+
+        // Draw to a framebuffer that is off-screen
+        void write() const { glBindFramebuffer(GL_FRAMEBUFFER, m_FBO); }
+
         void read(GLenum textureUnit) const;
 
         ~OmniShadowMap();

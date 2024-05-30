@@ -24,16 +24,14 @@ class PointLight
 
         std::vector<glm::mat4> calculateLightTransform() const;
 
-        GLfloat getFarPlane() const;
+        GLfloat getFarPlane() const { return m_farPlane; }
 
-        const glm::vec3& getPosition() const;
+        const glm::vec3& getPosition() const { return m_position; }
 
         GLfloat getShadowMapWidth() const { return m_shadowMap->getShadowWidth(); }
         GLfloat getShadowMapHeight() const { return m_shadowMap->getShadowHeight(); }
         void shadowMapWrite() const { m_shadowMap->write(); }
         void shadowMapRead(GLenum textureUnit) const { m_shadowMap->read(textureUnit); }
-
-        ~PointLight();
 
     protected:
         glm::vec3 m_position {};

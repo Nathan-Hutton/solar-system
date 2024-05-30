@@ -6,11 +6,15 @@
 class Texture
 {
     public:
-        Texture();
-        explicit Texture(std::string fileLocation);
+        explicit Texture(std::string fileLocation) : m_fileLocation { fileLocation } {}
 
         bool loadTexture();
-        void useTexture() const;
+
+        // Specify which texture unit we'll be using for texture operations.
+        // We'll only have 1 active at a time.
+
+        // Bind our texture for draw operations
+        void useTexture() const { glBindTexture(GL_TEXTURE_2D, m_textureID); }
 
         ~Texture();
 

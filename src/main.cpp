@@ -157,7 +157,7 @@ int main()
         // Update FPS counter
         if (counter == 30)
         {
-            std::string frameRateStr = "Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS";
+            std::string frameRateStr {"Solar System - " + std::to_string(30.0 / (now - lastFPSUpdateTime)) + " FPS"};
             glfwSetWindowTitle(window::mainWindow, frameRateStr.c_str());
             lastFPSUpdateTime = now;
             counter = 0;

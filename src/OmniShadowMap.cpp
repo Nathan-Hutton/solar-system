@@ -46,12 +46,6 @@ bool OmniShadowMap::init()
     return true;
 }
 
-void OmniShadowMap::write() const
-{
-    // Draw to a framebuffer that is off-screen
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-}
-
 void OmniShadowMap::read(GLenum textureUnit) const
 {
     glActiveTexture(textureUnit);

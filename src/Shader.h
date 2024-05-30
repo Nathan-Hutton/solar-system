@@ -17,28 +17,30 @@ class Shader
 
         void validate();
 
-        GLuint getShaderID() const;
+        GLuint getShaderID() const { return m_shaderID; }
 
-        GLuint getProjectionLocation() const;
-        GLuint getModelLocation() const;
-        GLuint getViewLocation() const;
+        GLuint getProjectionLocation() const { return m_uniformVariables.uniformProjection; }
+        GLuint getModelLocation() const { return m_uniformVariables.uniformModel; }
+        GLuint getViewLocation() const { return m_uniformVariables.uniformView; }
 
-        GLuint getEyePositionLocation() const;
-        GLuint getSpecularIntensityLocation() const;
-        GLuint getShininessLocation() const;
+        GLuint getEyePositionLocation() const { return m_uniformVariables.uniformEyePosition; }
+        GLuint getSpecularIntensityLocation() const { return m_uniformVariables.uniformSpecularIntensity; }
+        GLuint getShininessLocation() const { return m_uniformVariables.uniformShininess; }
 
-        GLuint getOmniLightPosLocation() const;
-        GLuint getFarPlaneLocation() const;
+        GLuint getOmniLightPosLocation() const { return m_uniformVariables.uniformOmniLightPos; }
+        GLuint getFarPlaneLocation() const { return m_uniformVariables.uniformFarPlane; }
 
         void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount) const;
         void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const;
         void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
 
-        void setTexture(GLuint textureUnit) const;
+        void setTexture(GLuint textureUnit) const { glUniform1i(m_uniformVariables.uniformTexture, textureUnit); }
         void setLightMatrices(const std::vector<glm::mat4>& lightMatrices) const;
 
-        void useShader() const;
+
+        // Set the active shader program for subsequent rendering operations
+        void useShader() const { glUseProgram(m_shaderID); }
 
         ~Shader();
 

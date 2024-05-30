@@ -8,37 +8,40 @@
 class SpaceObject
 {
     public:
-        SpaceObject();
-        explicit SpaceObject(GLfloat mass);
+        explicit SpaceObject(GLfloat mass=1.0f) 
+            : m_mass { mass }
+            , m_material { nullptr }
+            , m_position { 0.0f }
+            , m_velocity { 0.0f }
+            , m_rotation { 0.0f }
+        {}
 
-        GLfloat getMass() const;
-        const glm::vec3& getOldPosition() const;
-        void setOldPosition(glm::vec3 oldPos);
-        const glm::vec3& getPosition() const;
-        void setPosition(glm::vec3 position);
-        const glm::vec3& getVelocity() const;
-        void setVelocity(glm::vec3 velocity);
-        const glm::vec3& getRotation() const;
-        void setRotation(glm::vec3 rotation);
-        GLfloat getAngle() const;
-        void setAngle(GLfloat angle);
-        GLfloat getRotationSpeed() const;
-        void setRotationSpeed(GLfloat speed);
-        void setMaterialPointer(Material* material);
+        GLfloat getMass() const { return m_mass; }
+        const glm::vec3& getOldPosition() const { return m_oldPosition; }
+        void setOldPosition(glm::vec3 oldPos) { m_oldPosition = oldPos; }
+        const glm::vec3& getPosition() const { return m_position; }
+        void setPosition(glm::vec3 position) { m_position = position; }
+        const glm::vec3& getVelocity() const { return m_velocity; }
+        void setVelocity(glm::vec3 velocity) { m_velocity = velocity; }
+        const glm::vec3& getRotation() const { return m_rotation; }
+        void setRotation(glm::vec3 rotation) { m_rotation = rotation; }
+        GLfloat getAngle() const { return m_angle; }
+        void setAngle(GLfloat angle) { m_angle = angle; }
+        GLfloat getRotationSpeed() const { return m_rotationSpeed; }
+        void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
+        void setMaterialPointer(Material* material) { m_material = material; }
         virtual void render() const = 0;
         virtual void setWorldProperties(glm::mat4& model) = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
         virtual GLfloat getCollisionDistance() const = 0;
 
-        ~SpaceObject();
-
     protected:
         const GLfloat m_mass {};
-        glm::vec3 m_oldPosition {};
+        Material *m_material {};
         glm::vec3 m_position {};
         glm::vec3 m_velocity {};
         glm::vec3 m_rotation {};
+        glm::vec3 m_oldPosition {};
         GLfloat m_angle {};
         GLfloat m_rotationSpeed {};
-        Material *m_material {};
 };

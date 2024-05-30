@@ -3,11 +3,7 @@
 #include "OmniShadowMap.h"
 
 PointLight::PointLight() 
-    : m_color { 1.0f }
-    , m_ambientIntensity { 1.0f }
-    , m_diffuseIntensity { 0.0f }
-    , m_position { 0.0f, -1.0f, 0.0f }
-    , m_constant { 1.0f }
+    : PointLight{ 1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f }
 {}
 
 PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
@@ -16,7 +12,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
-    : m_shadowMap { new OmniShadowMap{ shadowWidth, shadowHeight } }
+    : m_shadowMap { new OmniShadowMap { shadowWidth, shadowHeight } }
     , m_color { red, green, blue }
     , m_ambientIntensity { ambientIntensity }
     , m_diffuseIntensity { diffuseIntensity }
@@ -64,18 +60,4 @@ std::vector<glm::mat4> PointLight::calculateLightTransform() const
     lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));
 
     return lightMatrices;
-}
-
-GLfloat PointLight::getFarPlane() const
-{
-    return m_farPlane;
-}
-
-const glm::vec3& PointLight::getPosition() const
-{
-    return m_position;
-}
-
-PointLight::~PointLight()
-{
 }
