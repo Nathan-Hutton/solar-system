@@ -24,13 +24,13 @@ namespace
             
             // Add up forces from stars
             for (SpaceObject *star : scene::stars)
-                force += OrbitalPhysics::getForce(scene::satellites[i], star);
+                force += orbitalPhysics::getForce(scene::satellites[i], star);
                 
             // Add up forces for other satellites
             for (int j {0}; j < scene::satellites.size(); ++j) 
             {
                 if (i == j) continue;
-                force += OrbitalPhysics::getForce(scene::satellites[i], scene::satellites[j]);
+                force += orbitalPhysics::getForce(scene::satellites[i], scene::satellites[j]);
             }
 
             acceleration    = force / scene::satellites[i]->getMass();
@@ -40,7 +40,7 @@ namespace
     }
 }
 
-void SceneHandler::setupSkybox(const glm::mat4& projection)
+void sceneHandler::setupSkybox(const glm::mat4& projection)
 {
 	std::vector<std::string> skyboxFaces {};
 	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
@@ -53,7 +53,7 @@ void SceneHandler::setupSkybox(const glm::mat4& projection)
     skybox::setProjectionMatrix(projection);
 }
 
-void SceneHandler::createObjectsDefault()
+void sceneHandler::createObjectsDefault()
 {
     camera::position  = glm::vec3{0.0f, 0.0f, 110.0f};
     camera::moveSpeed = 25.0f;
@@ -125,11 +125,11 @@ void SceneHandler::createObjectsDefault()
     asteroid->setScaleFactor(0.5f);
     scene::satellites.push_back(asteroid);
 
-    if (OrbitalPhysics::verlet)
+    if (orbitalPhysics::verlet)
         setOldPositions();
 }
 
-void SceneHandler::createObjects1Sun1Planet()
+void sceneHandler::createObjects1Sun1Planet()
 {
     camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
     camera::moveSpeed = 10.0f;
@@ -169,11 +169,11 @@ void SceneHandler::createObjects1Sun1Planet()
     planet->setRotationSpeed(100.0f);
     scene::satellites.push_back(planet);
 
-    if (OrbitalPhysics::verlet)
+    if (orbitalPhysics::verlet)
         setOldPositions();
 }
 
-void SceneHandler::createObjectsFigureEight()
+void sceneHandler::createObjectsFigureEight()
 {
     camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
     camera::moveSpeed = 10.0f;
@@ -223,11 +223,11 @@ void SceneHandler::createObjectsFigureEight()
     planet->setRotationSpeed(100.0f);
     scene::satellites.push_back(planet);
 
-    if (OrbitalPhysics::verlet)
+    if (orbitalPhysics::verlet)
         setOldPositions();
 }
 
-void SceneHandler::createObjectsFancy()
+void sceneHandler::createObjectsFancy()
 {
 
     camera::position  = glm::vec3{0.0f, 0.0f, 150.0f};
@@ -325,6 +325,6 @@ void SceneHandler::createObjectsFancy()
     mars->setRotationSpeed(-100.0f);
     scene::satellites.push_back(mars);
 
-    if (OrbitalPhysics::verlet)
+    if (orbitalPhysics::verlet)
         setOldPositions();
 }

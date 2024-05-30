@@ -50,75 +50,72 @@ namespace
     }
 }
 
-namespace camera
+glm::vec3 camera::position {glm::vec3{0.0f}};
+GLfloat camera::moveSpeed {5.0f};
+GLfloat camera::turnSpeed {1.0f};
+
+SpotLight* camera::spotLight {};
+
+void camera::keyControl(bool* keys, GLfloat deltaTime)
 {
-    glm::vec3 position {glm::vec3{0.0f}};
-    GLfloat moveSpeed {5.0f};
-    GLfloat turnSpeed {1.0f};
+    const GLfloat velocity {moveSpeed * deltaTime};
 
-    SpotLight *spotLight {};
+    if (keys[GLFW_KEY_W])
+        position += front * velocity;
+    if (keys[GLFW_KEY_A])
+        position -= right * velocity;
+    if (keys[GLFW_KEY_S])
+        position -= front * velocity;
+    if (keys[GLFW_KEY_D])
+        position += right * velocity;
 
-    void keyControl(bool* keys, GLfloat deltaTime)
-    {
-        const GLfloat velocity {moveSpeed * deltaTime};
+    // Up and down
+    if (keys[GLFW_KEY_LEFT_SHIFT])
+        position -= up * velocity;
+    if (keys[GLFW_KEY_SPACE])
+        position += up * velocity;
 
-        if (keys[GLFW_KEY_W])
-            position += front * velocity;
-        if (keys[GLFW_KEY_A])
-            position -= right * velocity;
-        if (keys[GLFW_KEY_S])
-            position -= front * velocity;
-        if (keys[GLFW_KEY_D])
-            position += right * velocity;
+    // Roll
+    if (keys[GLFW_KEY_E])
+        roll += turnSpeed * 3;
+    if (keys[GLFW_KEY_Q])
+        roll -= turnSpeed * 3;
 
-        // Up and down
-        if (keys[GLFW_KEY_LEFT_SHIFT])
-            position -= up * velocity;
-        if (keys[GLFW_KEY_SPACE])
-            position += up * velocity;
+    handleFlashlightKey(keys);
+}
 
-        // Roll
-        if (keys[GLFW_KEY_E])
-            roll += turnSpeed * 3;
-        if (keys[GLFW_KEY_Q])
-            roll -= turnSpeed * 3;
+void camera::mouseControl(GLfloat xChange, GLfloat yChange)
+{
+    xChange *= turnSpeed;
+    yChange *= turnSpeed;
 
-        handleFlashlightKey(keys);
-    }
+    yaw += xChange;
+    pitch += yChange;
 
-    void mouseControl(GLfloat xChange, GLfloat yChange)
-    {
-        xChange *= turnSpeed;
-        yChange *= turnSpeed;
+    update();
+}
 
-        yaw += xChange;
-        pitch += yChange;
+void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
+                GLfloat near, GLfloat far,
+                GLfloat red, GLfloat green, GLfloat blue, 
+                GLfloat ambientIntensity, GLfloat diffuseIntensity, 
+                GLfloat xPos, GLfloat yPos, GLfloat zPos,
+                GLfloat xDir, GLfloat yDir, GLfloat zDir,
+                GLfloat exponential, GLfloat linear, GLfloat constant,
+                GLfloat edge)
+{
+    spotLight = new SpotLight{shadowWidth, shadowHeight,
+                        near, far,
+                        red, green, blue,
+                        ambientIntensity, diffuseIntensity,
+                        xPos, yPos, zPos,
+                        xDir, yDir, zDir,
+                        exponential, linear, constant,
+                        edge};
+}
 
-        update();
-    }
-
-    void setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
-                    GLfloat near, GLfloat far,
-                    GLfloat red, GLfloat green, GLfloat blue, 
-                    GLfloat ambientIntensity, GLfloat diffuseIntensity, 
-                    GLfloat xPos, GLfloat yPos, GLfloat zPos,
-                    GLfloat xDir, GLfloat yDir, GLfloat zDir,
-                    GLfloat exponential, GLfloat linear, GLfloat constant,
-                    GLfloat edge)
-    {
-        spotLight = new SpotLight{shadowWidth, shadowHeight,
-                            near, far,
-                            red, green, blue,
-                            ambientIntensity, diffuseIntensity,
-                            xPos, yPos, zPos,
-                            xDir, yDir, zDir,
-                            exponential, linear, constant,
-                            edge};
-    }
-
-    void calculateViewMatrix(glm::mat4& viewMatrix)
-    {
-        // Args are where the camera is, what the camera is looking at, and what its up is
-        viewMatrix = glm::lookAt(position, position + front, up);
-    }
+void camera::calculateViewMatrix(glm::mat4& viewMatrix)
+{
+    // Args are where the camera is, what the camera is looking at, and what its up is
+    viewMatrix = glm::lookAt(position, position + front, up);
 }

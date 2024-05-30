@@ -7,7 +7,7 @@
 
 #include "SpaceObject.h"
 
-namespace OrbitalPhysics {
+namespace orbitalPhysics {
     extern bool verlet;
     glm::vec3 getForce(const SpaceObject* const object1, const SpaceObject* const object2);
     glm::vec3 getAcceleration(GLfloat mass, glm::vec3 force);

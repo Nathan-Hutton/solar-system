@@ -6,14 +6,15 @@
 
 #include "Scene.h"
 
-namespace OrbitalPhysics {
-    bool verlet = false;
+namespace
+{
+    constexpr float MAX_TIME_STEP {0.005f};
+    constexpr float gForce {-100.0f};
 }
 
-constexpr float MAX_TIME_STEP {0.005f};
-constexpr float gForce {-100.0f};
+bool orbitalPhysics::verlet = false;
 
-glm::vec3 OrbitalPhysics::getForce(const SpaceObject* const object1, const SpaceObject* const object2)
+glm::vec3 orbitalPhysics::getForce(const SpaceObject* const object1, const SpaceObject* const object2)
 {
     const glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
     const float displacementVectorLength {glm::length(displacementVector)};
@@ -25,7 +26,7 @@ glm::vec3 OrbitalPhysics::getForce(const SpaceObject* const object1, const Space
     return ((gForce * object1->getMass() * object2->getMass()) / (float)pow(displacementVectorLength, 2)) * glm::normalize(displacementVector);
 }
 
-void OrbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
+void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
     for (SpaceObject *sphere : scene::satellites) 
@@ -46,7 +47,7 @@ void OrbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
     }
 }
 
-void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
+void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
     const float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
     std::vector<glm::vec3> newSatellitePositions {};
@@ -85,7 +86,7 @@ void OrbitalPhysics::updatePositionsEuler(GLfloat timeStep)
         updatePositionsEuler(timeStep - MAX_TIME_STEP);
 }
 
-void OrbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
+void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
 {
     // Only do these calculations it's been a whole 0.005f seconds since the last time we ran this
     if (glfwGetTime() - timeSinceLastUpdate < MAX_TIME_STEP)

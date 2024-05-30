@@ -375,51 +375,47 @@ namespace
     }
 }
 
-namespace renderer
+void renderer::toggleShadows()
 {
-    void toggleShadows()
-    {
-        shadowsEnabled = !shadowsEnabled;
-        shaders.mainShader = shaders.mainShaders[shadowsEnabled];
+    shadowsEnabled = !shadowsEnabled;
+    shaders.mainShader = shaders.mainShaders[shadowsEnabled];
 
-        shaders.mainShader                                  = shaders.mainShader;
-        uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
+    shaders.mainShader                                  = shaders.mainShader;
+    uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
+    uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
+    uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
+    uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
+    uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
 
-        for (SpaceObject* satellite : scene::satellites)
-            satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
-    }
+    for (SpaceObject* satellite : scene::satellites)
+        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
+}
 
-    void setup(const glm::mat4& projection)
-    {
-        createShaders(projection);
-        setupPostProcessingObjects();
-        setLightUniformVariables();
-    }
+void renderer::setup(const glm::mat4& projection)
+{
+    createShaders(projection);
+    setupPostProcessingObjects();
+    setLightUniformVariables();
+}
 
-    void omniShadowMapPasses()
-    {
-        if (!shadowsEnabled)
-            return;
+void renderer::omniShadowMapPasses()
+{
+    if (!shadowsEnabled)
+        return;
 
-        for (size_t i {0}; i < scene::pointLightCount; ++i)
-            omniShadowMapPass(scene::pointLights[i]);
-        omniShadowMapPass(camera::spotLight);
-    }
+    for (size_t i {0}; i < scene::pointLightCount; ++i)
+        omniShadowMapPass(scene::pointLights[i]);
+    omniShadowMapPass(camera::spotLight);
+}
 
-    void renderPass()
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
-        glViewport(0, 0, 1920, 1200);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+void renderer::renderPass()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
+    glViewport(0, 0, 1920, 1200);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        renderAllObjects();
-        handleBloom();
-        renderToScreen();
-    }
-
+    renderAllObjects();
+    handleBloom();
+    renderToScreen();
 }

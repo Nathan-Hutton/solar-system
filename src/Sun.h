@@ -16,6 +16,7 @@ class Sun: public Sphere
         PointLight* getPointLight() const { return m_light; }
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         
+        // TODO: Make the destructor decrease pointLightCount
         ~Sun() { delete m_sphereMesh, m_light; }
 
     private:

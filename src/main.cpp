@@ -75,7 +75,7 @@ namespace
                 continue;
             }
 
-            OrbitalPhysics::verlet = verletInput;
+            orbitalPhysics::verlet = verletInput;
             return;
         }
     }
@@ -116,22 +116,22 @@ namespace
         switch (selectedScene)
         {
         case 1:
-            SceneHandler::createObjects1Sun1Planet();
+            sceneHandler::createObjects1Sun1Planet();
             break;
         case 2:
-            SceneHandler::createObjectsDefault();
+            sceneHandler::createObjectsDefault();
             break;
         case 3:
-            SceneHandler::createObjectsFigureEight();
+            sceneHandler::createObjectsFigureEight();
             break;
         case 4:
-            SceneHandler::createObjectsFancy();
+            sceneHandler::createObjectsFancy();
             break;
         }
 
         // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
         const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
-        SceneHandler::setupSkybox(projection);
+        sceneHandler::setupSkybox(projection);
         renderer::setup(projection);
     }
 }
@@ -163,13 +163,13 @@ int main()
             counter = 0;
         }
 
-        OrbitalPhysics::updateCelestialBodyAngles(timeStep);
+        orbitalPhysics::updateCelestialBodyAngles(timeStep);
 
         // Update our object's positions based on our chosen numerical scheme
-        if (OrbitalPhysics::verlet)
-            OrbitalPhysics::updatePositionsVerlet(timeSinceLastVerlet);
+        if (orbitalPhysics::verlet)
+            orbitalPhysics::updatePositionsVerlet(timeSinceLastVerlet);
         else
-            OrbitalPhysics::updatePositionsEuler(timeStep);
+            orbitalPhysics::updatePositionsEuler(timeStep);
 
         // Get + handle user input
         glfwPollEvents();

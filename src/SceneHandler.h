@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace SceneHandler {
+namespace sceneHandler {
     void setupSkybox(const glm::mat4& projection);
     void createObjectsDefault();
     void createObjectsFigureEight();
