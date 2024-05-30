@@ -8,9 +8,9 @@
 class SpaceObject
 {
     public:
-        explicit SpaceObject(GLfloat mass=1.0f) 
+        explicit SpaceObject(GLfloat mass=1.0f, Material* material = new Material{}) 
             : m_mass { mass }
-            , m_material { nullptr }
+            , m_material { material }
             , m_position { 0.0f }
             , m_velocity { 0.0f }
             , m_rotation { 0.0f }
@@ -29,7 +29,6 @@ class SpaceObject
         void setAngle(GLfloat angle) { m_angle = angle; }
         GLfloat getRotationSpeed() const { return m_rotationSpeed; }
         void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
-        void setMaterialPointer(Material* material) { m_material = material; }
         virtual void render() const = 0;
         virtual void setWorldProperties(glm::mat4& model) = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;

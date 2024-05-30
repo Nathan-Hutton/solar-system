@@ -15,7 +15,7 @@
 class Model : public SpaceObject
 {
     public:
-        explicit Model(GLfloat mass=1.0f);
+        explicit Model(GLfloat mass=1.0f, Material* material = new Material{});
 
         void setScaleFactor(GLfloat sFactor);
         void loadModel(const std::string& fileName);

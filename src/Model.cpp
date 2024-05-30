@@ -4,8 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Model::Model(GLfloat mass) 
-    : SpaceObject{ mass }
+Model::Model(GLfloat mass, Material* material) 
+    : SpaceObject{ mass, material }
     , m_scaleFactor { 1.0f }
     , m_scaleFactorVector { 1.0f }
 {}
