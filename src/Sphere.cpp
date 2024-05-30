@@ -49,7 +49,7 @@ namespace
     }
 }
 
-Sphere::Sphere(GLfloat radius, GLfloat mass, int stacks, int slices, bool usingNormals) 
+Sphere::Sphere(GLfloat mass, GLfloat radius, int stacks, int slices, bool usingNormals) 
     : SpaceObject(mass)
     , m_radius(radius)
     , m_sphereMesh { new Mesh{} }

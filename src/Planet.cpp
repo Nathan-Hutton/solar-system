@@ -2,8 +2,8 @@
 
 #include <vector>
 
-Planet::Planet(float radius, GLfloat mass, int stacks, int slices) 
-    : Sphere { radius, mass, stacks, slices } 
+Planet::Planet(float mass, GLfloat radius, int stacks, int slices) 
+    : Sphere { mass, radius, stacks, slices } 
 {}
 
 void Planet::render() const

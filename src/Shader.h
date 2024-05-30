@@ -11,7 +11,7 @@
 class Shader
 {
     public:
-        Shader();
+        Shader() {};
 
         void createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3 = "");
 

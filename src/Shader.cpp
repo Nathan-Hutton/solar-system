@@ -68,8 +68,6 @@ namespace
     }
 }
 
-Shader::Shader() {}
-
 void Shader::createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3)
 {
     compileShader(readFile(file1), readFile(file2), (file3 == "") ? "" : readFile(file3));

@@ -6,7 +6,7 @@
 class Sun: public Sphere
 {
     public:
-        explicit Sun(GLfloat radius=1.5f, GLfloat mass=2.0f, int stacks=15, int slices=15);
+        explicit Sun(GLfloat mass=2.0f, GLfloat radius=1.5f, int stacks=15, int slices=15);
         void render() const override;
         void setPointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,

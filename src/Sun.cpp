@@ -1,7 +1,7 @@
 #include "Sun.h"
 
-Sun::Sun(GLfloat radius, GLfloat mass, int stacks, int slices) 
-    : Sphere(radius, mass, stacks, slices, false) 
+Sun::Sun(GLfloat mass, GLfloat radius, int stacks, int slices) 
+    : Sphere(mass, radius, stacks, slices, false) 
 {}
 
 // This method is different from Sphere's version because we don't need normals
