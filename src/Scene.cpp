@@ -4,6 +4,6 @@ namespace scene
 {
     std::vector<SpaceObject*> satellites {};
     std::vector<SpaceObject*> stars {};
-    PointLight* pointLights[MAX_POINT_LIGHTS] {};
+    std::array<PointLight*, MAX_POINT_LIGHTS> pointLights;
     GLint pointLightCount {};
 }

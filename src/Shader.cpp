@@ -237,7 +237,7 @@ void Shader::compileProgram()
     }
 }
 
-void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount) const
+void Shader::setPointLightsWithoutShadows(std::array<PointLight*, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount) const
 {
     // Clamp the number of lights allowed
     if (lightCount > scene::MAX_POINT_LIGHTS) lightCount =  scene::MAX_POINT_LIGHTS;
@@ -250,7 +250,7 @@ void Shader::setPointLightsWithoutShadows(PointLight* pLights[], unsigned int li
     }
 }
 
-void Shader::setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const
+void Shader::setPointLights(std::array<PointLight*, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const
 {
     // Clamp the number of lights allowed
     if (lightCount > scene::MAX_POINT_LIGHTS) lightCount =  scene::MAX_POINT_LIGHTS;

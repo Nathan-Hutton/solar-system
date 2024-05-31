@@ -31,8 +31,8 @@ class Shader
         GLuint getOmniLightPosLocation() const { return m_uniformVariables.uniformOmniLightPos; }
         GLuint getFarPlaneLocation() const { return m_uniformVariables.uniformFarPlane; }
 
-        void setPointLightsWithoutShadows(PointLight* pLights[], unsigned int lightCount) const;
-        void setPointLights(PointLight* pLights[], unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const;
+        void setPointLightsWithoutShadows(std::array<PointLight*, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount) const;
+        void setPointLights(std::array<PointLight*, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const;
         void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
 
