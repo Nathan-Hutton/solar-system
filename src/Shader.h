@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -36,7 +37,7 @@ class Shader
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
 
         void setTexture(GLuint textureUnit) const { glUniform1i(m_uniformVariables.uniformTexture, textureUnit); }
-        void setLightMatrices(const std::vector<glm::mat4>& lightMatrices) const;
+        void setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices) const;
 
 
         // Set the active shader program for subsequent rendering operations

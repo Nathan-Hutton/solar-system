@@ -1,3 +1,5 @@
+#include <array>
+
 #include "SceneHandler.h"
 #include "OrbitalPhysics.h"
 #include "Sun.h"
@@ -42,13 +44,13 @@ namespace
 
 void sceneHandler::setupSkybox(const glm::mat4& projection)
 {
-	std::vector<std::string> skyboxFaces {};
-	skyboxFaces.push_back("../assets/textures/skybox/rightImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/leftImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/upImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/downImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
-	skyboxFaces.push_back("../assets/textures/skybox/frontImage.png");
+	std::array<std::string, 6> skyboxFaces {};
+	skyboxFaces[0] = "../assets/textures/skybox/rightImage.png";
+	skyboxFaces[1] = "../assets/textures/skybox/leftImage.png";
+	skyboxFaces[2] = "../assets/textures/skybox/upImage.png";
+	skyboxFaces[3] = "../assets/textures/skybox/downImage.png";
+	skyboxFaces[4] = "../assets/textures/skybox/frontImage.png";
+	skyboxFaces[5] = "../assets/textures/skybox/frontImage.png";
     skybox::setup(skyboxFaces);
     skybox::setProjectionMatrix(projection);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <array>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -22,7 +22,7 @@ class PointLight
                     GLuint colorLocation, GLuint positionLocation,
                     GLuint exponentialLocation, GLuint linearLocation, GLuint constantLocation) const;
 
-        std::vector<glm::mat4> calculateLightTransform() const;
+        std::array<glm::mat4, 6> calculateLightTransform() const;
 
         GLfloat getFarPlane() const { return m_farPlane; }
 

@@ -18,7 +18,7 @@ namespace
     GLuint uniformProjection {};
 }
 
-void skybox::setup(const std::vector<std::string>& faceLocations)
+void skybox::setup(const std::array<std::string, 6>& faceLocations)
 {
     // Shader setup
     skyShader = new Shader{};

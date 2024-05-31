@@ -307,7 +307,7 @@ void Shader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsig
     glUniform1i(m_uniformOmniShadowMaps[offset].shadowMap, textureUnit);
 }
 
-void Shader::setLightMatrices(const std::vector<glm::mat4>& lightMatrices) const
+void Shader::setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices) const
 {
     for (size_t i {0}; i < 6; ++i)
         glUniformMatrix4fv(m_uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));

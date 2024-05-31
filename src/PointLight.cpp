@@ -44,20 +44,20 @@ void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensi
     glUniform1f(constantLocation, m_constant);
 }
 
-std::vector<glm::mat4> PointLight::calculateLightTransform() const
+std::array<glm::mat4, 6> PointLight::calculateLightTransform() const
 {
-    std::vector<glm::mat4> lightMatrices {};
+    std::array<glm::mat4, 6> lightMatrices {};
     // +x, -x
-    lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{1.0f, 0.0f, 0.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));
-    lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{-1.0f, 0.0f, 0.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));
+    lightMatrices[0] = m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{1.0f, 0.0f, 0.0f}, glm::vec3{0.0f, -1.0f, 0.0f});
+    lightMatrices[1] = m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{-1.0f, 0.0f, 0.0f}, glm::vec3{0.0f, -1.0f, 0.0f});
 
     // +y, -y
-    lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}));
-    lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, -1.0f, 0.0f}, glm::vec3{0.0f, 0.0f, -1.0f}));
+    lightMatrices[2] = m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f});
+    lightMatrices[3] = m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, -1.0f, 0.0f}, glm::vec3{0.0f, 0.0f, -1.0f});
 
     // +z, -z
-    lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));
-    lightMatrices.push_back(m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, -1.0f, 0.0f}));
+    lightMatrices[4] = m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{0.0f, -1.0f, 0.0f});
+    lightMatrices[5] = m_lightProj * glm::lookAt(m_position, m_position + glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, -1.0f, 0.0f});
 
     return lightMatrices;
 }
