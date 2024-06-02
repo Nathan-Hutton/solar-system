@@ -44,6 +44,8 @@ void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensi
     glUniform1f(constantLocation, m_constant);
 }
 
+// TODO: Make the main expression after the equals sign a method so that we can return an unnamed array
+// which will take advantage of copy elison
 std::array<glm::mat4, 6> PointLight::calculateLightTransform() const
 {
     std::array<glm::mat4, 6> lightMatrices {};

@@ -1,6 +1,7 @@
 #include "Renderer.h"
 
 #include <stdexcept>
+#include <array>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -18,8 +19,8 @@ namespace
         GLuint postProcessingFBO {};
         GLuint postProcessingTexture {};
         GLuint textureToBlur {};
-        unsigned int pingPongFBO[2] {};
-        unsigned int pingPongBuffer[2] {};
+        std::array<unsigned int, 2> pingPongFBO;;
+        std::array<unsigned int, 2> pingPongBuffer;
         Mesh* framebufferQuad {};
     };
     PostProcessingResources postProcessingResources {};
@@ -41,7 +42,7 @@ namespace
 
     struct Shaders {
         Shader* mainShader {};
-        Shader* mainShaders[2] {};
+        std::array<Shader*, 2> mainShaders;
         Shader* sunShader {};
         Shader* omniShadowShader {};
         Shader* hdrShader {};
@@ -183,9 +184,9 @@ namespace
         glDrawBuffers(2, attachments);
 
         // Setup the ping pong framebuffers to take in half-sized textures and output half-sized textures
-        glGenFramebuffers(2, postProcessingResources.pingPongFBO);
-        glGenTextures(2, postProcessingResources.pingPongBuffer);
-        for (unsigned int i {0}; i < 2; ++i)
+        glGenFramebuffers(2, postProcessingResources.pingPongFBO.data());
+        glGenTextures(2, postProcessingResources.pingPongBuffer.data());
+        for (int i {0}; i < 2; ++i)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[i]);
             glBindTexture(GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[i]);
@@ -348,7 +349,7 @@ namespace
         postProcessingResources.framebufferQuad->render();
 
         const int amount {4};
-        for (unsigned int i {0}; i < amount; ++i)
+        for (int _ {0}; _ < amount; ++_)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[horizontal]);
             glUniform1i(uniformVariables.uniformHorizontal, horizontal);

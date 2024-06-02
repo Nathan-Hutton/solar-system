@@ -20,24 +20,24 @@ namespace
         glm::vec3 position {};
         
         // Apply forces to all planets and moons
-        for (int i {0}; i < scene::satellites.size(); ++i) 
+        for (SpaceObject* satellite1 : scene::satellites)
         {
             glm::vec3 force {0};
             
             // Add up forces from stars
-            for (SpaceObject *star : scene::stars)
-                force += orbitalPhysics::getForce(scene::satellites[i], star);
+            for (const SpaceObject *star : scene::stars)
+                force += orbitalPhysics::getForce(satellite1, star);
                 
             // Add up forces for other satellites
-            for (int j {0}; j < scene::satellites.size(); ++j) 
+            for (const SpaceObject* satellite2 : scene::satellites)
             {
-                if (i == j) continue;
-                force += orbitalPhysics::getForce(scene::satellites[i], scene::satellites[j]);
+                if (satellite1 == satellite2) continue;
+                force += orbitalPhysics::getForce(satellite1, satellite2);
             }
 
-            acceleration    = force / scene::satellites[i]->getMass();
-            velocity        = scene::satellites[i]->getVelocity() + acceleration * 0.005f;
-            scene::satellites[i]->setOldPosition(scene::satellites[i]->getPosition() - velocity * 0.005f);
+            acceleration    = force / satellite1->getMass();
+            velocity        = satellite1->getVelocity() + acceleration * 0.005f;
+            satellite1->setOldPosition(satellite1->getPosition() - velocity * 0.005f);
         }
     }
 }

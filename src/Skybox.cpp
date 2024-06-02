@@ -33,7 +33,7 @@ void skybox::setup(const std::array<std::string, 6>& faceLocations)
 
     int width {}, height {}, bitDepth {};
 
-    for (size_t i {0}; i < 6; ++i)
+    for (int i {0}; i < 6; ++i)
     {
         unsigned char *textData {stbi_load(faceLocations[i].c_str(), &width, &height, &bitDepth, STBI_rgb)};
         if (!textData)
