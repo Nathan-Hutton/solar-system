@@ -20,7 +20,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
     , m_exponential { exponential }
     , m_linear { linear }
     , m_constant { constant }
-    , m_farPlane { far}
+    , m_farPlane { far }
 {
     m_shadowMap->init();
 

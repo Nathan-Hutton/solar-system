@@ -55,11 +55,52 @@ void sceneHandler::setupSkybox(const glm::mat4& projection)
     skybox::setProjectionMatrix(projection);
 }
 
+void sceneHandler::createObjects1Sun1Planet()
+{
+    camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
+    camera::moveSpeed = 10.0f;
+    camera::turnSpeed = 0.3f;
+    camera::setSpotLight(1024, 1024, 
+                         0.01f, 100.0f,
+                         1.0f, 1.0f, 1.0f,
+                         0.0f, 10.0f,
+                         camera::position.x, camera::position.y, camera::position.z,
+                         0.0f, -1.0f, 0.0f,
+                         0.1f, 0.1f, 0.5f,
+                         20.0f);
+
+    Texture *sunTexture {new Texture{"../assets/textures/sun.jpg"}};
+    sunTexture->loadTexture();
+    Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
+    earthTexture->loadTexture();
+
+    Material *material {new Material{0.0f, 0}};
+
+    Sun *sun = new Sun{225.0f, 5.0f, 25, 25};
+    sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
+    sun->setTexturePointer(sunTexture);
+    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 5.0f, 300.0f, 0.1f, 0.1f, 0.01f);
+    sun->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
+    sun->setAngle(90.0f);
+    sun->setRotationSpeed(-25.0f);
+    scene::pointLights[scene::pointLightCount++] = sun->getPointLight();
+
+    Planet *planet {new Planet{4.0f, material, 1.0f, 20, 20}};
+    planet->setTexturePointer(earthTexture);
+    planet->setPosition(glm::vec3{25.5f, 0.0f, -2.5f});
+    planet->setVelocity(glm::vec3{0.0f, 22.0f, 0.0f});
+    planet->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
+    planet->setRotationSpeed(100.0f);
+
+    scene::satellites = { planet };
+    scene::stars = { sun };
+
+    if (orbitalPhysics::verlet)
+        setOldPositions();
+}
+
 void sceneHandler::createObjectsDefault()
 {
-    scene::satellites.resize(4);
-    scene::stars.resize(1);
-
     camera::position  = glm::vec3{0.0f, 0.0f, 110.0f};
     camera::moveSpeed = 25.0f;
     camera::turnSpeed = 0.3f;
@@ -90,7 +131,6 @@ void sceneHandler::createObjectsDefault()
     sun->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
-    scene::stars[0] = sun;
     scene::pointLights[scene::pointLightCount++] = sun->getPointLight();
 
     Planet *planet {new Planet{4.0f, material, 1.0f, 20, 20}};
@@ -99,7 +139,6 @@ void sceneHandler::createObjectsDefault()
     planet->setVelocity(glm::vec3{-55.0f, 0.0f, 0.0f});
     planet->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
     planet->setRotationSpeed(100.0f);
-    scene::satellites[0] = planet;
 
     Planet *planet1 {new Planet{4.0f, material, 1.0f, 20, 20}};
     planet1->setTexturePointer(marsTexture);
@@ -107,7 +146,6 @@ void sceneHandler::createObjectsDefault()
     planet1->setVelocity(glm::vec3{0.0f, -32.0f, 0.0f});
     planet1->setRotation(glm::vec3{-1.0f, 0.0f, -2.0f});
     planet1->setRotationSpeed(-100.0f);
-    scene::satellites[1] = planet1;
 
     Planet *moon {new Planet{1.25f, material, 0.5f, 20, 20}};
     moon->setTexturePointer(moonTexture);
@@ -115,7 +153,6 @@ void sceneHandler::createObjectsDefault()
     moon->setVelocity(glm::vec3{-3.0f, -45.0f, 0.0f});
     moon->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
     moon->setRotationSpeed(200.0f);
-    scene::satellites[2] = moon;
 
     Model *asteroid {new Model{0.25f, material}};
     asteroid->loadModel("../assets/models/asteroid.obj");
@@ -124,53 +161,9 @@ void sceneHandler::createObjectsDefault()
     asteroid->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
     asteroid->setRotationSpeed(200.0f);
     asteroid->setScaleFactor(0.5f);
-    scene::satellites[3] = asteroid;
 
-    if (orbitalPhysics::verlet)
-        setOldPositions();
-}
-
-void sceneHandler::createObjects1Sun1Planet()
-{
-    scene::satellites.resize(1);
-    scene::stars.resize(1);
-
-    camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
-    camera::moveSpeed = 10.0f;
-    camera::turnSpeed = 0.3f;
-    camera::setSpotLight(1024, 1024, 
-                         0.01f, 100.0f,
-                         1.0f, 1.0f, 1.0f,
-                         0.0f, 10.0f,
-                         camera::position.x, camera::position.y, camera::position.z,
-                         0.0f, -1.0f, 0.0f,
-                         0.1f, 0.1f, 0.5f,
-                         20.0f);
-
-    Texture *sunTexture {new Texture{"../assets/textures/sun.jpg"}};
-    sunTexture->loadTexture();
-    Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
-    earthTexture->loadTexture();
-
-    Material *material {new Material{0.0f, 0}};
-
-    Sun *sun = new Sun{225.0f, 5.0f, 25, 25};
-    sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
-    sun->setTexturePointer(sunTexture);
-    sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 5.0f, 300.0f, 0.1f, 0.1f, 0.01f);
-    sun->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
-    sun->setAngle(90.0f);
-    sun->setRotationSpeed(-25.0f);
-    scene::stars[0] = sun;
-    scene::pointLights[scene::pointLightCount++] = sun->getPointLight();
-
-    Planet *planet {new Planet{4.0f, material, 1.0f, 20, 20}};
-    planet->setTexturePointer(earthTexture);
-    planet->setPosition(glm::vec3{25.5f, 0.0f, -2.5f});
-    planet->setVelocity(glm::vec3{0.0f, 22.0f, 0.0f});
-    planet->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-    planet->setRotationSpeed(100.0f);
-    scene::satellites[0] = planet;
+    scene::satellites = { planet, planet1, moon, asteroid };
+    scene::stars = { sun };
 
     if (orbitalPhysics::verlet)
         setOldPositions();
@@ -178,9 +171,6 @@ void sceneHandler::createObjects1Sun1Planet()
 
 void sceneHandler::createObjectsFigureEight()
 {
-    scene::satellites.resize(1);
-    scene::stars.resize(2);
-
     camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
     camera::moveSpeed = 10.0f;
     camera::turnSpeed = 0.3f;
@@ -207,7 +197,6 @@ void sceneHandler::createObjectsFigureEight()
     sun1->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
     sun1->setAngle(90.0f);
     sun1->setRotationSpeed(-25.2f);
-    scene::stars[0] = sun1;
     scene::pointLights[scene::pointLightCount++] = sun1->getPointLight();
 
     Sun *sun2 {new Sun{67.0f, 2.0f, 25, 25}};
@@ -217,7 +206,6 @@ void sceneHandler::createObjectsFigureEight()
     sun2->setRotation(glm::vec3{0.0f, 1.0f, 1.0f});
     sun2->setAngle(90.0f);
     sun2->setRotationSpeed(25.0f);
-    scene::stars[1] = sun2;
     scene::pointLights[scene::pointLightCount++] = sun2->getPointLight();
 
     Planet *planet {new Planet{4.0f, material, 1.0f, 20, 20}};
@@ -226,7 +214,9 @@ void sceneHandler::createObjectsFigureEight()
     planet->setVelocity(glm::vec3{17.0f, 24.675f, 0.0f});
     planet->setRotation(glm::vec3{-1.0f, 0.0f, -2.0f});
     planet->setRotationSpeed(100.0f);
-    scene::satellites[0] = planet;
+
+    scene::satellites = { planet };
+    scene::stars = { sun1, sun2 };
 
     if (orbitalPhysics::verlet)
         setOldPositions();
@@ -234,9 +224,6 @@ void sceneHandler::createObjectsFigureEight()
 
 void sceneHandler::createObjectsFancy()
 {
-    scene::satellites.resize(6);
-    scene::stars.resize(1);
-
     camera::position  = glm::vec3{0.0f, 0.0f, 150.0f};
     camera::moveSpeed = 30.0f;
     camera::turnSpeed = 0.3f;
@@ -275,7 +262,6 @@ void sceneHandler::createObjectsFancy()
     sun->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
     sun->setAngle(90.0f);
     sun->setRotationSpeed(-25.0f);
-    scene::stars[0] = sun;
     scene::pointLights[scene::pointLightCount++] = sun->getPointLight();
 
     Planet *jupiter {new Planet{4.0f, material, 4.0f, 20, 20}};
@@ -284,7 +270,6 @@ void sceneHandler::createObjectsFancy()
     jupiter->setVelocity(glm::vec3{0.0f, 22.0f, 0.0f});
     jupiter->setRotation(glm::vec3{0.0f, 1.0f, 0.0f});
     jupiter->setRotationSpeed(30.0f);
-    scene::satellites[0] = jupiter;
 
     Planet *neptune {new Planet{4.0f, material, 1.0f, 20, 20}};
     neptune->setTexturePointer(neptuneTexture);
@@ -292,7 +277,6 @@ void sceneHandler::createObjectsFancy()
     neptune->setVelocity(glm::vec3{0.0f, 27.0f, 0.0f});
     neptune->setRotation(glm::vec3{0.0f, 1.0f, 0.0f});
     neptune->setRotationSpeed(30.0f);
-    scene::satellites[1] = neptune;
 
     Planet *neptuneMoon {new Planet{1.25f, material, 0.5f, 20, 20}};
     neptuneMoon->setTexturePointer(moonTexture);
@@ -300,7 +284,6 @@ void sceneHandler::createObjectsFancy()
     neptuneMoon->setVelocity(glm::vec3{0.0f, 29.0f, 10.0f});
     neptuneMoon->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
     neptuneMoon->setRotationSpeed(200.0f);
-    scene::satellites[2] = neptuneMoon;
 
     Planet *venus {new Planet{4.0f, material, 1.0f, 20, 20}};
     venus->setTexturePointer(venusTexture);
@@ -308,7 +291,6 @@ void sceneHandler::createObjectsFancy()
     venus->setVelocity(glm::vec3{0.0f, 25.0f, 8.0f});
     venus->setRotation(glm::vec3{0.0f, 1.0f, 0.0f});
     venus->setRotationSpeed(30.0f);
-    scene::satellites[3] = venus;
 
     Planet *venusMoon {new Planet{1.25f, material, 0.5f, 20, 20}};
     venusMoon->setTexturePointer(cloudsTexture);
@@ -316,7 +298,6 @@ void sceneHandler::createObjectsFancy()
     venusMoon->setVelocity(glm::vec3{-4.0f, 25.0f, 8.0f});
     venusMoon->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
     venusMoon->setRotationSpeed(200.0f);
-    scene::satellites[4] = venusMoon;
 
     Planet *mars {new Planet{4.0f, material, 1.0f, 20, 20}};
     mars->setTexturePointer(marsTexture);
@@ -324,7 +305,9 @@ void sceneHandler::createObjectsFancy()
     mars->setVelocity(glm::vec3{-15.0f, 15.0f, 15.0f});
     mars->setRotation(glm::vec3{-1.0f, 0.0f, -2.0f});
     mars->setRotationSpeed(-100.0f);
-    scene::satellites[5] = mars;
+
+    scene::satellites = { jupiter, neptune, neptuneMoon, venus, venusMoon, mars };
+    scene::stars = { sun };
 
     if (orbitalPhysics::verlet)
         setOldPositions();
