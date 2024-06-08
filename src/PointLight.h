@@ -34,18 +34,19 @@ class PointLight
         void shadowMapRead(GLenum textureUnit) const { m_shadowMap->read(textureUnit); }
 
     protected:
+        OmniShadowMap* m_shadowMap {};
+
+        glm::vec3 m_color {};
+        GLfloat m_ambientIntensity {};
+        GLfloat m_diffuseIntensity {};
+
         glm::vec3 m_position {};
         GLfloat m_exponential {}, m_linear {}, m_constant {};
         
         // How far we want shadows to go. The farther they go, the lower resolution they are.
         GLfloat m_farPlane {};
 
-        glm::vec3 m_color {};
-        GLfloat m_ambientIntensity {};
-        GLfloat m_diffuseIntensity {};
-
         // How the light can see. This will be different for directional and point lights
         glm::mat4 m_lightProj {};
 
-        OmniShadowMap* m_shadowMap {};
 };

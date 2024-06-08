@@ -26,4 +26,4 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
 }
 
 // This is here so we can throw a vector of suns into the same methods that planets and models use
-void Sun::setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess){}
+void Sun::setUniformVariables([[maybe_unused]] GLuint uniformSpecularIntesnity, [[maybe_unused]] GLuint uniformShininess){}

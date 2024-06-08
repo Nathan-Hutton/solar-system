@@ -35,7 +35,7 @@ class Model : public SpaceObject
         // The node won't store the mesh, just a reference to it
         // Scene holds all the data from a 3D scene or model, node holds data to a specific node
         void loadNode(aiNode* node, const aiScene* scene);
-        void loadMesh(aiMesh* mesh, const aiScene* scene);
+        void loadMesh(aiMesh* mesh);
         // Materials contain data for textures, colors, shaders, etc.
         void loadMaterials(const aiScene* scene);
 

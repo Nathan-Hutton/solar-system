@@ -79,7 +79,7 @@ void Model::loadNode(aiNode* node, const aiScene* scene)
     for(size_t i {0}; i < node->mNumMeshes; ++i)
     {
         // node only stores the ID of the mesh, the scene stores the data
-        loadMesh(scene->mMeshes[node->mMeshes[i]], scene);
+        loadMesh(scene->mMeshes[node->mMeshes[i]]);
     }
 
     // Recursively call loadNode on all children
@@ -89,7 +89,7 @@ void Model::loadNode(aiNode* node, const aiScene* scene)
     }
 }
 
-void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
+void Model::loadMesh(aiMesh* mesh)
 {
     // Each vertex will contain 3 float values
     std::vector<GLfloat> vertices {};
@@ -131,7 +131,7 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
         }
     }
 
-    Mesh *newMesh {new Mesh()};
+    Mesh *newMesh {new Mesh{}};
     newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
     m_meshList.push_back(newMesh);
     m_meshToTex.push_back(mesh->mMaterialIndex);

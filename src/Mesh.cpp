@@ -130,17 +130,17 @@ void Mesh::render() const
 
 Mesh::~Mesh()
 {
-    if (m_IBO =! 0) {
+    if (m_IBO != 0) {
         glDeleteBuffers(1, &m_IBO);
         m_IBO = 0;
     }
 
-    if (m_VBO =! 0) {
+    if (m_VBO != 0) {
         glDeleteBuffers(1, &m_VBO);
         m_VBO = 0;
     }
 
-    if (m_VAO =! 0) {
+    if (m_VAO != 0) {
         glDeleteVertexArrays(1, &m_VAO);
         m_VAO = 0;
     }

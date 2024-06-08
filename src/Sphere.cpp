@@ -6,11 +6,11 @@ namespace
 {
     void generateSphereData(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, int stacks, int slices, GLfloat radius, bool usingNormals)
     {
-        for (size_t i {0}; i <= stacks; ++i) {
+        for (int i {0}; i <= stacks; ++i) {
             const float V {i / static_cast<float>(stacks)};
             const float phi {V * glm::pi<float>()};
 
-            for (size_t j {0}; j <= slices; ++j) {
+            for (int j {0}; j <= slices; ++j) {
                 const float U {j / static_cast<float>(slices)};
                 const float theta {U * glm::pi<float>() * 2};
 
@@ -37,7 +37,7 @@ namespace
             }
         }
 
-        for (size_t i {0}; i < slices * stacks + slices; ++i) {
+        for (int i {0}; i < slices * stacks + slices; ++i) {
             indices.push_back(i);
             indices.push_back(i + slices);
             indices.push_back(i + slices + 1);

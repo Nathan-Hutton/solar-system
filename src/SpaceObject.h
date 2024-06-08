@@ -8,7 +8,7 @@
 class SpaceObject
 {
     public:
-        explicit SpaceObject(GLfloat mass=1.0f, Material* material = new Material{}) 
+        explicit SpaceObject(GLfloat mass=1.0f) 
             : m_mass { mass }
             , m_position { 0.0f }
             , m_velocity { 0.0f }

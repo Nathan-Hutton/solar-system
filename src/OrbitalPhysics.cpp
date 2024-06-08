@@ -50,22 +50,22 @@ void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
     const float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
-    glm::vec3 newSatellitePositions[scene::satellites.size()];
+    glm::vec3* newSatellitePositions { new glm::vec3[scene::satellites.size()] };
     glm::vec3 acceleration {};
     glm::vec3 velocity {};
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i { 0 }; i < scene::satellites.size(); ++i)
+    for (size_t i { 0 }; i < scene::satellites.size(); ++i)
     {
         glm::vec3 force {0};
         
         // Add up forces from stars
-        for (int j { 0 }; j < scene::stars.size(); ++j)
+        for (size_t j { 0 }; j < scene::stars.size(); ++j)
             force += getForce(scene::satellites[i], scene::stars[j]);
 
         // Add up forces for other satellites
-        for (int j { 0 }; j < scene::satellites.size(); ++j)
+        for (size_t j { 0 }; j < scene::satellites.size(); ++j)
         {
             if (i == j) continue;
             force += getForce(scene::satellites[i], scene::satellites[j]);
@@ -84,6 +84,8 @@ void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 
     if (timeStep > MAX_TIME_STEP)
         updatePositionsEuler(timeStep - MAX_TIME_STEP);
+
+    delete[] newSatellitePositions;
 }
 
 void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
@@ -94,12 +96,12 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
 
     timeSinceLastUpdate += MAX_TIME_STEP;
 
-    glm::vec3 newSatellitePositions[scene::satellites.size()];
+    glm::vec3* newSatellitePositions { new glm::vec3[scene::satellites.size()] };
     glm::vec3 acceleration {};
     glm::vec3 position {};
     
     // Apply forces to all planets and moons
-    for (int i { 0 }; i < scene::satellites.size(); ++i)
+    for (size_t i { 0 }; i < scene::satellites.size(); ++i)
     {
         glm::vec3 force {0};
         
@@ -107,7 +109,7 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
         for (const SpaceObject* star : scene::stars)
             force += getForce(scene::satellites[i], star);
             
-        for (int j { 0 }; j < scene::satellites.size(); ++j)
+        for (size_t j { 0 }; j < scene::satellites.size(); ++j)
         {
             if (scene::satellites[i] == scene::satellites[j]) continue;
             force += getForce(scene::satellites[i], scene::satellites[j]);
@@ -125,4 +127,6 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
 
     // Keep doing these calculations until I can no longer do full 0.005f timesteps
     updatePositionsVerlet(timeSinceLastUpdate);
+
+    delete newSatellitePositions;
 }

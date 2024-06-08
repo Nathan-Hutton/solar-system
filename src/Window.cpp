@@ -16,7 +16,7 @@ namespace
     GLfloat yScrollOffset {0};
 
     // Callback functions needs to have all 4 of these params
-    void handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
+    void handleKeys(GLFWwindow* window, int key, [[maybe_unused]] int code, int action, [[maybe_unused]] int mode)
     {
         if (key < 0 || key >= 1024)
             return;
@@ -30,7 +30,7 @@ namespace
             window::keys[key] = false;
     }
 
-    void handleMouse(GLFWwindow* window, double xPos, double yPos)
+    void handleMouse([[maybe_unused]] GLFWwindow* window, double xPos, double yPos)
     {
         // This if will only pass a single time
         if (mouseFirstMoved)
@@ -48,7 +48,7 @@ namespace
         lastY = yPos;
     }
 
-    void handleScroll(GLFWwindow* window, double xOffset, double yOffset)
+    void handleScroll([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xOffset, double yOffset)
     {
         yScrollOffset = yOffset;
     }

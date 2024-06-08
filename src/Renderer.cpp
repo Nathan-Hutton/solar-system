@@ -404,7 +404,7 @@ void renderer::omniShadowMapPasses()
     if (!shadowsEnabled)
         return;
 
-    for (size_t i {0}; i < scene::pointLightCount; ++i)
+    for (int i {0}; i < scene::pointLightCount; ++i)
         omniShadowMapPass(scene::pointLights[i]);
     omniShadowMapPass(camera::spotLight);
 }
