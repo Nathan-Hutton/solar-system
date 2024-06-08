@@ -23,7 +23,8 @@ class Model : public SpaceObject
         void setWorldProperties(glm::mat4& model) override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         GLfloat getCollisionDistance() const override { return m_greatestDistanceBetweenVertices; }
-        //void clearModel();
+
+        ~Model();
 
     private:
         Material* m_material {};

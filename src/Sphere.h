@@ -17,7 +17,7 @@ class Sphere : public SpaceObject
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
         GLfloat getCollisionDistance() const override { return m_radius; }
 
-        ~Sphere() { delete m_sphereMesh; }
+        ~Sphere() { delete m_sphereMesh; delete m_texture; }
 
     protected:
         const GLfloat m_radius {};

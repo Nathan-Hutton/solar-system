@@ -33,6 +33,8 @@ class PointLight
         void shadowMapWrite() const { m_shadowMap->write(); }
         void shadowMapRead(GLenum textureUnit) const { m_shadowMap->read(textureUnit); }
 
+        ~PointLight() { delete m_shadowMap; }
+
     protected:
         OmniShadowMap* m_shadowMap {};
 

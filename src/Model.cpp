@@ -52,27 +52,6 @@ void Model::setWorldProperties(glm::mat4& model)
     model = glm::scale(model, m_scaleFactorVector);
 }
 
-//void Model::clearModel()
-//{
-//    for (size_t i {0}; i < m_meshList.size(); ++i)
-//    {
-//        if (m_meshList[i])
-//        {
-//            delete m_meshList[i];
-//            m_meshList[i] = nullptr;
-//        }
-//    }
-//
-//    for (size_t i {0}; i < m_textureList.size(); ++i)
-//    {
-//        if (m_textureList[i])
-//        {
-//            delete m_textureList[i];
-//            m_textureList[i] = nullptr;
-//        }
-//    }
-//}
-
 void Model::loadNode(aiNode* node, const aiScene* scene)
 {
     // Load meshes for the node
@@ -186,4 +165,25 @@ void Model::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformS
 {
     m_specularIntensityLocation   = uniformSpecularIntensity;
     m_shininessLocation           = uniformShininess;
+}
+
+Model::~Model()
+{
+    for (size_t i {0}; i < m_meshList.size(); ++i)
+    {
+        if (m_meshList[i])
+        {
+            delete m_meshList[i];
+            m_meshList[i] = nullptr;
+        }
+    }
+
+    for (size_t i {0}; i < m_textureList.size(); ++i)
+    {
+        if (m_textureList[i])
+        {
+            delete m_textureList[i];
+            m_textureList[i] = nullptr;
+        }
+    }
 }

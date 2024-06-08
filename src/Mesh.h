@@ -19,5 +19,4 @@ class Mesh
     private:
         GLuint m_VAO {}, m_VBO {}, m_IBO {};
         GLsizei m_indexCount {};
-        Texture *m_texture {};
 };
