@@ -29,7 +29,7 @@ glm::vec3 orbitalPhysics::getForce(const SpaceObject* const object1, const Space
 void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
-    for (SpaceObject *sphere : scene::satellites) 
+    for (SpaceObject* sphere : scene::satellites) 
     {
         sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed() * timeStep);
         if (sphere->getAngle() >= 360)
@@ -37,7 +37,7 @@ void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
         if (sphere->getAngle() <= -360)
             sphere->setAngle(sphere->getAngle() + 360);
     }
-    for (SpaceObject *star : scene::stars) 
+    for (SpaceObject* star : scene::stars) 
     {
         star->setAngle(star->getAngle() + star->getRotationSpeed() * timeStep);
         if (star->getAngle() >= 360)
