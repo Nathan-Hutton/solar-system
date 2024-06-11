@@ -1,16 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include "Sphere.h"
 
 class Planet : public Sphere
 {
     public:
-        explicit Planet(float mass=1.0f, Material* material = new Material{}, GLfloat radius=0.5f, int stacks=20, int slices=20);
+        explicit Planet(float mass=1.0f, std::shared_ptr<Material> material = std::make_shared<Material>(), GLfloat radius=0.5f, int stacks=20, int slices=20);
         void render() const override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
-        ~Planet() { delete m_sphereMesh; delete m_material; }
+        ~Planet() { delete m_sphereMesh; }
 
     private:
-        Material *m_material {};
+        std::shared_ptr<Material> m_material {};
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};
 };

@@ -27,13 +27,13 @@ namespace
             
             // Add up forces from stars
             for (const std::unique_ptr<SpaceObject>& star : scene::stars)
-                force += orbitalPhysics::getForce(satellite1, star);
+                force += orbitalPhysics::getForce(satellite1.get(), star.get());
                 
             // Add up forces for other satellites
             for (const std::unique_ptr<SpaceObject>&  satellite2 : scene::satellites)
             {
                 if (satellite1 == satellite2) continue;
-                force += orbitalPhysics::getForce(satellite1, satellite2);
+                force += orbitalPhysics::getForce(satellite1.get(), satellite2.get());
             }
 
             acceleration    = force / satellite1->getMass();
@@ -75,7 +75,7 @@ void sceneHandler::createObjects1Sun1Planet()
     Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
     earthTexture->loadTexture();
 
-    Material *material {new Material{0.0f, 0}};
+    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
 
     std::unique_ptr<Sun> sun { std::make_unique<Sun>(225.0f, 5.0f, 25, 25) };
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
@@ -122,7 +122,7 @@ void sceneHandler::createObjectsDefault()
     Texture *moonTexture {new Texture{"../assets/textures/moon.jpg"}};
     moonTexture->loadTexture();
 
-    Material *material {new Material{0.0f, 0}};
+    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
 
     std::unique_ptr<Sun> sun { std::make_unique<Sun>(429.3f, 7.0f, 25, 25) };
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
@@ -190,7 +190,7 @@ void sceneHandler::createObjectsFigureEight()
     Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
     earthTexture->loadTexture();
 
-    Material *material {new Material{0.0f, 0}};
+    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
 
     std::unique_ptr<Sun> sun1 { std::make_unique<Sun>(67.0f, 2.0f, 25, 25) };
     sun1->setPosition(glm::vec3{-15.0f, 0.0f, -2.5f});
@@ -255,7 +255,7 @@ void sceneHandler::createObjectsFancy()
     Texture *cloudsTexture {new Texture{"../assets/textures/clouds.jpg"}};
     cloudsTexture->loadTexture();
 
-    Material *material {new Material{0.0f, 0}};
+    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
 
     std::unique_ptr<Sun> sun { std::make_unique<Sun>(425.0f, 15.0f, 30, 30) };
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});

@@ -14,7 +14,7 @@ namespace
 
 bool orbitalPhysics::verlet = false;
 
-glm::vec3 orbitalPhysics::getForce(const std::unique_ptr<SpaceObject>& object1, const std::unique_ptr<SpaceObject>& object2)
+glm::vec3 orbitalPhysics::getForce(const SpaceObject* const object1, const SpaceObject* const object2)
 {
     const glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
     const float displacementVectorLength {glm::length(displacementVector)};
@@ -62,13 +62,13 @@ void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
         
         // Add up forces from stars
         for (size_t j { 0 }; j < scene::stars.size(); ++j)
-            force += getForce(scene::satellites[i], scene::stars[j]);
+            force += getForce(scene::satellites[i].get(), scene::stars[j].get());
 
         // Add up forces for other satellites
         for (size_t j { 0 }; j < scene::satellites.size(); ++j)
         {
             if (i == j) continue;
-            force += getForce(scene::satellites[i], scene::satellites[j]);
+            force += getForce(scene::satellites[i].get(), scene::satellites[j].get());
         }
 
         acceleration    = force / scene::satellites[i]->getMass();
@@ -107,12 +107,12 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
         
         // Add up forces from stars
         for (std::unique_ptr<SpaceObject>& star : scene::stars)
-            force += getForce(scene::satellites[i], star);
+            force += getForce(scene::satellites[i].get(), star.get());
             
         for (size_t j { 0 }; j < scene::satellites.size(); ++j)
         {
             if (scene::satellites[i] == scene::satellites[j]) continue;
-            force += getForce(scene::satellites[i], scene::satellites[j]);
+            force += getForce(scene::satellites[i].get(), scene::satellites[j].get());
         }
 
         acceleration    = force / scene::satellites[i]->getMass();

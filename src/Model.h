@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -15,7 +16,7 @@
 class Model : public SpaceObject
 {
     public:
-        explicit Model(GLfloat mass=1.0f, Material* material = new Material{});
+        explicit Model(GLfloat mass=1.0f, std::shared_ptr<Material> material = std::make_shared<Material>());
 
         void setScaleFactor(GLfloat sFactor);
         void loadModel(const std::string& fileName);
@@ -27,7 +28,7 @@ class Model : public SpaceObject
         ~Model();
 
     private:
-        Material* m_material {};
+        std::shared_ptr<Material> m_material {};
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};
         // Since this isn't a sphere where we just set the radius, we may want to use a glm::scale
         GLfloat m_scaleFactor {};
