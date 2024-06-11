@@ -14,7 +14,7 @@ namespace
 
 bool orbitalPhysics::verlet = false;
 
-glm::vec3 orbitalPhysics::getForce(const SpaceObject* const object1, const SpaceObject* const object2)
+glm::vec3 orbitalPhysics::getForce(const std::unique_ptr<SpaceObject>& object1, const std::unique_ptr<SpaceObject>& object2)
 {
     const glm::vec3 displacementVector {object1->getPosition() - object2->getPosition()};
     const float displacementVectorLength {glm::length(displacementVector)};
@@ -29,7 +29,7 @@ glm::vec3 orbitalPhysics::getForce(const SpaceObject* const object1, const Space
 void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 {
     // Add to angles with increments, adjust so that the numbers don't get too big and cause issues
-    for (SpaceObject* sphere : scene::satellites) 
+    for (std::unique_ptr<SpaceObject>& sphere : scene::satellites) 
     {
         sphere->setAngle(sphere->getAngle() + sphere->getRotationSpeed() * timeStep);
         if (sphere->getAngle() >= 360)
@@ -37,7 +37,7 @@ void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
         if (sphere->getAngle() <= -360)
             sphere->setAngle(sphere->getAngle() + 360);
     }
-    for (SpaceObject* star : scene::stars) 
+    for (std::unique_ptr<SpaceObject>& star : scene::stars) 
     {
         star->setAngle(star->getAngle() + star->getRotationSpeed() * timeStep);
         if (star->getAngle() >= 360)
@@ -106,7 +106,7 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
         glm::vec3 force {0};
         
         // Add up forces from stars
-        for (const SpaceObject* star : scene::stars)
+        for (std::unique_ptr<SpaceObject>& star : scene::stars)
             force += getForce(scene::satellites[i], star);
             
         for (size_t j { 0 }; j < scene::satellites.size(); ++j)

@@ -231,7 +231,7 @@ namespace
 
     void setLightUniformVariables()
     {
-        for (SpaceObject* satellite : scene::satellites)
+        for (std::unique_ptr<SpaceObject>& satellite : scene::satellites)
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
 }
@@ -240,7 +240,7 @@ namespace
 {
     bool shadowsEnabled {false};
 
-    void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel)
+    void renderObjectsVector(const std::vector<std::unique_ptr<SpaceObject>>& objects, GLuint uniformModel)
     {
         // Apply rotations, transformations, and render objects
         // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -254,7 +254,7 @@ namespace
 
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
-        for (SpaceObject *object : objects)
+        for (const std::unique_ptr<SpaceObject>& object : objects)
         {
             glm::mat4 model {1.0f};
             object->setWorldProperties(model);
@@ -388,7 +388,7 @@ void renderer::toggleShadows()
     uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
     uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
 
-    for (SpaceObject* satellite : scene::satellites)
+    for (std::unique_ptr<SpaceObject>& satellite : scene::satellites)
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
 }
 
