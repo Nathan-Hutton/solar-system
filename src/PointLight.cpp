@@ -12,7 +12,7 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
                     GLfloat xPos, GLfloat yPos, GLfloat zPos,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
-    : m_shadowMap { new OmniShadowMap { shadowWidth, shadowHeight } }
+    : m_shadowMap { std::make_unique<OmniShadowMap>(shadowWidth, shadowHeight) }
     , m_color { red, green, blue }
     , m_ambientIntensity { ambientIntensity }
     , m_diffuseIntensity { diffuseIntensity }

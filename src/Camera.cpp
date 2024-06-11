@@ -54,7 +54,7 @@ glm::vec3 camera::position {glm::vec3{0.0f}};
 GLfloat camera::moveSpeed {5.0f};
 GLfloat camera::turnSpeed {1.0f};
 
-SpotLight* camera::spotLight {};
+std::unique_ptr<SpotLight> camera::spotLight {};
 
 void camera::keyControl(bool* keys, GLfloat deltaTime)
 {
@@ -104,14 +104,14 @@ void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                 GLfloat exponential, GLfloat linear, GLfloat constant,
                 GLfloat edge)
 {
-    spotLight = new SpotLight{shadowWidth, shadowHeight,
+    spotLight = std::make_unique<SpotLight>(shadowWidth, shadowHeight,
                         near, far,
                         red, green, blue,
                         ambientIntensity, diffuseIntensity,
                         xPos, yPos, zPos,
                         xDir, yDir, zDir,
                         exponential, linear, constant,
-                        edge};
+                        edge);
 }
 
 void camera::calculateViewMatrix(glm::mat4& viewMatrix)

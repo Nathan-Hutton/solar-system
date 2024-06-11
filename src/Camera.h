@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -9,7 +11,7 @@ namespace camera {
     extern glm::vec3 position;
     extern GLfloat moveSpeed;
     extern GLfloat turnSpeed;
-    extern SpotLight *spotLight;
+    extern std::unique_ptr<SpotLight> spotLight;
 
     void keyControl(bool* keys, GLfloat deltaTime);
     void mouseControl(GLfloat xChange, GLfloat yChange);

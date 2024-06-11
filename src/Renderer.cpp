@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <array>
+#include <memory>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -21,7 +22,7 @@ namespace
         GLuint textureToBlur {};
         std::array<unsigned int, 2> pingPongFBO;;
         std::array<unsigned int, 2> pingPongBuffer;
-        Mesh* framebufferQuad {};
+        std::unique_ptr<Mesh> framebufferQuad {};
     };
     PostProcessingResources postProcessingResources {};
 
@@ -43,11 +44,11 @@ namespace
     struct Shaders {
         Shader* mainShader {};
         std::array<Shader*, 2> mainShaders;
-        Shader* sunShader {};
-        Shader* omniShadowShader {};
-        Shader* hdrShader {};
-        Shader* bloomShader {};
-        Shader* halfShader {};
+        std::unique_ptr<Shader> sunShader {};
+        std::unique_ptr<Shader> omniShadowShader {};
+        std::unique_ptr<Shader> hdrShader {};
+        std::unique_ptr<Shader> bloomShader {};
+        std::unique_ptr<Shader> halfShader {};
     };
     Shaders shaders {};
 }
@@ -57,7 +58,7 @@ namespace
     void createShaders(const glm::mat4& projection)
     {
         // Shader for the suns (no lighting or shadows)
-        shaders.sunShader = new Shader{};
+        shaders.sunShader = std::make_unique<Shader>();
         shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
         shaders.sunShader->useShader();
         glUniformMatrix4fv(shaders.sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
@@ -67,7 +68,7 @@ namespace
         uniformVariables.uniformModelSuns    = shaders.sunShader->getModelLocation();
         uniformVariables.uniformViewSuns     = shaders.sunShader->getViewLocation();
 
-        shaders.omniShadowShader = new Shader{};
+        shaders.omniShadowShader = std::make_unique<Shader>();
         shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
             "../assets/shaders/omni_shadow_map.geom",
             "../assets/shaders/omni_shadow_map.frag");
@@ -77,13 +78,13 @@ namespace
         uniformVariables.uniformOmniLightPos         = shaders.omniShadowShader->getOmniLightPosLocation();
         uniformVariables.uniformFarPlane             = shaders.omniShadowShader->getFarPlaneLocation();
 
-        shaders.hdrShader = new Shader{};
+        shaders.hdrShader = std::make_unique<Shader>();
         shaders.hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
         shaders.hdrShader->useShader();
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 0);
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 1);
 
-        shaders.bloomShader = new Shader{};
+        shaders.bloomShader = std::make_unique<Shader>();
         shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
         shaders.bloomShader->useShader();
         shaders.bloomShader->setTexture(0);
@@ -95,14 +96,14 @@ namespace
         shaders.mainShaders[1]->useShader();
         shaders.mainShaders[1]->setTexture(2);
         shaders.mainShaders[1]->validate();
-        shaders.mainShaders[1]->setSpotLight(camera::spotLight, true, 4+scene::pointLightCount, scene::pointLightCount);
+        shaders.mainShaders[1]->setSpotLight(camera::spotLight.get(), true, 4+scene::pointLightCount, scene::pointLightCount);
         glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
         // texture, and the third is the texture(s) of the objects we're rendering
         shaders.mainShaders[1]->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
         glUniform1i(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
-        shaders.halfShader = new Shader{};
+        shaders.halfShader = std::make_unique<Shader>();
         shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
         shaders.halfShader->useShader();
         shaders.halfShader->setTexture(0);
@@ -113,7 +114,7 @@ namespace
         shaders.mainShaders[0]->useShader();
         shaders.mainShaders[0]->setTexture(2);
         shaders.mainShaders[0]->validate();
-        shaders.mainShaders[0]->setSpotLight(camera::spotLight, false, 4+scene::pointLightCount, scene::pointLightCount);
+        shaders.mainShaders[0]->setSpotLight(camera::spotLight.get(), false, 4+scene::pointLightCount, scene::pointLightCount);
         glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         shaders.mainShaders[0]->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
         glUniform1i(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "pointLightCount"), scene::pointLightCount);
@@ -141,7 +142,7 @@ namespace
             0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
             1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
         };
-        postProcessingResources.framebufferQuad = new Mesh{};
+        postProcessingResources.framebufferQuad = std::make_unique<Mesh>();
         postProcessingResources.framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
         // HDR
         glGenFramebuffers(1, &postProcessingResources.postProcessingFBO);
@@ -263,7 +264,7 @@ namespace
         }
     }
 
-    void omniShadowMapPass(PointLight* light)
+    void omniShadowMapPass(const PointLight* const light)
     {
         shaders.omniShadowShader->useShader();
 
@@ -314,7 +315,7 @@ namespace
         // =================================================
 
         shaders.mainShader->useShader();
-        shaders.mainShader->setSpotLightDirAndPos(camera::spotLight, shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
+        shaders.mainShader->setSpotLightDirAndPos(camera::spotLight.get(), shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
 
         // Eye position is for specular lighting
         glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera::position));
@@ -406,7 +407,7 @@ void renderer::omniShadowMapPasses()
 
     for (int i {0}; i < scene::pointLightCount; ++i)
         omniShadowMapPass(scene::pointLights[i]);
-    omniShadowMapPass(camera::spotLight);
+    omniShadowMapPass(camera::spotLight.get());
 }
 
 void renderer::renderPass()

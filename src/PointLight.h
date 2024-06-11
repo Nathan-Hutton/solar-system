@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -33,10 +34,8 @@ class PointLight
         void shadowMapWrite() const { m_shadowMap->write(); }
         void shadowMapRead(GLenum textureUnit) const { m_shadowMap->read(textureUnit); }
 
-        ~PointLight() { delete m_shadowMap; }
-
     protected:
-        OmniShadowMap* m_shadowMap {};
+        std::unique_ptr<OmniShadowMap> m_shadowMap {};
 
         glm::vec3 m_color {};
         GLfloat m_ambientIntensity {};
