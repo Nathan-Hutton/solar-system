@@ -42,8 +42,8 @@ namespace
     UniformVariables uniformVariables {};
 
     struct Shaders {
-        Shader* mainShader {};
-        std::array<Shader*, 2> mainShaders;
+        std::unique_ptr<Shader> mainShader {}; // Initially, this is the shader that doesn't use shadows
+        std::unique_ptr<Shader> shaderNotInUse {}; // Initially this is the shader that uses shadows
         std::unique_ptr<Shader> sunShader {};
         std::unique_ptr<Shader> omniShadowShader {};
         std::unique_ptr<Shader> hdrShader {};
@@ -91,17 +91,17 @@ namespace
         uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShader->getShaderID(), "horizontal");
         
         // Shader for the satellites, moons, and models. Includes shadows
-        shaders.mainShaders[1] = new Shader{};
-        shaders.mainShaders[1]->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
-        shaders.mainShaders[1]->useShader();
-        shaders.mainShaders[1]->setTexture(2);
-        shaders.mainShaders[1]->validate();
-        shaders.mainShaders[1]->setSpotLight(camera::spotLight.get(), true, 4+scene::pointLightCount, scene::pointLightCount);
-        glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        shaders.shaderNotInUse = std::make_unique<Shader>();
+        shaders.shaderNotInUse->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
+        shaders.shaderNotInUse->useShader();
+        shaders.shaderNotInUse->setTexture(2);
+        shaders.shaderNotInUse->validate();
+        shaders.shaderNotInUse->setSpotLight(camera::spotLight.get(), true, 4+scene::pointLightCount, scene::pointLightCount);
+        glUniformMatrix4fv(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
         // texture, and the third is the texture(s) of the objects we're rendering
-        shaders.mainShaders[1]->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
-        glUniform1i(glGetUniformLocation(shaders.mainShaders[1]->getShaderID(), "pointLightCount"), scene::pointLightCount);
+        shaders.shaderNotInUse->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
+        glUniform1i(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
         shaders.halfShader = std::make_unique<Shader>();
         shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
@@ -109,19 +109,18 @@ namespace
         shaders.halfShader->setTexture(0);
         
         // Shader for the satellites, moons, and models. Doesn't use shadows
-        shaders.mainShaders[0] = new Shader{};
-        shaders.mainShaders[0]->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
-        shaders.mainShaders[0]->useShader();
-        shaders.mainShaders[0]->setTexture(2);
-        shaders.mainShaders[0]->validate();
-        shaders.mainShaders[0]->setSpotLight(camera::spotLight.get(), false, 4+scene::pointLightCount, scene::pointLightCount);
-        glUniformMatrix4fv(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        shaders.mainShaders[0]->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
-        glUniform1i(glGetUniformLocation(shaders.mainShaders[0]->getShaderID(), "pointLightCount"), scene::pointLightCount);
+        shaders.mainShader = std::make_unique<Shader>();
+        shaders.mainShader->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
+        shaders.mainShader->useShader();
+        shaders.mainShader->setTexture(2);
+        shaders.mainShader->validate();
+        shaders.mainShader->setSpotLight(camera::spotLight.get(), false, 4+scene::pointLightCount, scene::pointLightCount);
+        glUniformMatrix4fv(glGetUniformLocation(shaders.mainShader->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        shaders.mainShader->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
+        glUniform1i(glGetUniformLocation(shaders.mainShader->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
         // This is so we can disable shadows
         // By default, shadows will be turned off
-        shaders.mainShader                                  = shaders.mainShaders[0];
         uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
         uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
         uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
@@ -380,9 +379,8 @@ namespace
 void renderer::toggleShadows()
 {
     shadowsEnabled = !shadowsEnabled;
-    shaders.mainShader = shaders.mainShaders[shadowsEnabled];
+    std::swap(shaders.mainShader, shaders.shaderNotInUse);
 
-    shaders.mainShader                                  = shaders.mainShader;
     uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
     uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
     uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
