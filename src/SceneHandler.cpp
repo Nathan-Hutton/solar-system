@@ -70,9 +70,9 @@ void sceneHandler::createObjects1Sun1Planet()
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture {new Texture{"../assets/textures/sun.jpg"}};
+    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun.jpg") };
     sunTexture->loadTexture();
-    Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
+    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
     earthTexture->loadTexture();
 
     std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
@@ -113,13 +113,13 @@ void sceneHandler::createObjectsDefault()
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture {new Texture{"../assets/textures/sun.jpg"}};
+    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun.jpg") };
     sunTexture->loadTexture();
-    Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
+    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
     earthTexture->loadTexture();
-    Texture *marsTexture {new Texture{"../assets/textures/mars.jpg"}};
+    std::shared_ptr<Texture> marsTexture { std::make_shared<Texture>("../assets/textures/mars.jpg") };
     marsTexture->loadTexture();
-    Texture *moonTexture {new Texture{"../assets/textures/moon.jpg"}};
+    std::shared_ptr<Texture> moonTexture { std::make_shared<Texture>("../assets/textures/moon.jpg") };
     moonTexture->loadTexture();
 
     std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
@@ -185,9 +185,9 @@ void sceneHandler::createObjectsFigureEight()
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture {new Texture{"../assets/textures/sun.jpg"}};
+    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun.jpg") };
     sunTexture->loadTexture();
-    Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
+    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
     earthTexture->loadTexture();
 
     std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
@@ -238,21 +238,21 @@ void sceneHandler::createObjectsFancy()
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
-    Texture *sunTexture {new Texture{"../assets/textures/sun2.jpg"}};
+    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun2.jpg") };
     sunTexture->loadTexture();
-    Texture *earthTexture {new Texture{"../assets/textures/earth.jpg"}};
+    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
     earthTexture->loadTexture();
-    Texture *marsTexture {new Texture{"../assets/textures/mars.jpg"}};
+    std::shared_ptr<Texture> marsTexture { std::make_shared<Texture>("../assets/textures/mars.jpg") };
     marsTexture->loadTexture();
-    Texture *moonTexture {new Texture{"../assets/textures/moon.jpg"}};
+    std::shared_ptr<Texture> moonTexture { std::make_shared<Texture>("../assets/textures/moon.jpg") };
     moonTexture->loadTexture();
-    Texture *jupiterTexture {new Texture{"../assets/textures/jupiter.jpg"}};
+    std::shared_ptr<Texture> jupiterTexture { std::make_shared<Texture>("../assets/textures/jupiter.jpg") };
     jupiterTexture->loadTexture();
-    Texture *neptuneTexture {new Texture{"../assets/textures/neptune.jpg"}};
+    std::shared_ptr<Texture> neptuneTexture { std::make_shared<Texture>("../assets/textures/neptune.jpg") };
     neptuneTexture->loadTexture();
-    Texture *venusTexture {new Texture{"../assets/textures/venus.jpg"}};
+    std::shared_ptr<Texture> venusTexture { std::make_shared<Texture>("../assets/textures/venus.jpg") };
     venusTexture->loadTexture();
-    Texture *cloudsTexture {new Texture{"../assets/textures/clouds.jpg"}};
+    std::shared_ptr<Texture> cloudsTexture { std::make_shared<Texture>("../assets/textures/clouds.jpg") };
     cloudsTexture->loadTexture();
 
     std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
