@@ -80,7 +80,7 @@ void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
     for (size_t i {0}; i < scene::satellites.size(); ++i)
-        scene::satellites[i]->setPosition(newSatellitePositions[i]);
+        scene::satellites[i]->setPositionMove(newSatellitePositions[i]);
 
     if (timeStep > MAX_TIME_STEP)
         updatePositionsEuler(timeStep - MAX_TIME_STEP);
@@ -123,7 +123,7 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
 
     // Update positions at the end of the loop so that no objects move before we get all of our data
     for (size_t i {0}; i < scene::satellites.size(); ++i)
-        scene::satellites[i]->setPosition(newSatellitePositions[i]);
+        scene::satellites[i]->setPositionMove(newSatellitePositions[i]);
 
     // Keep doing these calculations until I can no longer do full 0.005f timesteps
     updatePositionsVerlet(timeSinceLastUpdate);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -20,6 +22,7 @@ class SpaceObject
         void setOldPosition(glm::vec3 oldPos) { m_oldPosition = oldPos; }
         const glm::vec3& getPosition() const { return m_position; }
         void setPosition(glm::vec3 position) { m_position = position; }
+        void setPositionMove(glm::vec3& position) { m_position = std::move(position); }
         const glm::vec3& getVelocity() const { return m_velocity; }
         void setVelocity(glm::vec3 velocity) { m_velocity = velocity; }
         const glm::vec3& getRotation() const { return m_rotation; }
