@@ -7,13 +7,11 @@
 Model::Model(GLfloat mass, std::shared_ptr<Material> material) 
     : SpaceObject{ mass }
     , m_material { material }
-    , m_scaleFactor { 1.0f }
     , m_scaleFactorVector { 1.0f }
 {}
 
 void Model::setScaleFactor(GLfloat sFactor)
 {
-    m_scaleFactor       = sFactor;
     m_scaleFactorVector = glm::vec3{sFactor, sFactor, sFactor};
 }
 

@@ -31,7 +31,6 @@ class Model : public SpaceObject
         std::shared_ptr<Material> m_material {};
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};
         // Since this isn't a sphere where we just set the radius, we may want to use a glm::scale
-        GLfloat m_scaleFactor {};
         glm::vec3 m_scaleFactorVector {};
         // We tend to call each mesh in the tree a node
         // The node won't store the mesh, just a reference to it
