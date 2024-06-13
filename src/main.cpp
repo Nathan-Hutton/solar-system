@@ -11,7 +11,7 @@
 
 #include "Renderer.h"
 #include "Window.h"
-#include "SceneHandler.h"
+#include "Scene.h"
 #include "Camera.h"
 #include "OrbitalPhysics.h"
 
@@ -116,22 +116,22 @@ namespace
         switch (selectedScene)
         {
         case 1:
-            sceneHandler::createObjects1Sun1Planet();
+            scene::createObjects1Sun1Planet();
             break;
         case 2:
-            sceneHandler::createObjectsDefault();
+            scene::createObjectsDefault();
             break;
         case 3:
-            sceneHandler::createObjectsFigureEight();
+            scene::createObjectsFigureEight();
             break;
         case 4:
-            sceneHandler::createObjectsFancy();
+            scene::createObjectsFancy();
             break;
         }
 
         // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
         const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
-        sceneHandler::setupSkybox(projection);
+        scene::setupSkybox(projection);
         renderer::setup(projection);
     }
 }

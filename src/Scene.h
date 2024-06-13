@@ -4,6 +4,8 @@
 #include <array>
 #include <memory>
 
+#include <glm/glm.hpp>
+
 #include "SpaceObject.h"
 #include "PointLight.h"
 
@@ -14,4 +16,10 @@ namespace scene
     extern std::vector<std::unique_ptr<SpaceObject>> stars;
     extern std::array<PointLight*, MAX_POINT_LIGHTS> pointLights;
     extern GLint pointLightCount;
+
+    void setupSkybox(const glm::mat4& projection);
+    void createObjectsDefault();
+    void createObjectsFigureEight();
+    void createObjects1Sun1Planet();
+    void createObjectsFancy();
 }
