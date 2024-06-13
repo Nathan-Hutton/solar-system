@@ -4,13 +4,6 @@ Sun::Sun(GLfloat mass, GLfloat radius, int stacks, int slices)
     : Sphere(mass,radius, stacks, slices, false) 
 {}
 
-// This method is different from Sphere's version because we don't need normals
-void Sun::render() const
-{
-    m_texture->useTexture();
-    m_sphereMesh->render();
-}
-
 void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat near, GLfloat far,
     GLfloat red, GLfloat green, GLfloat blue, 
@@ -23,6 +16,13 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
             ambientIntensity, diffuseIntensity,
             getPosition(),
             exponential, linear, constant};
+}
+
+// This method is different from Sphere's version because we don't need normals
+void Sun::render() const
+{
+    m_texture->useTexture();
+    m_sphereMesh->render();
 }
 
 // This is here so we can throw a vector of suns into the same methods that planets and models use
