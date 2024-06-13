@@ -13,7 +13,7 @@
 // A mesh is a collection of vertices whereas a model is either a mesh or a collection
 // of meshes that represents a more advanced object
 // For example, a model of a human will have meshes for the limbs, torso, head, etc.
-class Model : public SpaceObject
+class Model final : public SpaceObject
 {
     public:
         explicit Model(GLfloat mass=1.0f, std::shared_ptr<Material> material = std::make_shared<Material>());

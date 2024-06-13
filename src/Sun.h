@@ -3,7 +3,7 @@
 #include "Sphere.h"
 #include "PointLight.h"
 
-class Sun: public Sphere
+class Sun final : public Sphere
 {
     public:
         explicit Sun(GLfloat mass=2.0f, GLfloat radius=1.5f, int stacks=15, int slices=15);
@@ -14,8 +14,8 @@ class Sun: public Sphere
             GLfloat ambientIntensity, GLfloat diffuseIntensity,
             GLfloat exponential, GLfloat linear, GLfloat constant);
         PointLight* getPointLight() const { return m_light; }
-        virtual void render() const override;
-        virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
+        void render() const override;
+        void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         
         // TODO: Make the destructor decrease pointLightCount
         ~Sun() { delete m_light; }

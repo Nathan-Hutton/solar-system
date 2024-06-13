@@ -13,10 +13,10 @@ class Sphere : public SpaceObject
         explicit Sphere(GLfloat mass=1.0f, GLfloat radius=0.5f, int stacks=15, int slices=15, bool usingNormals=true);
 
         void setTexturePointer(std::shared_ptr<Texture> texture) { m_texture = texture; }
-        virtual void render() const override = 0;
-        virtual void setWorldProperties(glm::mat4& model) override;
-        virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
-        virtual GLfloat getCollisionDistance() const override { return m_radius; }
+        void render() const override = 0;
+        void setWorldProperties(glm::mat4& model) override;
+        void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
+        GLfloat getCollisionDistance() const override { return m_radius; }
 
         ~Sphere() { delete m_sphereMesh; }
 
