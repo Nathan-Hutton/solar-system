@@ -10,8 +10,8 @@ class SpotLight : public PointLight {
                     GLfloat near, GLfloat far,
                     GLfloat red, GLfloat green, GLfloat blue, 
                     GLfloat ambientIntensity, GLfloat diffuseIntensity, 
-                    GLfloat xPos, GLfloat yPos, GLfloat zPos,
-                    GLfloat xDir, GLfloat yDir, GLfloat zDir,
+                    glm::vec3 position,
+                    glm::vec3 direction,
                     GLfloat exponential, GLfloat linear, GLfloat constant,
                     GLfloat edge);
 

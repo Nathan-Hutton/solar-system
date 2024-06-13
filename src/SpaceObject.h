@@ -36,7 +36,7 @@ class SpaceObject
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
         virtual GLfloat getCollisionDistance() const = 0;
 
-    protected:
+    private:
         const GLfloat m_mass {};
         glm::vec3 m_position {};
         glm::vec3 m_velocity {};

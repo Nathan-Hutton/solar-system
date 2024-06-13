@@ -16,7 +16,7 @@ class PointLight
                     GLfloat near, GLfloat far,
                     GLfloat red, GLfloat green, GLfloat blue, 
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
-                    GLfloat xPos, GLfloat yPos, GLfloat zPos,
+                    glm::vec3 position,
                     GLfloat exponential, GLfloat linear, GLfloat constant);
 
         void useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation,

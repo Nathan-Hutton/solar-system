@@ -16,3 +16,5 @@ class Planet : public Sphere
         std::shared_ptr<Material> m_material {};
         GLuint m_specularIntensityLocation {}, m_shininessLocation {};
 };
+
+using Moon = Planet;

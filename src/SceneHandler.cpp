@@ -65,8 +65,8 @@ void sceneHandler::createObjects1Sun1Planet()
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         camera::position.x, camera::position.y, camera::position.z,
-                         0.0f, -1.0f, 0.0f,
+                         camera::position,
+                         glm::vec3(0.0f, -1.0f, 0.0f),
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
@@ -108,8 +108,8 @@ void sceneHandler::createObjectsDefault()
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         camera::position.x, camera::position.y, camera::position.z,
-                         0.0f, -1.0f, 0.0f,
+                         camera::position,
+                         glm::vec3(0.0f, -1.0f, 0.0f),
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
@@ -150,7 +150,7 @@ void sceneHandler::createObjectsDefault()
     planet1->setRotationSpeed(-100.0f);
     scene::satellites.push_back(std::move(planet1));
 
-    std::unique_ptr<Planet> moon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
+    std::unique_ptr<Moon> moon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
     moon->setTexturePointer(moonTexture);
     moon->setPosition(glm::vec3{42.0f, 0.0f, -2.5f});
     moon->setVelocity(glm::vec3{-3.0f, -45.0f, 0.0f});
@@ -180,8 +180,8 @@ void sceneHandler::createObjectsFigureEight()
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         camera::position.x, camera::position.y, camera::position.z,
-                         0.0f, -1.0f, 0.0f,
+                         camera::position,
+                         glm::vec3(0.0f, -1.0f, 0.0f),
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
@@ -233,8 +233,8 @@ void sceneHandler::createObjectsFancy()
                          0.01f, 100.0f,
                          1.0f, 1.0f, 1.0f,
                          0.0f, 10.0f,
-                         camera::position.x, camera::position.y, camera::position.z,
-                         0.0f, -1.0f, 0.0f,
+                         camera::position,
+                         glm::vec3(0.0f, -1.0f, 0.0f),
                          0.1f, 0.1f, 0.5f,
                          20.0f);
 
@@ -283,7 +283,7 @@ void sceneHandler::createObjectsFancy()
     neptune->setRotationSpeed(30.0f);
     scene::satellites.push_back(std::move(neptune));
 
-    std::unique_ptr<Planet> neptuneMoon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
+    std::unique_ptr<Moon> neptuneMoon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
     neptuneMoon->setTexturePointer(moonTexture);
     neptuneMoon->setPosition(glm::vec3{59.0f, 0.0f, -2.5f});
     neptuneMoon->setVelocity(glm::vec3{0.0f, 29.0f, 10.0f});
@@ -299,7 +299,7 @@ void sceneHandler::createObjectsFancy()
     venus->setRotationSpeed(30.0f);
     scene::satellites.push_back(std::move(venus));
 
-    std::unique_ptr<Planet> venusMoon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
+    std::unique_ptr<Moon> venusMoon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
     venusMoon->setTexturePointer(cloudsTexture);
     venusMoon->setPosition(glm::vec3{-65.5f, -3.0f, -22.5f});
     venusMoon->setVelocity(glm::vec3{-4.0f, 25.0f, 8.0f});

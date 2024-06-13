@@ -99,8 +99,8 @@ void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                 GLfloat near, GLfloat far,
                 GLfloat red, GLfloat green, GLfloat blue, 
                 GLfloat ambientIntensity, GLfloat diffuseIntensity, 
-                GLfloat xPos, GLfloat yPos, GLfloat zPos,
-                GLfloat xDir, GLfloat yDir, GLfloat zDir,
+                glm::vec3 position,
+                glm::vec3 direction,
                 GLfloat exponential, GLfloat linear, GLfloat constant,
                 GLfloat edge)
 {
@@ -108,8 +108,8 @@ void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                         near, far,
                         red, green, blue,
                         ambientIntensity, diffuseIntensity,
-                        xPos, yPos, zPos,
-                        xDir, yDir, zDir,
+                        position,
+                        direction,
                         exponential, linear, constant,
                         edge);
 }

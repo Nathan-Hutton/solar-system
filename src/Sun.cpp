@@ -21,7 +21,7 @@ void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,
             near, far,
             red, green, blue, 
             ambientIntensity, diffuseIntensity,
-            m_position.x, m_position.y, m_position.z, 
+            getPosition(),
             exponential, linear, constant};
 }
 

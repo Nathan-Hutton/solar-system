@@ -3,20 +3,20 @@
 #include "OmniShadowMap.h"
 
 PointLight::PointLight() 
-    : PointLight{ 1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f }
+    : PointLight{ 1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, glm::vec3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f, 1.0f }
 {}
 
 PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
                     GLfloat red, GLfloat green, GLfloat blue, 
                     GLfloat ambientIntensity, GLfloat diffuseIntensity,
-                    GLfloat xPos, GLfloat yPos, GLfloat zPos,
+                    glm::vec3 position,
                     GLfloat exponential, GLfloat linear, GLfloat constant) 
     : m_shadowMap { std::make_unique<OmniShadowMap>(shadowWidth, shadowHeight) }
     , m_color { red, green, blue }
     , m_ambientIntensity { ambientIntensity }
     , m_diffuseIntensity { diffuseIntensity }
-    , m_position { xPos, yPos, zPos }
+    , m_position { position }
     , m_exponential { exponential }
     , m_linear { linear }
     , m_constant { constant }

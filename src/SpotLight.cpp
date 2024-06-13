@@ -1,7 +1,7 @@
 #include "SpotLight.h"
 
 SpotLight::SpotLight() 
-    : SpotLight{ 1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    : SpotLight{ 1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
     0.0f, 0.0f, 1.0f, 1.0f }
 {}
 
@@ -9,12 +9,12 @@ SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat near, GLfloat far,
     GLfloat red, GLfloat green, GLfloat blue, 
     GLfloat ambientIntensity, GLfloat diffuseIntensity,
-    GLfloat xPos, GLfloat yPos, GLfloat zPos,
-    GLfloat xDir, GLfloat yDir, GLfloat zDir,
+    glm::vec3 position,
+    glm::vec3 direction,
     GLfloat exponential, GLfloat linear, GLfloat constant,
     GLfloat edge) 
-    : PointLight(shadowWidth, shadowHeight, near, far, red, green, blue, ambientIntensity, diffuseIntensity, xPos, yPos, zPos, exponential, linear, constant)
-    , m_direction { glm::normalize(glm::vec3{ xDir, yDir, zDir }) }
+    : PointLight(shadowWidth, shadowHeight, near, far, red, green, blue, ambientIntensity, diffuseIntensity, position, exponential, linear, constant)
+    , m_direction { glm::normalize(direction) }
     , m_edge { edge }
     , m_procEdge { cosf(glm::radians(m_edge)) }
 {}
