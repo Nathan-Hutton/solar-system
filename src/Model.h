@@ -25,7 +25,7 @@ class Model final : public SpaceObject
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         virtual GLfloat getCollisionDistance() const override { return m_greatestDistanceBetweenVertices; }
 
-        ~Model();
+        ~Model() override;
 
     private:
         std::shared_ptr<Material> m_material {};

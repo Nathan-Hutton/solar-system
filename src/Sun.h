@@ -18,7 +18,7 @@ class Sun final : public Sphere
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         
         // TODO: Make the destructor decrease pointLightCount
-        ~Sun() { delete m_light; }
+        ~Sun() override { delete m_light; }
 
     private:
         PointLight *m_light {};
