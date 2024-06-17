@@ -126,6 +126,8 @@ void Shader::compileProgram()
         glGetProgramInfoLog(m_shaderID, sizeof(eLog), NULL, eLog);
         throw std::runtime_error("Error linking program: " + std::string{eLog});
     }
+
+    m_uniformTexture = glGetUniformLocation(m_shaderID, "theTexture");
 }
 
 Shader::~Shader()

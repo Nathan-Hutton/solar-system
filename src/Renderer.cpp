@@ -45,7 +45,7 @@ namespace
     struct Shaders {
         std::unique_ptr<MainShader> mainShader {}; // Initially, this is the shader that doesn't use shadows
         std::unique_ptr<MainShader> shaderNotInUse {}; // Initially this is the shader that uses shadows
-        std::unique_ptr<MainShader> sunShader {};
+        std::unique_ptr<Shader> sunShader {};
         std::unique_ptr<MainShader> omniShadowShader {};
         std::unique_ptr<Shader> hdrShader {};
         std::unique_ptr<Shader> bloomShader {};
@@ -59,15 +59,15 @@ namespace
     void createShaders(const glm::mat4& projection)
     {
         // Shader for the suns (no lighting or shadows)
-        shaders.sunShader = std::make_unique<MainShader>();
+        shaders.sunShader = std::make_unique<Shader>();
         shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
         shaders.sunShader->useShader();
         glUniformMatrix4fv(glGetUniformLocation(shaders.sunShader->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         shaders.sunShader->setTexture(2);
         shaders.sunShader->validate();
         // For the sun shaders we don't do any light or shadow calculations
-        uniformVariables.uniformModelSuns    = shaders.sunShader->getModelLocation();
-        uniformVariables.uniformViewSuns     = shaders.sunShader->getViewLocation();
+        uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShader->getShaderID(), "model");
+        uniformVariables.uniformViewSuns     = glGetUniformLocation(shaders.sunShader->getShaderID(), "view");
 
         shaders.omniShadowShader = std::make_unique<MainShader>();
         shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
@@ -75,7 +75,7 @@ namespace
             "../assets/shaders/omni_shadow_map.frag");
 
         // The shadow map shader will record the depth values of all objects except suns
-        uniformVariables.uniformModelOmniShadowMap   = shaders.omniShadowShader->getModelLocation();
+        uniformVariables.uniformModelOmniShadowMap   = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "model");
         uniformVariables.uniformOmniLightPos         = shaders.omniShadowShader->getOmniLightPosLocation();
         uniformVariables.uniformFarPlane             = shaders.omniShadowShader->getFarPlaneLocation();
 
@@ -122,8 +122,8 @@ namespace
 
         // This is so we can disable shadows
         // By default, shadows will be turned off
-        uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
-        uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
+        uniformVariables.uniformModelPlanets   = glGetUniformLocation(shaders.mainShader->getShaderID(), "model");
+        uniformVariables.uniformViewPlanets                 = glGetUniformLocation(shaders.mainShader->getShaderID(), "view");
         uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
         uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
         uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
@@ -382,8 +382,8 @@ void renderer::toggleShadows()
     shadowsEnabled = !shadowsEnabled;
     std::swap(shaders.mainShader, shaders.shaderNotInUse);
 
-    uniformVariables.uniformModelPlanets                = shaders.mainShader->getModelLocation();
-    uniformVariables.uniformViewPlanets                 = shaders.mainShader->getViewLocation();
+    uniformVariables.uniformModelPlanets                = glGetUniformLocation(shaders.mainShader->getShaderID(), "model");
+    uniformVariables.uniformViewPlanets                 = glGetUniformLocation(shaders.mainShader->getShaderID(), "view");
     uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
     uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
     uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();

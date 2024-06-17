@@ -20,9 +20,6 @@ class MainShader
 
         GLuint getShaderID() const { return m_shaderID; }
 
-        GLuint getModelLocation() const { return m_uniformVariables.uniformModel; }
-        GLuint getViewLocation() const { return m_uniformVariables.uniformView; }
-
         GLuint getEyePositionLocation() const { return m_uniformVariables.uniformEyePosition; }
         GLuint getSpecularIntensityLocation() const { return m_uniformVariables.uniformSpecularIntensity; }
         GLuint getShininessLocation() const { return m_uniformVariables.uniformShininess; }
@@ -37,7 +34,6 @@ class MainShader
 
         void setTexture(GLuint textureUnit) const { glUniform1i(m_uniformVariables.uniformTexture, textureUnit); }
         void setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices) const;
-
 
         // Set the active shader program for subsequent rendering operations
         void useShader() const { glUseProgram(m_shaderID); }
