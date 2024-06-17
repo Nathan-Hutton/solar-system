@@ -1,11 +1,6 @@
 #include "MainShader.h"
 
-#include <iostream>
-#include <fstream>
 #include <filesystem>
-#include <stdexcept>
-
-#include <glm/gtc/type_ptr.hpp>
 
 void MainShader::setLightsUniformVariables()
 {
