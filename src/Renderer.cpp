@@ -48,8 +48,8 @@ namespace
         std::unique_ptr<MainShader> sunShader {};
         std::unique_ptr<MainShader> omniShadowShader {};
         std::unique_ptr<Shader> hdrShader {};
-        std::unique_ptr<MainShader> bloomShader {};
-        std::unique_ptr<MainShader> halfShader {};
+        std::unique_ptr<Shader> bloomShader {};
+        std::unique_ptr<Shader> halfShader {};
     };
     Shaders shaders {};
 }
@@ -62,7 +62,7 @@ namespace
         shaders.sunShader = std::make_unique<MainShader>();
         shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
         shaders.sunShader->useShader();
-        glUniformMatrix4fv(shaders.sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(shaders.sunShader->getShaderID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         shaders.sunShader->setTexture(2);
         shaders.sunShader->validate();
         // For the sun shaders we don't do any light or shadow calculations
@@ -85,7 +85,7 @@ namespace
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 0);
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 1);
 
-        shaders.bloomShader = std::make_unique<MainShader>();
+        shaders.bloomShader = std::make_unique<Shader>();
         shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
         shaders.bloomShader->useShader();
         shaders.bloomShader->setTexture(0);
@@ -104,7 +104,7 @@ namespace
         shaders.shaderNotInUse->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
         glUniform1i(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
-        shaders.halfShader = std::make_unique<MainShader>();
+        shaders.halfShader = std::make_unique<Shader>();
         shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
         shaders.halfShader->useShader();
         shaders.halfShader->setTexture(0);

@@ -1,13 +1,8 @@
 #pragma once
 
 #include <string>
-#include <array>
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
-
-#include "Scene.h"
-#include "SpotLight.h"
 
 class Shader
 {
@@ -23,10 +18,13 @@ class Shader
         // Set the active shader program for subsequent rendering operations
         void useShader() const { glUseProgram(m_shaderID); }
 
+        void setTexture(GLuint textureUnit) const { glUniform1i(m_uniformTexture, textureUnit); }
+
         ~Shader();
 
     private:
         GLuint m_shaderID {}; 
+        GLuint m_uniformTexture {}; 
 
         void compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code = "");
         void compileProgram();

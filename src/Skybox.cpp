@@ -24,7 +24,7 @@ void skybox::setup(const std::array<std::string, 6>& faceLocations)
     skyShader = new MainShader{};
     skyShader->createFromFiles("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
 
-    uniformProjection   = skyShader->getProjectionLocation();
+    uniformProjection   = glGetUniformLocation(skyShader->getShaderID(), "projection");
     uniformView         = skyShader->getViewLocation();
 
     // Texture setup

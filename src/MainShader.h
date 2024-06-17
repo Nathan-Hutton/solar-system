@@ -20,7 +20,6 @@ class MainShader
 
         GLuint getShaderID() const { return m_shaderID; }
 
-        GLuint getProjectionLocation() const { return m_uniformVariables.uniformProjection; }
         GLuint getModelLocation() const { return m_uniformVariables.uniformModel; }
         GLuint getViewLocation() const { return m_uniformVariables.uniformView; }
 
@@ -51,7 +50,6 @@ class MainShader
         GLuint m_shaderID {}; 
 
         struct {
-            GLuint uniformProjection {}; 
             GLuint uniformModel {};
             GLuint uniformView {}; 
             GLuint uniformEyePosition {};

@@ -135,7 +135,6 @@ void MainShader::compileProgram()
 
     // Camera/Window
     m_uniformVariables.uniformModel                = glGetUniformLocation(m_shaderID, "model");
-    m_uniformVariables.uniformProjection           = glGetUniformLocation(m_shaderID, "projection");
     m_uniformVariables.uniformView                 = glGetUniformLocation(m_shaderID, "view");
 
     // Specular
@@ -320,5 +319,4 @@ MainShader::~MainShader()
     }
 
     m_uniformVariables.uniformModel        = 0;
-    m_uniformVariables.uniformProjection   = 0;
 }

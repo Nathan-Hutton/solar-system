@@ -5,8 +5,6 @@
 #include <filesystem>
 #include <stdexcept>
 
-#include <glm/gtc/type_ptr.hpp>
-
 namespace
 {
     std::string getShaderTypeString(GLenum shaderType)
