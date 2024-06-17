@@ -22,7 +22,7 @@ class Model final : public SpaceObject
         void loadModel(const std::string& fileName);
         virtual void render() const override;
         virtual void setWorldProperties(glm::mat4& model) override;
-        virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
+        virtual void setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess) override;
         virtual GLfloat getCollisionDistance() const override { return m_greatestDistanceBetweenVertices; }
 
         ~Model() override;

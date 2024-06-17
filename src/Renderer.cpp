@@ -106,6 +106,7 @@ namespace
         // Shader for the satellites, moons, and models. Includes shadows
         shaders.shaderNotInUse = std::make_unique<MainShader>();
         shaders.shaderNotInUse->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
+        shaders.shaderNotInUse->setLightsUniformVariables();
         shaders.shaderNotInUse->useShader();
         shaders.shaderNotInUse->setTexture(2);
         shaders.shaderNotInUse->validate();
@@ -124,6 +125,7 @@ namespace
         // Shader for the satellites, moons, and models. Doesn't use shadows
         shaders.mainShader = std::make_unique<MainShader>();
         shaders.mainShader->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
+        shaders.mainShader->setLightsUniformVariables();
         shaders.mainShader->useShader();
         shaders.mainShader->setTexture(2);
         shaders.mainShader->validate();
@@ -134,11 +136,11 @@ namespace
 
         // This is so we can disable shadows
         // By default, shadows will be turned off
-        uniformVariables.uniformModelPlanets   = glGetUniformLocation(shaders.mainShader->getShaderID(), "model");
+        uniformVariables.uniformModelPlanets                = glGetUniformLocation(shaders.mainShader->getShaderID(), "model");
         uniformVariables.uniformViewPlanets                 = glGetUniformLocation(shaders.mainShader->getShaderID(), "view");
-        uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
-        uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
-        uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
+        uniformVariables.uniformEyePositionPlanets          = glGetUniformLocation(shaders.mainShader->getShaderID(), "eyePosition");
+        uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.specularIntensity");
+        uniformVariables.uniformShininessPlanets            = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.shininess");
     }
 
     void setupPostProcessingObjects()
@@ -242,7 +244,7 @@ namespace
     }
 
 
-    void setLightUniformVariables()
+    void setSpecularUniformVariables()
     {
         for (std::unique_ptr<SpaceObject>& satellite : scene::satellites)
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
@@ -403,9 +405,9 @@ void renderer::toggleShadows()
 
     uniformVariables.uniformModelPlanets                = glGetUniformLocation(shaders.mainShader->getShaderID(), "model");
     uniformVariables.uniformViewPlanets                 = glGetUniformLocation(shaders.mainShader->getShaderID(), "view");
-    uniformVariables.uniformEyePositionPlanets          = shaders.mainShader->getEyePositionLocation();
-    uniformVariables.uniformSpecularIntensityPlanets    = shaders.mainShader->getSpecularIntensityLocation();
-    uniformVariables.uniformShininessPlanets            = shaders.mainShader->getShininessLocation();
+    uniformVariables.uniformEyePositionPlanets          = glGetUniformLocation(shaders.mainShader->getShaderID(), "eyePosition");
+    uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.specularIntensity");
+    uniformVariables.uniformShininessPlanets            = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.shininess");
 
     for (std::unique_ptr<SpaceObject>& satellite : scene::satellites)
         satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
@@ -415,7 +417,7 @@ void renderer::setup(const glm::mat4& projection)
 {
     createShaders(projection);
     setupPostProcessingObjects();
-    setLightUniformVariables();
+    setSpecularUniformVariables();
 }
 
 void renderer::omniShadowMapPasses()

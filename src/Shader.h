@@ -22,7 +22,7 @@ class Shader
 
         ~Shader();
 
-    private:
+    protected:
         GLuint m_shaderID {}; 
         GLuint m_uniformTexture {}; 
 
