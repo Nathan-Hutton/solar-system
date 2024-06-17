@@ -13,7 +13,7 @@ namespace
 {
     Mesh* skyMesh {};
     GLuint textureID {};
-    MainShader* skyShader {};
+    Shader* skyShader {};
     GLuint uniformView {};
     GLuint uniformProjection {};
 }
@@ -21,7 +21,7 @@ namespace
 void skybox::setup(const std::array<std::string, 6>& faceLocations)
 {
     // Shader setup
-    skyShader = new MainShader{};
+    skyShader = new Shader{};
     skyShader->createFromFiles("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
 
     uniformProjection   = glGetUniformLocation(skyShader->getShaderID(), "projection");
