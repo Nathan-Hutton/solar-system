@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Mesh.h"
-#include "Shader.h"
+#include "MainShader.h"
 #include "stb_image.h"
 
 
@@ -13,7 +13,7 @@ namespace
 {
     Mesh* skyMesh {};
     GLuint textureID {};
-    Shader* skyShader {};
+    MainShader* skyShader {};
     GLuint uniformView {};
     GLuint uniformProjection {};
 }
@@ -21,7 +21,7 @@ namespace
 void skybox::setup(const std::array<std::string, 6>& faceLocations)
 {
     // Shader setup
-    skyShader = new Shader{};
+    skyShader = new MainShader{};
     skyShader->createFromFiles("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
 
     uniformProjection   = skyShader->getProjectionLocation();

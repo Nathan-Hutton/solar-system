@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "Skybox.h"
 #include "Shader.h"
+#include "MainShader.h"
 #include "Scene.h"
 #include "Camera.h"
 
@@ -42,13 +43,13 @@ namespace
     UniformVariables uniformVariables {};
 
     struct Shaders {
-        std::unique_ptr<Shader> mainShader {}; // Initially, this is the shader that doesn't use shadows
-        std::unique_ptr<Shader> shaderNotInUse {}; // Initially this is the shader that uses shadows
-        std::unique_ptr<Shader> sunShader {};
-        std::unique_ptr<Shader> omniShadowShader {};
+        std::unique_ptr<MainShader> mainShader {}; // Initially, this is the shader that doesn't use shadows
+        std::unique_ptr<MainShader> shaderNotInUse {}; // Initially this is the shader that uses shadows
+        std::unique_ptr<MainShader> sunShader {};
+        std::unique_ptr<MainShader> omniShadowShader {};
         std::unique_ptr<Shader> hdrShader {};
-        std::unique_ptr<Shader> bloomShader {};
-        std::unique_ptr<Shader> halfShader {};
+        std::unique_ptr<MainShader> bloomShader {};
+        std::unique_ptr<MainShader> halfShader {};
     };
     Shaders shaders {};
 }
@@ -58,7 +59,7 @@ namespace
     void createShaders(const glm::mat4& projection)
     {
         // Shader for the suns (no lighting or shadows)
-        shaders.sunShader = std::make_unique<Shader>();
+        shaders.sunShader = std::make_unique<MainShader>();
         shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
         shaders.sunShader->useShader();
         glUniformMatrix4fv(shaders.sunShader->getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
@@ -68,7 +69,7 @@ namespace
         uniformVariables.uniformModelSuns    = shaders.sunShader->getModelLocation();
         uniformVariables.uniformViewSuns     = shaders.sunShader->getViewLocation();
 
-        shaders.omniShadowShader = std::make_unique<Shader>();
+        shaders.omniShadowShader = std::make_unique<MainShader>();
         shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
             "../assets/shaders/omni_shadow_map.geom",
             "../assets/shaders/omni_shadow_map.frag");
@@ -84,14 +85,14 @@ namespace
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 0);
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 1);
 
-        shaders.bloomShader = std::make_unique<Shader>();
+        shaders.bloomShader = std::make_unique<MainShader>();
         shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
         shaders.bloomShader->useShader();
         shaders.bloomShader->setTexture(0);
         uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShader->getShaderID(), "horizontal");
         
         // Shader for the satellites, moons, and models. Includes shadows
-        shaders.shaderNotInUse = std::make_unique<Shader>();
+        shaders.shaderNotInUse = std::make_unique<MainShader>();
         shaders.shaderNotInUse->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
         shaders.shaderNotInUse->useShader();
         shaders.shaderNotInUse->setTexture(2);
@@ -103,13 +104,13 @@ namespace
         shaders.shaderNotInUse->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
         glUniform1i(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
-        shaders.halfShader = std::make_unique<Shader>();
+        shaders.halfShader = std::make_unique<MainShader>();
         shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
         shaders.halfShader->useShader();
         shaders.halfShader->setTexture(0);
         
         // Shader for the satellites, moons, and models. Doesn't use shadows
-        shaders.mainShader = std::make_unique<Shader>();
+        shaders.mainShader = std::make_unique<MainShader>();
         shaders.mainShader->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
         shaders.mainShader->useShader();
         shaders.mainShader->setTexture(2);
