@@ -186,8 +186,8 @@ vec3 gaussianBlur(sampler2D image, vec2 centerUV, vec2 texelOffset)
 
     for (int i = 0; i < 9; i++)
     {
-        vec2 texCoordOffset = gOffsets9[i] * texelOffset;
-        vec3 col = texture(image, centerUV + texCoordOffset).xyz + texture(image, centerUV - texCoordOffset).xyz;
+        const vec2 texCoordOffset = gOffsets9[i] * texelOffset;
+        const vec3 col = texture(image, centerUV + texCoordOffset).xyz + texture(image, centerUV - texCoordOffset).xyz;
         colOut += gWeights9[i] * col;
     }
     return colOut;

@@ -62,7 +62,7 @@ uniform Material material;
 uniform vec3 eyePosition;
 
 // This will be used to make soft shadows for omni directional shadow maps
-vec3 sampleOffsetDirections[20] = vec3[]
+const vec3 sampleOffsetDirections[20] = vec3[]
 (
    vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
    vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
@@ -86,16 +86,16 @@ float CalcOmniShadowFactor(PointLight light, int shadowIndex)
 	//float bias = 0.05;
 	//return current - bias > closest ? 1.0 : 0.0;
 	
-	vec3 lightToFrag = fragPos - light.position;
-	float currentDepth = length(lightToFrag);
+	const vec3 lightToFrag = fragPos - light.position;
+	const float currentDepth = length(lightToFrag);
 
 	float shadow = 0.0;
-	float bias = 0.05;
-	int samples = 20;
+	const float bias = 0.05;
+	const int samples = 20;
 	
 	// Distance in each direction based on how far the camera is from the fragment
-	float viewDistance = length(fragPos - eyePosition);
-	float diskRadius = (1.0 + (viewDistance / omniShadowMaps[shadowIndex].farPlane)) / 25.0;
+	const float viewDistance = length(fragPos - eyePosition);
+	const float diskRadius = (1.0 + (viewDistance / omniShadowMaps[shadowIndex].farPlane)) / 25.0;
 	
 	// This adds a sort of fade to the edges of the shadows (soft shadows)
 	for (int i = 0; i < samples; i++)
@@ -113,17 +113,17 @@ float CalcOmniShadowFactor(PointLight light, int shadowIndex)
 
 vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 {
-	vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
+	const vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
 	
-	float diffuseFactor = max(dot(normalize(normal), -normalize(direction)), 0.0f);
-	vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
+	const float diffuseFactor = max(dot(normalize(normal), -normalize(direction)), 0.0f);
+	const vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 	
 	vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	if(diffuseFactor > 0.0f)
 	{
-		vec3 fragToEye = normalize(eyePosition - fragPos);
-		vec3 reflectedVertex = normalize(reflect(direction, normalize(normal)));
+		const vec3 fragToEye = normalize(eyePosition - fragPos);
+		const vec3 reflectedVertex = normalize(reflect(direction, normalize(normal)));
 		
 		float specularFactor = dot(fragToEye, reflectedVertex);
 		if(specularFactor > 0.0f)
@@ -139,13 +139,13 @@ vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 vec4 CalcPointLight(PointLight pLight, int shadowIndex)
 {
     vec3 direction = fragPos - pLight.position;
-    float distance = length(direction);
+    const float distance = length(direction);
     direction = normalize(direction);
 
 	float shadowFactor = CalcOmniShadowFactor(pLight, shadowIndex);
     
-    vec4 color = CalcLightByDirection(pLight.base, direction, shadowFactor);
-    float attenuation = pLight.exponential * distance * distance +
+    const vec4 color = CalcLightByDirection(pLight.base, direction, shadowFactor);
+    const float attenuation = pLight.exponential * distance * distance +
                         pLight.linear * distance +
                         pLight.constant;
     
@@ -154,13 +154,13 @@ vec4 CalcPointLight(PointLight pLight, int shadowIndex)
 
 vec4 CalcSpotLight(SpotLight sLight, int shadowIndex)
 {
-    vec3 rayDirection = normalize(fragPos - sLight.base.position);
-    float slFactor = dot(rayDirection, sLight.direction);
+    const vec3 rayDirection = normalize(fragPos - sLight.base.position);
+    const float slFactor = dot(rayDirection, sLight.direction);
 
 	if (slFactor <= sLight.edge)
 		return vec4(0, 0, 0, 0);
 
-	vec4 color = CalcPointLight(sLight.base, shadowIndex);
+	const vec4 color = CalcPointLight(sLight.base, shadowIndex);
     return color * (1.0f - (1.0f - slFactor) * (1.0f / (1.0f - sLight.edge)));
 }
 

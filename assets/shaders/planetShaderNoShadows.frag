@@ -55,17 +55,17 @@ uniform vec3 eyePosition;
 
 vec4 CalcLightByDirection(Light light, vec3 direction)
 {
-	vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
+	const vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
 	
-	float diffuseFactor = max(dot(normalize(normal), -direction), 0.0f);
-	vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
+	const float diffuseFactor = max(dot(normalize(normal), -direction), 0.0f);
+	const vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 	
 	vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	if(diffuseFactor > 0.0f)
 	{
-		vec3 fragToEye = normalize(eyePosition - fragPos);
-        vec3 halfway = normalize(fragToEye - direction);
+		const vec3 fragToEye = normalize(eyePosition - fragPos);
+        const vec3 halfway = normalize(fragToEye - direction);
 		
 		float specularFactor = dot(normalize(normal), halfway);
 		if(specularFactor > 0.0f)
@@ -81,11 +81,11 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 vec4 CalcPointLight(PointLight pLight)
 {
     vec3 direction = fragPos - pLight.position;
-    float distance = length(direction);
+    const float distance = length(direction);
     direction = normalize(direction);
     
-    vec4 color = CalcLightByDirection(pLight.base, direction);
-    float attenuation = pLight.exponential * distance * distance +
+    const vec4 color = CalcLightByDirection(pLight.base, direction);
+    const float attenuation = pLight.exponential * distance * distance +
                         pLight.linear * distance +
                         pLight.constant;
     
@@ -94,13 +94,13 @@ vec4 CalcPointLight(PointLight pLight)
 
 vec4 CalcSpotLight(SpotLight sLight)
 {
-    vec3 rayDirection = normalize(fragPos - sLight.base.position);
-    float slFactor = dot(rayDirection, sLight.direction);
+    const vec3 rayDirection = normalize(fragPos - sLight.base.position);
+    const float slFactor = dot(rayDirection, sLight.direction);
 
 	if (slFactor <= sLight.edge)
 		return vec4(0, 0, 0, 0);
 
-	vec4 color = CalcPointLight(sLight.base);
+	const vec4 color = CalcPointLight(sLight.base);
     return color * (1.0f - (1.0f - slFactor) * (1.0f / (1.0f - sLight.edge)));
 }
 

@@ -22,18 +22,16 @@ namespace
 
     std::string readFile(std::string_view fileLocation)
     {
-        std::string content {};
         std::ifstream fileStream{std::filesystem::path{fileLocation}};
 
         if (!fileStream.is_open())
             throw std::runtime_error("Failed to read " + std::string{fileLocation} + " File doesn't exist");
 
-        std::string line {""};
-        std::string fileContents {""};
+        std::string line {};
+        std::string fileContents {};
         while (getline(fileStream, line))
             fileContents += line + '\n';
 
-        fileStream.close();
         return fileContents;
     }
 

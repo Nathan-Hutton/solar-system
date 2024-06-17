@@ -11,7 +11,7 @@ void main()
 { 
     const float gamma = 1.8;
     vec3 hdrColor = texture(theTexture, texCoords).rgb;
-    vec3 bloomColor = texture(blurTexture, texCoords).rgb;
+    const vec3 bloomColor = texture(blurTexture, texCoords).rgb;
     hdrColor += bloomColor; // Add the blur on top of the default color
 
     vec3 toneMapped = hdrColor / (hdrColor + vec3(1.0));
