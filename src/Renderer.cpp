@@ -56,6 +56,7 @@ namespace
     Shaders shaders {};
 }
 
+// Shader nonsense
 namespace 
 {
     void createShaders(const glm::mat4& projection)
@@ -258,6 +259,7 @@ namespace
 
 }
 
+// Called when renderering
 namespace
 {
     bool shadowsEnabled {false};
@@ -409,8 +411,7 @@ void renderer::toggleShadows()
     uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.specularIntensity");
     uniformVariables.uniformShininessPlanets            = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.shininess");
 
-    for (std::unique_ptr<SpaceObject>& satellite : scene::satellites)
-        satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
+    setSpecularUniformVariables();
 }
 
 void renderer::setup(const glm::mat4& projection)
