@@ -33,7 +33,6 @@ class MainShader
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
 
         void setTexture(GLuint textureUnit) const { glUniform1i(m_uniformVariables.uniformTexture, textureUnit); }
-        void setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices) const;
 
         // Set the active shader program for subsequent rendering operations
         void useShader() const { glUseProgram(m_shaderID); }
@@ -42,7 +41,6 @@ class MainShader
 
     private:
         int m_pointLightCount;
-        GLuint m_uniformLightMatrices[6] {};
         GLuint m_shaderID {}; 
 
         struct {

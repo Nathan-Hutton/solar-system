@@ -209,15 +209,6 @@ void MainShader::compileProgram()
     m_uniformVariables.uniformOmniLightPos        = glGetUniformLocation(m_shaderID, "lightPos");
     m_uniformVariables.uniformFarPlane            = glGetUniformLocation(m_shaderID, "farPlane");
 
-    // Light matrices
-    for (size_t i {0}; i < 6; ++i)
-    {
-        ss << "lightMatrices[" << i << "]";
-        m_uniformLightMatrices[i] = glGetUniformLocation(m_shaderID, ss.str().c_str());
-        ss.str(""); // Clear the buffer
-        ss.clear(); // Clear error flags
-    }
-
     for (size_t i {0}; i < scene::MAX_POINT_LIGHTS + 1; ++i)
     {
         // Shadowmap
@@ -302,12 +293,6 @@ void MainShader::setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, u
 
     // The offset is to take into account that the shadowmaps are all 1 array in the shader
     glUniform1i(m_uniformOmniShadowMaps[offset].shadowMap, textureUnit);
-}
-
-void MainShader::setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices) const
-{
-    for (size_t i {0}; i < 6; ++i)
-        glUniformMatrix4fv(m_uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
 }
 
 MainShader::~MainShader()

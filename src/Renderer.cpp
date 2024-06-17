@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <array>
 #include <memory>
+#include <sstream>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -39,6 +40,7 @@ namespace
         GLuint uniformViewSuns {};
         GLuint uniformModelOmniShadowMap {};
         GLuint uniformHorizontal {};
+        GLuint uniformLightMatrices[6] {};
     };
     UniformVariables uniformVariables {};
 
@@ -46,7 +48,7 @@ namespace
         std::unique_ptr<MainShader> mainShader {}; // Initially, this is the shader that doesn't use shadows
         std::unique_ptr<MainShader> shaderNotInUse {}; // Initially this is the shader that uses shadows
         std::unique_ptr<Shader> sunShader {};
-        std::unique_ptr<MainShader> omniShadowShader {};
+        std::unique_ptr<Shader> omniShadowShader {};
         std::unique_ptr<Shader> hdrShader {};
         std::unique_ptr<Shader> bloomShader {};
         std::unique_ptr<Shader> halfShader {};
@@ -69,15 +71,25 @@ namespace
         uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShader->getShaderID(), "model");
         uniformVariables.uniformViewSuns     = glGetUniformLocation(shaders.sunShader->getShaderID(), "view");
 
-        shaders.omniShadowShader = std::make_unique<MainShader>();
+        shaders.omniShadowShader = std::make_unique<Shader>();
         shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
             "../assets/shaders/omni_shadow_map.geom",
             "../assets/shaders/omni_shadow_map.frag");
 
         // The shadow map shader will record the depth values of all objects except suns
         uniformVariables.uniformModelOmniShadowMap   = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "model");
-        uniformVariables.uniformOmniLightPos         = shaders.omniShadowShader->getOmniLightPosLocation();
-        uniformVariables.uniformFarPlane             = shaders.omniShadowShader->getFarPlaneLocation();
+        uniformVariables.uniformOmniLightPos         = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "lightPos");
+        uniformVariables.uniformFarPlane             = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "farPlane");
+        
+        // Light matrices
+        std::stringstream ss {};
+        for (size_t i {0}; i < 6; ++i)
+        {
+            ss << "lightMatrices[" << i << "]";
+            uniformVariables.uniformLightMatrices[i] = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), ss.str().c_str());
+            ss.str(""); // Clear the buffer
+            ss.clear(); // Clear error flags
+        }
 
         shaders.hdrShader = std::make_unique<Shader>();
         shaders.hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
@@ -235,6 +247,13 @@ namespace
         for (std::unique_ptr<SpaceObject>& satellite : scene::satellites)
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
+
+    void setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices)
+    {
+        for (size_t i {0}; i < 6; ++i)
+            glUniformMatrix4fv(uniformVariables.uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
+    }
+
 }
 
 namespace
@@ -280,7 +299,7 @@ namespace
 
         glUniform3fv(uniformVariables.uniformOmniLightPos, 1, glm::value_ptr(light->getPosition()));
         glUniform1f(uniformVariables.uniformFarPlane, light->getFarPlane());
-        shaders.omniShadowShader->setLightMatrices(light->calculateLightTransform());
+        setLightMatrices(light->calculateLightTransform());
 
         shaders.omniShadowShader->validate();
 
