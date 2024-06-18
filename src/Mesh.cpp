@@ -46,31 +46,29 @@ void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices
     // We've bound the shader programs which have the attributes specified with the 'layout' keyword.
     // The shader gets sent these attributes when we call glDrawElements after binding the VAO and IBO again.
 
+    // ****************************
+    // Create the vertex attributes
+    // ****************************
     // Specify how to find the vertex location attribute
 
     // In the case where we're just rendering the quad for post-processing effects,
     // we just use 2 values for each vertex since it's a 2D shape
-    const int size {threeVertices ? 3 : 2};
+    const int vertexSize {threeVertices ? 3 : 2};
+    const int stride { hasNormals ? static_cast<int>(sizeof(GLfloat)) * (vertexSize + 5) : static_cast<int>(sizeof(GLfloat)) * (vertexSize + 2) };
 
     // Not all objects need normals. Suns and quads used for post-processing don't need them
+    glVertexAttribPointer(0, vertexSize, GL_FLOAT, GL_FALSE, stride, 0);
+    glEnableVertexAttribArray(0);
+
+    // Specify how to find the vertex texture attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(vertices[0]) * vertexSize));
+    glEnableVertexAttribArray(1);
+
+    // Specify how to find the vertex normal attribute
     if (hasNormals)
     {
-        glVertexAttribPointer(0, size, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 5), 0);
-        glEnableVertexAttribArray(0);
-        // Specify how to find the vertex texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 5), (void*)(sizeof(vertices[0]) * size));
-        glEnableVertexAttribArray(1);
-        // Specify how to find the vertex normal attribute
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 5), (void*)(sizeof(vertices[0]) * 5));
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(vertices[0]) * 5));
         glEnableVertexAttribArray(2);
-    }
-    else
-    {
-        glVertexAttribPointer(0, size, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 2), 0);
-        glEnableVertexAttribArray(0);
-        // Specify how to find the vertex texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * (size + 2), (void*)(sizeof(vertices[0]) * size));
-        glEnableVertexAttribArray(1);
     }
 
     // Unbind everything

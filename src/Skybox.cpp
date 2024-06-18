@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Mesh.h"
-#include "MainShader.h"
+#include "Shader.h"
 #include "stb_image.h"
 
 
