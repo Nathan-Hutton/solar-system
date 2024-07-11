@@ -157,6 +157,7 @@ void camera::calculateViewMatrix(glm::mat4& viewMatrix)
     // manipulated instead of the vertices themselves to achieve the same effect.
     // The view space axes are the up, front, and right vectors. The view matrix transforms the scene to
     // align with these axes, enabling the rendering of the scene from the camera's perspective.
+    // The projection defines how this view matrix is projected onto the 2D screen.
     
     // Args are where the camera is, what the camera is looking at, and what its up is
     viewMatrix = glm::lookAt(position, position + front, up);

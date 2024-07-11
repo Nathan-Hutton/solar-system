@@ -12,8 +12,7 @@ out vec3 fragPos;
 out vec4 directionalLightSpacePos;
 
 uniform mat4 model;
-uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 modelToClipSpace;
 
 // We'll use this to determine where a fragment is relative to the light.
 // We'll then compare the depth of the fragment relative to the light to
@@ -25,7 +24,7 @@ void main()
     // Built in GLSL variable that holds the final position of the vertex.
     // This is the key output (not passed to fragment shader) that the program
     // Uses to make the primitives, which rasterization uses to get fragments out of
-    gl_Position = projection * view * model * vec4(pos, 1.0);
+    gl_Position = modelToClipSpace * vec4(pos, 1.0);
 
     // View the vertex from the light's perspective
     directionalLightSpacePos = directionalLightTransform * model * vec4(pos, 1.0);

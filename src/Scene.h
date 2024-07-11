@@ -17,7 +17,7 @@ namespace scene
     extern std::array<PointLight*, MAX_POINT_LIGHTS> pointLights;
     extern GLint pointLightCount;
 
-    void setupSkybox(const glm::mat4& projection);
+    void setupSkybox();
     void createObjectsDefault();
     void createObjectsFigureEight();
     void createObjects1Sun1Planet();

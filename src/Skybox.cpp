@@ -14,8 +14,7 @@ namespace
     Mesh* skyMesh {};
     GLuint textureID {};
     Shader* skyShader {};
-    GLuint uniformView {};
-    GLuint uniformProjection {};
+    GLuint uniformWorldToClip {};
 }
 
 void skybox::setup(const std::array<std::string, 6>& faceLocations)
@@ -23,9 +22,7 @@ void skybox::setup(const std::array<std::string, 6>& faceLocations)
     // Shader setup
     skyShader = new Shader{};
     skyShader->createFromFiles("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
-
-    uniformProjection   = glGetUniformLocation(skyShader->getShaderID(), "projection");
-    uniformView         = glGetUniformLocation(skyShader->getShaderID(), "view");
+    uniformWorldToClip    = glGetUniformLocation(skyShader->getShaderID(), "worldToClip");
 
     // Texture setup
     glGenTextures(1, &textureID);
@@ -87,22 +84,16 @@ void skybox::setup(const std::array<std::string, 6>& faceLocations)
     skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36, false);
 }
 
-void skybox::setProjectionMatrix(const glm::mat4& projection)
-{
-    skyShader->useShader();
-    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-}
-
-void skybox::drawSkybox(glm::mat4& viewMatrix)
+void skybox::drawSkybox(glm::mat4& view, const glm::mat4& projection)
 {
     // We only want to use the rotation values. All of the transformation values
     // are stored in the 4th column of the viewMatrix, so we'll set that column to all zeros
-    viewMatrix[3][0] = 0.0f;
-    viewMatrix[3][1] = 0.0f;
-    viewMatrix[3][2] = 0.0f;
+    view[3][0] = 0.0f;
+    view[3][1] = 0.0f;
+    view[3][2] = 0.0f;
     skyShader->useShader();
 
-    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(uniformWorldToClip, 1, GL_FALSE, glm::value_ptr(projection * view));
 
     // We can set this to GL_TEXTURE0 since it's independent of the other shaders
     glActiveTexture(GL_TEXTURE0);

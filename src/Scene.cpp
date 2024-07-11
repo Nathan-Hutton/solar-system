@@ -48,7 +48,7 @@ std::vector<std::unique_ptr<SpaceObject>> scene::stars {};
 std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount {};
 
-void scene::setupSkybox(const glm::mat4& projection)
+void scene::setupSkybox()
 {
     std::array<std::string, 6> skyboxFaces {};
     skyboxFaces[0] = "../assets/textures/skybox/rightImage.png";
@@ -58,7 +58,6 @@ void scene::setupSkybox(const glm::mat4& projection)
     skyboxFaces[4] = "../assets/textures/skybox/frontImage.png";
     skyboxFaces[5] = "../assets/textures/skybox/frontImage.png";
     skybox::setup(skyboxFaces);
-    skybox::setProjectionMatrix(projection);
 }
 
 void scene::createObjects1Sun1Planet()
