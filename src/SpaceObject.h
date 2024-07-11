@@ -32,7 +32,7 @@ class SpaceObject
         GLfloat getRotationSpeed() const { return m_rotationSpeed; }
         void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
         virtual void render() const = 0;
-        virtual void setWorldProperties(glm::mat4& model) = 0;
+        virtual void setWorldProperties(glm::mat4& model) const = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
         virtual GLfloat getCollisionDistance() const = 0;
 

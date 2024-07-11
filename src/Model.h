@@ -21,7 +21,7 @@ class Model final : public SpaceObject
         void setScaleFactor(GLfloat sFactor);
         void loadModel(const std::string& fileName);
         virtual void render() const override;
-        virtual void setWorldProperties(glm::mat4& model) override;
+        virtual void setWorldProperties(glm::mat4& model) const override;
         virtual void setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess) override;
         virtual GLfloat getCollisionDistance() const override { return m_greatestDistanceBetweenVertices; }
 

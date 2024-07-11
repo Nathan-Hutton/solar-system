@@ -60,22 +60,23 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 	const float diffuseFactor = max(dot(normalize(normal), -direction), 0.0f);
 	const vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 	
-	vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    // If there's no diffuse, there will not be any specular either
+    if (diffuseFactor <= 0.0f)
+        return (ambientColor + diffuseColor);
 	
-	if(diffuseFactor > 0.0f)
-	{
-		const vec3 fragToEye = normalize(eyePosition - fragPos);
-        const vec3 halfway = normalize(fragToEye - direction);
-		
-		float specularFactor = dot(normalize(normal), halfway);
-		if(specularFactor > 0.0f)
-		{
-			specularFactor = pow(specularFactor, material.shininess);
-			specularColor = vec4(light.color * material.specularIntensity * specularFactor, 1.0f);
-		}
-	}
+    // Compute halfway vector
+    const vec3 fragToEye = normalize(eyePosition - fragPos);
+    const vec3 halfway = normalize(fragToEye - direction);
+    
+	vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    float specularFactor = dot(normalize(normal), halfway);
+    if(specularFactor > 0.0f)
+    {
+        specularFactor = pow(specularFactor, material.shininess);
+        specularColor = vec4(light.color * material.specularIntensity * specularFactor, 1.0f);
+    }
 
-	return (ambientColor + diffuseColor + specularColor);
+    return (ambientColor + diffuseColor + specularColor);
 }
 
 vec4 CalcPointLight(PointLight pLight)

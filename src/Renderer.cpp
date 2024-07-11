@@ -328,7 +328,7 @@ namespace
         
         // Apply view matrix.
         // View matrix represents the camera's position and orientation in world.
-        // The world is actually rotated around the camera with the view matrix. The camera is stationary.
+        // The world is actually moved to and rotated around the camera with the view matrix. The camera is stationary.
         glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
 
         renderObjectsVector(scene::stars, uniformVariables.uniformModelSuns);

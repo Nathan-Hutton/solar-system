@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <glm/gtc/quaternion.hpp>
+
 namespace
 {
     glm::vec3 worldUp {glm::vec3{0.0f, 1.0f, 0.0f}};
@@ -30,6 +32,36 @@ namespace
 
     void update()
     {
+        // TODO: Uncomment this code and make quaternions work. This will resolve the issue where shaking the mouse makes the camera orientation stack up with floating-point errors
+        //// Step 1: Create a quaternion from the current orientation
+        //glm::quat orientation = glm::quat(glm::vec3(glm::radians(pitch), glm::radians(yaw), glm::radians(roll)));
+        //
+        //// Step 2: Create quaternions for the yaw, pitch, and roll changes
+        //glm::quat yawQuat = glm::angleAxis(glm::radians(yaw - oldYaw), up);
+        //glm::quat pitchQuat = glm::angleAxis(glm::radians(pitch - oldPitch), right);
+        //glm::quat rollQuat = glm::angleAxis(glm::radians(roll - oldRoll), front);
+        //
+        //// Combine the quaternions
+        //orientation = yawQuat * orientation;
+        //orientation = pitchQuat * orientation;
+        //orientation = rollQuat * orientation;
+        //
+        //// Normalize the quaternion to avoid drift
+        //orientation = glm::normalize(orientation);
+
+        //// Update the old angles
+        //oldYaw = yaw;
+        //oldPitch = pitch;
+        //oldRoll = roll;
+        //
+        //// Step 3: Convert the quaternion back to direction vectors
+        //front = -glm::normalize(orientation * glm::vec3(0.0f, 0.0f, -1.0f));
+        //up = -glm::normalize(orientation * glm::vec3(0.0f, 1.0f, 0.0f));
+        //right = glm::normalize(glm::cross(front, up));
+
+        //// Update the flashlight position and direction
+        //camera::spotLight->setFlash(camera::position, front);
+
         const glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
         front       = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
         oldYaw      = yaw;
@@ -116,6 +148,16 @@ void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
 
 void camera::calculateViewMatrix(glm::mat4& viewMatrix)
 {
+    // This creates a lookat matrix, which is a transformation matrix that positions and orients (transforms) 
+    // objects to look at a target.
+    
+    // A view matrix is a type of lookat matrix that transforms coordinates (vertices) from world space to
+    // view (camera) space. It effectively moves and rotates the entire world so the camera is at the origin 
+    // of the view space looking down the negative z axis. Can also imagine the coordinate space is being
+    // manipulated instead of the vertices themselves to achieve the same effect.
+    // The view space axes are the up, front, and right vectors. The view matrix transforms the scene to
+    // align with these axes, enabling the rendering of the scene from the camera's perspective.
+    
     // Args are where the camera is, what the camera is looking at, and what its up is
     viewMatrix = glm::lookAt(position, position + front, up);
 }

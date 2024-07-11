@@ -14,7 +14,7 @@ class Sphere : public SpaceObject
 
         void setTexturePointer(std::shared_ptr<Texture> texture) { m_texture = texture; }
         void render() const override = 0;
-        void setWorldProperties(glm::mat4& model) override;
+        void setWorldProperties(glm::mat4& model) const override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
         GLfloat getCollisionDistance() const override { return m_radius; }
 

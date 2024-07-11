@@ -43,7 +43,7 @@ void Model::render() const
     }
 }
 
-void Model::setWorldProperties(glm::mat4& model)
+void Model::setWorldProperties(glm::mat4& model) const
 {
     model = glm::translate(model, getPosition());
     model = glm::rotate(model, glm::radians(getAngle()), getRotation());

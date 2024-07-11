@@ -60,7 +60,7 @@ Sphere::Sphere(GLfloat mass, GLfloat radius, int stacks, int slices, bool usingN
     m_sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), usingNormals);
 }
 
-void Sphere::setWorldProperties(glm::mat4& model)
+void Sphere::setWorldProperties(glm::mat4& model) const
 {
     model = glm::translate(model, getPosition());
     model = glm::rotate(model, glm::radians(getAngle()), getRotation());
