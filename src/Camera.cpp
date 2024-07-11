@@ -59,22 +59,25 @@ namespace
         //up = -glm::normalize(orientation * glm::vec3(0.0f, 1.0f, 0.0f));
         //right = glm::normalize(glm::cross(front, up));
 
-        //// Update the flashlight position and direction
-        //camera::spotLight->setFlash(camera::position, front);
+        // Interpolate yaw, pitch, and roll with damping
+        float dampingFactor = 0.1f; // Adjust this value for more or less damping
+        float dampedYaw = oldYaw + dampingFactor * (yaw - oldYaw);
+        float dampedPitch = oldPitch + dampingFactor * (pitch - oldPitch);
+        float dampedRoll = oldRoll + dampingFactor * (roll - oldRoll);
 
-        const glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - yaw), up)};
+        const glm::mat4 yawMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(oldYaw - dampedYaw), up)};
         front       = glm::normalize(glm::vec3{yawMatrix * glm::vec4{front, 0.0f}});
-        oldYaw      = yaw;
+        oldYaw      = dampedYaw;
         right       = glm::normalize(glm::cross(front, up));
 
-        glm::mat4 pitchMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(pitch - oldPitch), right)};
+        glm::mat4 pitchMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(dampedPitch - oldPitch), right)};
         front       = glm::normalize(glm::vec3{pitchMatrix * glm::vec4{front, 0.0f}});
-        oldPitch    = pitch;
+        oldPitch    = dampedPitch;
         up          = glm::normalize(glm::cross(right, front));
 
-        glm::mat4 rollMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(roll - oldRoll), front)};
+        glm::mat4 rollMatrix {glm::rotate(glm::mat4{1.0f}, glm::radians(dampedRoll - oldRoll), front)};
         up          = glm::normalize(glm::vec3{rollMatrix * glm::vec4{up, 0.0f}});
-        oldRoll     = roll;
+        oldRoll     = dampedRoll;
         right       = glm::normalize(glm::cross(front, up));
 
         // Update the flashlight position and direction
