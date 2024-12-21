@@ -426,6 +426,7 @@ void renderer::setup(const glm::mat4& projection)
     createShaders();
     setupPostProcessingObjects();
     setSpecularUniformVariables();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void renderer::omniShadowMapPasses()
@@ -443,7 +444,6 @@ void renderer::renderPass()
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
     glViewport(0, 0, 1920, 1200);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     renderAllObjects();
     handleBloom();

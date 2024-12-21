@@ -60,7 +60,7 @@ namespace
         //right = glm::normalize(glm::cross(front, up));
 
         // Interpolate yaw, pitch, and roll with damping
-        float dampingFactor = 0.1f; // Adjust this value for more or less damping
+        float dampingFactor = 0.07f; // Adjust this value for more or less damping
         float dampedYaw = oldYaw + dampingFactor * (yaw - oldYaw);
         float dampedPitch = oldPitch + dampingFactor * (pitch - oldPitch);
         float dampedRoll = oldRoll + dampingFactor * (roll - oldRoll);
