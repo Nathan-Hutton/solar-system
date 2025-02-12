@@ -79,7 +79,7 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 
 vec4 CalcPointLight(PointLight pLight)
 {
-    vec3 direction = fragPos - pLight.position;
+    vec3 direction = pLight.position - fragPos;
     const float distance = length(direction);
     direction = normalize(direction);
     

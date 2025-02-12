@@ -138,7 +138,7 @@ vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 
 vec4 CalcPointLight(PointLight pLight, int shadowIndex)
 {
-    vec3 direction = fragPos - pLight.position;
+    vec3 direction = pLight.position - fragPos;
     const float distance = length(direction);
     direction = normalize(direction);
 

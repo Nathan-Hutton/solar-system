@@ -29,7 +29,7 @@ namespace
                 if (usingNormals)
                 {
                     glm::vec3 normal{x,y,z};
-                    normal = glm::normalize(normal);
+                    normal = glm::normalize(-normal);
                     vertices.push_back(normal.x);
                     vertices.push_back(normal.y);
                     vertices.push_back(normal.z);
@@ -37,14 +37,19 @@ namespace
             }
         }
 
-        for (int i {0}; i < slices * stacks + slices; ++i) {
-            indices.push_back(i);
-            indices.push_back(i + slices);
-            indices.push_back(i + slices + 1);
+        for (int i = 0; i < stacks; ++i) {
+            for (int j = 0; j < slices; ++j) {
+                int first = (i * (slices + 1)) + j;
+                int second = first + slices + 1;
 
-            indices.push_back(i + slices + 1);
-            indices.push_back(i + 1);
-            indices.push_back(i);
+                indices.push_back(first);
+                indices.push_back(first + 1);
+                indices.push_back(second);
+
+                indices.push_back(second);
+                indices.push_back(first + 1);
+                indices.push_back(second + 1);
+            }
         }
     }
 }

@@ -54,7 +54,7 @@ void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices
     // In the case where we're just rendering the quad for post-processing effects,
     // we just use 2 values for each vertex since it's a 2D shape
     const int vertexSize {threeVertices ? 3 : 2};
-    const int stride { hasNormals ? static_cast<int>(sizeof(GLfloat)) * (vertexSize + 5) : static_cast<int>(sizeof(GLfloat)) * (vertexSize + 2) };
+    const int stride { hasNormals ? static_cast<int>(sizeof(GLfloat)) * (vertexSize + 5) : static_cast<int>(sizeof(GLfloat)) * (vertexSize + 2) }; // + 2 is for the UV coords
 
     // Not all objects need normals. Suns and quads used for post-processing don't need them
     glVertexAttribPointer(0, vertexSize, GL_FLOAT, GL_FALSE, stride, 0);
