@@ -379,7 +379,7 @@ namespace
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.halfTexture);
         postProcessingResources.framebufferQuad->render();
 
-        const int amount {4};
+        const int amount {5};
         for (int _ {0}; _ < amount; ++_)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[horizontal]);
