@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include "Texture.h"
 #include "Material.h"
+#include <vector>
 
 class Mesh
 {

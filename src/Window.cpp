@@ -21,7 +21,7 @@ namespace
         if (key < 0 || key >= 1024)
             return;
 
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        if ((key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)|| (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS))
             glfwSetWindowShouldClose(window, GL_TRUE);
 
         if (action == GLFW_PRESS)

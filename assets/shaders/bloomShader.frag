@@ -180,14 +180,14 @@ const float gOffsets9[9] ={
 //   62.46208
 //};
 
-vec3 gaussianBlur(sampler2D image, vec2 centerUV, vec2 texelOffset)
+vec3 gaussianBlur(vec2 centerUV, vec2 texOffset)
 {
     vec3 colOut = vec3(0,0,0);
 
     for (int i = 0; i < 9; i++)
     {
-        const vec2 texCoordOffset = gOffsets9[i] * texelOffset;
-        const vec3 col = texture(image, centerUV + texCoordOffset).xyz + texture(image, centerUV - texCoordOffset).xyz;
+        const vec2 texCoordOffset = gOffsets9[i] * texOffset;
+        const vec3 col = texture(theTexture, centerUV + texCoordOffset).xyz + texture(theTexture, centerUV - texCoordOffset).xyz;
         colOut += gWeights9[i] * col;
     }
     return colOut;
@@ -201,6 +201,6 @@ void main()
     else
         texOffset.x=0;
 
-    fragColor.rgb = gaussianBlur(theTexture, texCoord, texOffset);
+    fragColor.rgb = gaussianBlur(texCoord, texOffset);
     fragColor.a = 1;
 }
