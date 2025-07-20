@@ -62,10 +62,8 @@ namespace
 }
 
 GLFWwindow* window::mainWindow;
-GLint window::width = 800;
-GLint window::height = 600;
-GLint window::bufferWidth = 0;
-GLint window::bufferHeight = 0;
+GLint window::windowWidth = 0;
+GLint window::windowHeight = 0;
 bool window::keys[1024] = {0};
 
 int window::initialize()
@@ -89,16 +87,18 @@ int window::initialize()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create window and OpengGL context in our GLFW app. Allows for OpenGL input as well
-    mainWindow = glfwCreateWindow(width, height, "Solar System", NULL, NULL);
+	GLFWmonitor* monitor { glfwGetPrimaryMonitor() };
+    const GLFWvidmode* mode { glfwGetVideoMode(monitor) };
+	windowWidth = mode->width;
+	windowHeight = mode->height;
+    mainWindow = glfwCreateWindow(windowWidth, windowHeight, "Solar System", monitor, NULL);
     if (!mainWindow)
     {
         glfwDestroyWindow(mainWindow);
         glfwTerminate();
         throw std::runtime_error("GLFW window creation failed");
     }
-
-    // Get Buffer size information
-    glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
+	glfwMakeContextCurrent(mainWindow);
 
     // Set the OpenGL context to be current. Directs OpenGL commands to this context.
     // An OpenGL context is a complete set of OpenGL state variables. For OpenGL commands to work,
@@ -133,7 +133,7 @@ int window::initialize()
 
     // Create viewport. This sets up the portion of the window that OpenGL will draw to
     // Sets up the rectangular area of the window that OpenGL will draw to
-    glViewport(0, 0, bufferWidth, bufferHeight);
+    glViewport(0, 0, windowWidth, windowHeight);
 
     return 1;
 }

@@ -13,6 +13,7 @@
 #include "MainShader.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Window.h"
 
 namespace
 {
@@ -161,12 +162,12 @@ namespace
         // HDR
         glGenFramebuffers(1, &postProcessingResources.postProcessingFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
-        glViewport(0, 0, 1920, 1200);
+        glViewport(0, 0, window::windowWidth, window::windowHeight);
 
         // Make the main framebuffer texture
         glGenTextures(1, &postProcessingResources.postProcessingTexture);
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.postProcessingTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, window::windowWidth, window::windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -176,7 +177,7 @@ namespace
         // Make texture for bright spots so we cacn have bloom
         glGenTextures(1, &postProcessingResources.textureToBlur);
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.textureToBlur);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1920, 1200, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, window::windowWidth, window::windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -188,7 +189,7 @@ namespace
         unsigned int RBO {};
         glGenRenderbuffers(1, &RBO);
         glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1200);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, window::windowWidth, window::windowHeight);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
         GLenum status {glCheckFramebufferStatus(GL_FRAMEBUFFER)};
@@ -362,7 +363,7 @@ namespace
     void handleBloom()
     {
         // Half the bloom texture size before the pingPongFBOs can actually start bluring it
-        glViewport(0, 0, 960, 600);
+        glViewport(0, 0, window::windowWidth/2, window::windowHeight/2);
 
         shaders.halfShader->useShader();
         glActiveTexture(GL_TEXTURE0);
@@ -393,7 +394,7 @@ namespace
         }
 
         // Make the viewport regularly sized again
-        glViewport(0, 0, 1920, 1200);
+        glViewport(0, 0, window::windowWidth, window::windowHeight);
     }
     
     // Render to the screen after we've done all the post-processing effects
@@ -442,7 +443,7 @@ void renderer::omniShadowMapPasses()
 void renderer::renderPass()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);
-    glViewport(0, 0, 1920, 1200);
+    glViewport(0, 0, window::windowWidth, window::windowHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     renderAllObjects();

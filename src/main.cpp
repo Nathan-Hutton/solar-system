@@ -102,9 +102,6 @@ namespace
 
     void setupScene()
     {
-        window::width = 1920;
-        window::height = 1200;
-
         printControls();
         setNumericalScheme();
         int selectedScene { getSelectedScene() };
@@ -135,7 +132,7 @@ namespace
         // Persective projections have an FOV. Also responsible for clipping (defined by far and near plane).
         // This is different from the clipping performed by the fragment shader.
         // Puts things into clip space. In clip space, the hardware can easily perform clipping for us between stages.
-        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferWidth) / static_cast<GLfloat>(window::bufferHeight), 1.0f, 400.0f)};
+        const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::bufferHeight) / static_cast<GLfloat>(window::windowHeight), 1.0f, 400.0f)};
         scene::setupSkybox();
         renderer::setup(projection);
     }

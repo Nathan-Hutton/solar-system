@@ -7,10 +7,8 @@ namespace window
 {
     extern GLFWwindow* mainWindow;
 
-    extern GLint width;
-    extern GLint height;
-    extern GLint bufferWidth;
-    extern GLint bufferHeight;
+	extern GLint windowWidth;
+	extern GLint windowHeight;
 
     // For keyboard input
     extern bool keys[1024];
