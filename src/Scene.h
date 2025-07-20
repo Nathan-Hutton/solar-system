@@ -3,6 +3,7 @@
 #include <vector>
 #include <array>
 #include <memory>
+#include <string>
 
 #include <glm/glm.hpp>
 
@@ -17,6 +18,8 @@ namespace scene
     extern std::vector<SpaceObject*> nonStars;
     extern std::array<PointLight*, MAX_POINT_LIGHTS> pointLights;
     extern GLint pointLightCount;
+
+	void readSceneJson(std::string filePath);
 
     void setupSkybox();
     void createObjectsDefault();

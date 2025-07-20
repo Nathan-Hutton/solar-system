@@ -1,6 +1,8 @@
 #include "Scene.h"
 
 #include <utility>
+#include <fstream>
+#include <iostream>
 
 #include "OrbitalPhysics.h"
 #include "Sun.h"
@@ -10,6 +12,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Skybox.h"
+#include <nlohmann/json.hpp>
 
 namespace 
 {
@@ -40,6 +43,155 @@ std::vector<SpaceObject*> scene::nonStars {};
 std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount {};
 
+void scene::readSceneJson(std::string filePath)
+{
+	using json = nlohmann::json;
+
+	std::ifstream file{ filePath };
+	json sceneData;
+	file >> sceneData;
+
+	// TODO: When I incorporate ImGui, just have some default camera if we don't
+	// include one in the JSON and let the user adjust it with the gui
+	if (!sceneData.contains("camera"))
+	{
+		std::cerr << "\nJson file is missing camera\n\n";
+		std::exit(EXIT_FAILURE);
+	}
+
+	if (!sceneData.contains("objects") || sceneData["objects"].empty())
+	{
+		std::cerr << "\nJson file is missing objects\n\n";
+		std::exit(EXIT_FAILURE);
+	}
+
+	// ******
+	// Camera
+	// ******
+	if (!sceneData["camera"].contains("position"))
+	{
+		std::cerr << "\nJson file camera is missing position. Using default value.\n\n";
+		camera::position = glm::vec3(0.0f, 0.0f, 50.0f);
+	}
+	else
+	{
+		const float cameraX{ sceneData["camera"]["position"][0] };
+		const float cameraY{ sceneData["camera"]["position"][1] };
+		const float cameraZ{ sceneData["camera"]["position"][2] };
+		camera::position = glm::vec3(cameraX, cameraY, cameraZ);
+	}
+
+	if (!sceneData["camera"].contains("moveSpeed"))
+	{
+		std::cerr << "\nJson file camera is missing move speed. Using default value.\n\n";
+		camera::moveSpeed = 10.0f;
+	}
+	else
+	{
+		camera::moveSpeed = sceneData["camera"]["moveSpeed"];
+	}
+
+	if (!sceneData["camera"].contains("turnSpeed"))
+	{
+		std::cerr << "\nJson file camera is missing turn speed. Using default values.\n\n";
+		camera::turnSpeed = 0.3f;
+	}
+	else
+	{
+		camera::turnSpeed = sceneData["camera"]["turnSpeed"];
+	}
+
+	if (!sceneData["camera"].contains("spotLight"))
+	{
+		std::cerr << "\nJson file camera is missing spotlight. Using default values.\n\n";
+
+		constexpr int shadowWidth{ 1024 };
+		constexpr int shadowHeight{ 1024 };
+		constexpr float near{ 0.01f };
+		constexpr float far{ 100.0f };
+		constexpr glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+		constexpr float ambientIntensity{ 0.0f };
+		constexpr float diffuseIntensity{ 0.0f };
+		constexpr glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
+		constexpr glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
+		constexpr float edge{ 20.0f };
+
+		camera::setSpotLight(shadowWidth, shadowHeight, 
+			 near, far,
+			 color[0], color[1], color[2],
+			 ambientIntensity, diffuseIntensity,
+			 camera::position,
+			 direction,
+			 attenuation[0], attenuation[1], attenuation[2],
+			 edge
+		);
+	}
+	else
+	{
+		int shadowWidth{ 1024 };
+		if (sceneData["camera"]["spotLight"].contains("shadowWidth"))
+			shadowWidth = sceneData["camera"]["spotLight"]["shadowWidth"];
+
+		int shadowHeight{ 1024 };
+		if (sceneData["camera"]["spotLight"].contains("shadowHeight"))
+			shadowHeight = sceneData["camera"]["spotLight"]["shadowHeight"];
+
+		float near{ 0.01f };
+		if (sceneData["camera"]["spotLight"].contains("near") )
+			near = sceneData["camera"]["spotLight"]["near"]; 
+
+		float far{ 100.0f };
+		if (sceneData["camera"]["spotLight"].contains("far"))
+			far = sceneData["camera"]["spotLight"]["far"];
+
+		glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+		if (sceneData["camera"]["spotLight"].contains("color"))
+		{
+			color[0] = sceneData["camera"]["spotLight"]["color"][0];
+			color[1] = sceneData["camera"]["spotLight"]["color"][1];
+			color[2] = sceneData["camera"]["spotLight"]["color"][2];
+		}
+
+		float ambientIntensity{ 0.0f };
+		if (sceneData["camera"]["spotLight"].contains("ambientIntensity"))
+			ambientIntensity = sceneData["camera"]["spotLight"]["ambientIntensity"];
+
+		float diffuseIntensity{ 10.0f };
+		if (sceneData["camera"]["spotLight"].contains("diffuseIntensity"))
+			diffuseIntensity = sceneData["camera"]["spotLight"]["diffuseIntensity"];
+
+		glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
+		if (sceneData["camera"]["spotLight"].contains("direction"))
+		{
+			direction.x = sceneData["camera"]["spotLight"]["direction"][0];
+			direction.y = sceneData["camera"]["spotLight"]["direction"][1];
+			direction.z = sceneData["camera"]["spotLight"]["direction"][2];
+		}
+
+		glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
+		if (sceneData["camera"]["spotLight"].contains("attenuation"))
+		{
+			attenuation[0] = sceneData["camera"]["spotLight"]["attenuation"][0];
+			attenuation[1] = sceneData["camera"]["spotLight"]["attenuation"][1];
+			attenuation[2] = sceneData["camera"]["spotLight"]["attenuation"][2];
+		}
+
+		float edge{ 20.0f };
+		if (sceneData["camera"]["spotLight"].contains("edge"))
+			edge = sceneData["camera"]["spotLight"]["edge"];
+
+		camera::setSpotLight(shadowWidth, shadowHeight, 
+			 near, far,
+			 color[0], color[1], color[2],
+			 ambientIntensity, diffuseIntensity,
+			 camera::position,
+			 direction,
+			 attenuation[0], attenuation[1], attenuation[2],
+			 edge
+		);
+	}
+}
+
 void scene::setupSkybox()
 {
     std::array<std::string, 6> skyboxFaces {};
@@ -54,17 +206,19 @@ void scene::setupSkybox()
 
 void scene::createObjects1Sun1Planet()
 {
-    camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
-    camera::moveSpeed = 10.0f;
-    camera::turnSpeed = 0.3f;
-    camera::setSpotLight(1024, 1024, 
-                         0.01f, 100.0f,
-                         1.0f, 1.0f, 1.0f,
-                         0.0f, 10.0f,
-                         camera::position,
-                         glm::vec3(0.0f, -1.0f, 0.0f),
-                         0.1f, 0.1f, 0.5f,
-                         20.0f);
+	readSceneJson("../jsonScenes/1planet1sun.json");
+
+    //camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
+    //camera::moveSpeed = 10.0f;
+    //camera::turnSpeed = 0.3f;
+    //camera::setSpotLight(1024, 1024, 
+    //                     0.01f, 100.0f,
+    //                     1.0f, 1.0f, 1.0f,
+    //                     0.0f, 10.0f,
+    //                     camera::position,
+    //                     glm::vec3(0.0f, -1.0f, 0.0f),
+    //                     0.1f, 0.1f, 0.5f,
+    //                     20.0f);
 
     std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun.jpg") };
     sunTexture->loadTexture();
@@ -73,7 +227,7 @@ void scene::createObjects1Sun1Planet()
 
     std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
 
-    std::unique_ptr<Sun> sun { std::make_unique<Sun>(225.0f, 5.0f, 25, 25) };
+    std::unique_ptr<Sun> sun { std::make_unique<Sun>(525.0f, 5.0f, 25, 25) };
     sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
     sun->setTexturePointer(sunTexture);
     sun->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 5.0f, 300.0f, 0.1f, 0.1f, 0.01f);
@@ -88,7 +242,7 @@ void scene::createObjects1Sun1Planet()
     std::unique_ptr<Planet> planet { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
     planet->setTexturePointer(earthTexture);
     planet->setPosition(glm::vec3{25.5f, 0.0f, -2.5f});
-    planet->setVelocity(glm::vec3{0.0f, 22.0f, 0.0f});
+    planet->setVelocity(glm::vec3{0.0f, 35.0f, 0.0f});
     planet->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
     planet->setRotationSpeed(100.0f);
 	Planet* planetPtr{ planet.get() };
