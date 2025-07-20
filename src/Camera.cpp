@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+#include <iostream>
 #include <glm/gtc/quaternion.hpp>
 
 namespace
@@ -90,6 +91,115 @@ GLfloat camera::moveSpeed {5.0f};
 GLfloat camera::turnSpeed {1.0f};
 
 std::unique_ptr<SpotLight> camera::spotLight {};
+
+void camera::jsonSetup(nlohmann::json sceneData)
+{
+	const nlohmann::json& cam = sceneData["camera"];
+	if (!cam.contains("position"))
+	{
+		std::cerr << "\nJson file camera is missing position. Using default value.\n\n";
+		camera::position = glm::vec3(0.0f, 0.0f, 50.0f);
+	}
+	else
+	{
+		const float cameraX{ cam["position"][0] };
+		const float cameraY{ cam["position"][1] };
+		const float cameraZ{ cam["position"][2] };
+		camera::position = glm::vec3(cameraX, cameraY, cameraZ);
+	}
+
+	if (!cam.contains("moveSpeed"))
+	{
+		std::cerr << "\nJson file camera is missing move speed. Using default value.\n\n";
+		camera::moveSpeed = 10.0f;
+	}
+	else
+	{
+		camera::moveSpeed = cam["moveSpeed"];
+	}
+
+	if (!cam.contains("turnSpeed"))
+	{
+		std::cerr << "\nJson file camera is missing turn speed. Using default values.\n\n";
+		camera::turnSpeed = 0.3f;
+	}
+	else
+	{
+		camera::turnSpeed = cam["turnSpeed"];
+	}
+
+	if (!cam.contains("spotLight"))
+	{
+		std::cerr << "\nJson file camera is missing spotlight. Using default values.\n\n";
+
+		constexpr int shadowWidth{ 1024 };
+		constexpr int shadowHeight{ 1024 };
+		constexpr float near{ 0.01f };
+		constexpr float far{ 100.0f };
+		constexpr glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+		constexpr float ambientIntensity{ 0.0f };
+		constexpr float diffuseIntensity{ 0.0f };
+		constexpr glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
+		constexpr glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
+		constexpr float edge{ 20.0f };
+
+		camera::setSpotLight(shadowWidth, shadowHeight, 
+			 near, far,
+			 color[0], color[1], color[2],
+			 ambientIntensity, diffuseIntensity,
+			 camera::position,
+			 direction,
+			 attenuation[0], attenuation[1], attenuation[2],
+			 edge
+		);
+	}
+	else
+	{
+		const nlohmann::json& spotLight = cam["spotLight"];
+
+		const int shadowWidth{ spotLight.value("shadowWidth", 1024) };
+		const int shadowHeight{ spotLight.value("shadowHeight", 1024) };
+		const float near{ spotLight.value("near", 0.01f) };
+		const float far{ spotLight.value("far", 100.0f) };
+		const float ambientIntensity{ spotLight.value("ambientIntensity", 0.0f) };
+		const float diffuseIntensity{ spotLight.value("diffuseIntensity", 10.0f) };
+		const float edge{ spotLight.value("edge", 20.0f) };
+
+		glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+		if (spotLight.contains("color") && spotLight["color"].is_array() && spotLight["color"].size() == 3)
+		{
+			color.x = spotLight["color"][0];
+			color.y = spotLight["color"][1];
+			color.z = spotLight["color"][2];
+		}
+
+		glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
+		if (spotLight.contains("direction") && spotLight["direction"].is_array() && spotLight["direction"].size() == 3)
+		{
+			direction.x = spotLight["direction"][0];
+			direction.y = spotLight["direction"][1];
+			direction.z = spotLight["direction"][2];
+		}
+
+		glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
+		if (spotLight.contains("attenuation") && spotLight["attenuation"].is_array() && spotLight["attenuation"].size() == 3)
+		{
+			attenuation[0] = spotLight["attenuation"][0];
+			attenuation[1] = spotLight["attenuation"][1];
+			attenuation[2] = spotLight["attenuation"][2];
+		}
+
+		setSpotLight(shadowWidth, shadowHeight, 
+			 near, far,
+			 color[0], color[1], color[2],
+			 ambientIntensity, diffuseIntensity,
+			 camera::position,
+			 direction,
+			 attenuation[0], attenuation[1], attenuation[2],
+			 edge
+		);
+	}
+}
 
 void camera::keyControl(bool* keys, GLfloat deltaTime)
 {

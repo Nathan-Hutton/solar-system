@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <nlohmann/json.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -13,6 +14,7 @@ namespace camera {
     extern GLfloat turnSpeed;
     extern std::unique_ptr<SpotLight> spotLight;
 
+	void jsonSetup(nlohmann::json sceneData);
     void keyControl(bool* keys, GLfloat deltaTime);
     void mouseControl(GLfloat xChange, GLfloat yChange);
     void setSpotLight(GLuint shadowWidth, GLuint shadowHeight,

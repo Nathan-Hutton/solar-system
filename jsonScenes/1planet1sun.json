@@ -8,13 +8,13 @@
 			"shadowHeight": 1024,
 			"near": 0.01,
 			"far": 100.0,
-			"color": [1.0, 1.0, 1.0],
 			"ambientIntensity": 0.0,
 			"diffuseIntensity": 10.0,
+			"edge": 20.0,
+			"color": [1.0, 1.0, 1.0],
 			"position": [0.0, 0.0, 0.0],
 			"direction": [0.0, -1.0, 0.0],
-			"attenuation": [0.1, 0.1, 0.5],
-			"edge": 20.0
+			"attenuation": [0.1, 0.1, 0.5]
 		}
 	},
 	"objects": [
