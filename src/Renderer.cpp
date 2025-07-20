@@ -264,7 +264,7 @@ namespace
 {
     bool shadowsEnabled {false};
 
-    void renderNonStars(const std::vector<SpaceObject*>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
+    void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
     {
         // Apply rotations, transformations, and render objects
         // Objects vertices are first transformed by the model matrix, then the view matrix
@@ -279,30 +279,6 @@ namespace
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
         for (const SpaceObject* object : objects)
-        {
-            glm::mat4 model {1.0f};
-            object->setWorldProperties(model);
-            glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-            glUniformMatrix4fv(uniformModelToClipSpace, 1, GL_FALSE, glm::value_ptr(worldToClip * model));
-            object->render();
-        }
-    }
-
-    void renderSuns(const std::vector<Sun*>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
-    {
-        // Apply rotations, transformations, and render objects
-        // Objects vertices are first transformed by the model matrix, then the view matrix
-        // to bring them into camera space, positioning them relative to the camera,
-        // then the projection matrix is applied to the view space coordinates to project them
-        // onto our 2D screen. 
-        // In the shader: gl_Position = projection * view * model * vec4(pos, 1.0);
-
-        // Model matrix positions and orients objects in the world.
-        // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
-
-        // They'll all use GL_TEXTURE2
-        glActiveTexture(GL_TEXTURE2);
-        for (const Sun* object : objects)
         {
             glm::mat4 model {1.0f};
             object->setWorldProperties(model);
@@ -364,7 +340,7 @@ namespace
         // The world is actually moved to and rotated around the camera with the view matrix. The camera is stationary.
         //glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
 
-        renderSuns(scene::stars, uniformVariables.uniformModelSuns, uniformVariables.uniformModelToClipSpaceSuns, worldToClip);
+        renderObjectsVector(scene::stars, uniformVariables.uniformModelSuns, uniformVariables.uniformModelToClipSpaceSuns, worldToClip);
 
         // =================================================
         // RENDER PLANETS, MOONS, ASTEROIDS, and the SKYBOX
@@ -376,7 +352,7 @@ namespace
         // Eye position is for specular lighting
         glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera::position));
 
-        renderNonStars(scene::nonStars, uniformVariables.uniformModelPlanets, uniformVariables.uniformModelToClipSpacePlanets, worldToClip);
+        renderObjectsVector(scene::nonStars, uniformVariables.uniformModelPlanets, uniformVariables.uniformModelToClipSpacePlanets, worldToClip);
 
         // ==============
         // RENDER SKYBOX

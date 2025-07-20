@@ -35,7 +35,7 @@ namespace
 }
 
 std::vector<std::unique_ptr<SpaceObject>> scene::movables {};
-std::vector<Sun*> scene::stars {};
+std::vector<SpaceObject*> scene::stars {};
 std::vector<SpaceObject*> scene::nonStars {};
 std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount {};
