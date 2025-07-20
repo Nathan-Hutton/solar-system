@@ -51,9 +51,6 @@ void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
     const float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
     glm::vec3* newSatellitePositions { new glm::vec3[scene::satellites.size()] };
-    glm::vec3 acceleration {};
-    glm::vec3 velocity {};
-    glm::vec3 position {};
     
     // Apply forces to all planets and moons
     for (size_t i { 0 }; i < scene::satellites.size(); ++i)
@@ -71,21 +68,44 @@ void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
             force += getForce(scene::satellites[i].get(), scene::satellites[j].get());
         }
 
-        acceleration    = force / scene::satellites[i]->getMass();
-        velocity        = scene::satellites[i]->getVelocity() + acceleration * tStep;
-        position        = scene::satellites[i]->getPosition() + velocity * tStep;
+		const glm::vec3 acceleration{ force / scene::satellites[i]->getMass() };
+		const glm::vec3 velocity{ scene::satellites[i]->getVelocity() + acceleration * tStep };
+		const glm::vec3 position{ scene::satellites[i]->getPosition() + velocity * tStep };
         scene::satellites[i]->setVelocity(velocity);
         newSatellitePositions[i] = position;
     }
 
-    // Update positions at the end of the loop so that no objects move before we get all of our data
-    for (size_t i {0}; i < scene::satellites.size(); ++i)
+    glm::vec3* newStarPositions{ new glm::vec3[scene::stars.size()] };
+    for (size_t i { 0 }; i < scene::stars.size(); ++i)
+    {
+        glm::vec3 force {0};
+
+        // Add up forces for other stars
+        for (size_t j { i+1 }; j < scene::stars.size(); ++j)
+            force += getForce(scene::stars[i].get(), scene::stars[j].get());
+        
+        // Add up forces for other satellites
+        for (size_t j { 0 }; j < scene::satellites.size(); ++j)
+            force += getForce(scene::stars[i].get(), scene::satellites[j].get());
+
+		const glm::vec3 acceleration{ force / scene::stars[i]->getMass() };
+		const glm::vec3 velocity{ scene::stars[i]->getVelocity() + acceleration * tStep };
+		const glm::vec3 position{ scene::stars[i]->getPosition() + velocity * tStep };
+        scene::stars[i]->setVelocity(velocity);
+        newStarPositions[i] = position;
+    }
+
+	// Double buffering
+    for (size_t i{ 0 }; i < scene::satellites.size(); ++i)
         scene::satellites[i]->setPositionMove(newSatellitePositions[i]);
+    for (size_t i{ 0 }; i < scene::stars.size(); ++i)
+        scene::stars[i]->setPositionMove(newStarPositions[i]);
 
     if (timeStep > MAX_TIME_STEP)
         updatePositionsEuler(timeStep - MAX_TIME_STEP);
 
     delete[] newSatellitePositions;
+	delete[] newStarPositions;
 }
 
 void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
@@ -96,12 +116,9 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
 
     timeSinceLastUpdate += MAX_TIME_STEP;
 
-    glm::vec3* newSatellitePositions { new glm::vec3[scene::satellites.size()] };
-    glm::vec3 acceleration {};
-    glm::vec3 position {};
-    
     // Apply forces to all planets and moons
-    for (size_t i { 0 }; i < scene::satellites.size(); ++i)
+    glm::vec3* newSatellitePositions { new glm::vec3[scene::satellites.size()] };
+    for (size_t i{ 0 }; i < scene::satellites.size(); ++i)
     {
         glm::vec3 force {0};
         
@@ -109,24 +126,47 @@ void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
         for (std::unique_ptr<SpaceObject>& star : scene::stars)
             force += getForce(scene::satellites[i].get(), star.get());
             
-        for (size_t j { 0 }; j < scene::satellites.size(); ++j)
+        for (size_t j{ 0 }; j < scene::satellites.size(); ++j)
         {
             if (scene::satellites[i] == scene::satellites[j]) continue;
             force += getForce(scene::satellites[i].get(), scene::satellites[j].get());
         }
 
-        acceleration    = force / scene::satellites[i]->getMass();
-        position        = 2.0f * scene::satellites[i]->getPosition() - scene::satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f);
+        const glm::vec3 acceleration{ force / scene::satellites[i]->getMass() };
+        const glm::vec3 position{ 2.0f * scene::satellites[i]->getPosition() - scene::satellites[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f) };
         scene::satellites[i]->setOldPosition(scene::satellites[i]->getPosition());
         newSatellitePositions[i] = position;
     }
 
-    // Update positions at the end of the loop so that no objects move before we get all of our data
+	// Apply forces to stars
+    glm::vec3* newStarPositions{ new glm::vec3[scene::stars.size()] };
+    for (size_t i{ 0 }; i < scene::stars.size(); ++i)
+    {
+        glm::vec3 force{ 0 };
+        
+        // Add up forces from stars
+        for (size_t j{ i+1 }; j < scene::stars.size(); ++j)
+            force += getForce(scene::stars[i].get(), scene::stars[j].get());
+            
+        // Add up forces from planets
+        for (size_t j{ 0 }; j < scene::satellites.size(); ++j)
+            force += getForce(scene::stars[i].get(), scene::satellites[j].get());
+
+        const glm::vec3 acceleration{ force / scene::stars[i]->getMass() };
+        const glm::vec3 position{ 2.0f * scene::stars[i]->getPosition() - scene::stars[i]->getOldPosition() + acceleration * pow(MAX_TIME_STEP, 2.0f) };
+        scene::stars[i]->setOldPosition(scene::stars[i]->getPosition());
+        newStarPositions[i] = position;
+    }
+
+	// Double buffering
     for (size_t i {0}; i < scene::satellites.size(); ++i)
         scene::satellites[i]->setPositionMove(newSatellitePositions[i]);
+    for (size_t i {0}; i < scene::stars.size(); ++i)
+        scene::stars[i]->setPositionMove(newStarPositions[i]);
 
     // Keep doing these calculations until I can no longer do full 0.005f timesteps
     updatePositionsVerlet(timeSinceLastUpdate);
 
-    delete newSatellitePositions;
+    delete[] newSatellitePositions;
+	delete[] newStarPositions;
 }

@@ -16,10 +16,6 @@ namespace
     // This method will set old positions for all satellites in case we're using Verlet numerical integration
     void setOldPositions()
     {
-        glm::vec3 acceleration {};
-        glm::vec3 velocity {};
-        glm::vec3 position {};
-        
         // Apply forces to all planets and moons
         for (std::unique_ptr<SpaceObject>& satellite1 : scene::satellites)
         {
@@ -36,9 +32,27 @@ namespace
                 force += orbitalPhysics::getForce(satellite1.get(), satellite2.get());
             }
 
-            acceleration    = force / satellite1->getMass();
-            velocity        = satellite1->getVelocity() + acceleration * 0.005f;
+			const glm::vec3 acceleration{ force / satellite1->getMass() };
+            const glm::vec3 velocity{ satellite1->getVelocity() + acceleration * 0.005f };
             satellite1->setOldPosition(satellite1->getPosition() - velocity * 0.005f);
+        }
+		
+        // Apply forces to stars
+        for (size_t i{ 0 }; i < scene::stars.size(); ++i)
+        {
+            glm::vec3 force {0};
+            
+            // Add up forces from stars
+            for (size_t j{ i + 1 }; j < scene::stars.size(); ++j)
+                force += orbitalPhysics::getForce(scene::stars[i].get(), scene::stars[j].get());
+                
+            // Add up forces for other satellites
+            for (const std::unique_ptr<SpaceObject>&  satellite : scene::satellites)
+                force += orbitalPhysics::getForce(scene::stars[i].get(), satellite.get());
+
+			const glm::vec3 acceleration{ force / scene::stars[i].get()->getMass() };
+            const glm::vec3 velocity{ scene::stars[i].get()->getVelocity() + acceleration * 0.005f };
+			scene::stars[i].get()->setOldPosition(scene::stars[i].get()->getPosition() - velocity * 0.005f);
         }
     }
 }
