@@ -42,35 +42,31 @@ void orbitalPhysics::updateCelestialBodyAngles(GLfloat timeStep)
 void orbitalPhysics::updatePositionsEuler(GLfloat timeStep)
 {
     const float tStep { (timeStep > MAX_TIME_STEP) ? MAX_TIME_STEP : timeStep };
-    glm::vec3* newSatellitePositions { new glm::vec3[scene::movables.size()] };
-    
-    // Apply forces to all planets and moons
-    for (size_t i { 0 }; i < scene::movables.size(); ++i)
-    {
-        glm::vec3 force {0};
-        
-        // Add up forces for other movables
-        for (size_t j { 0 }; j < scene::movables.size(); ++j)
-        {
-            if (i == j) continue;
-            force += getForce(scene::movables[i].get(), scene::movables[j].get());
-        }
+	std::vector<glm::vec3> netForces(scene::movables.size(), glm::vec3{ 0.0f });
 
-		const glm::vec3 acceleration{ force / scene::movables[i]->getMass() };
+	// Calculate pairwise net forces
+	for (size_t i{ 0 }; i < scene::movables.size(); ++i)
+	{
+		for (size_t j{ i + 1 }; j < scene::movables.size(); ++j)
+		{
+			const glm::vec3 force{ getForce(scene::movables[i].get(), scene::movables[j].get()) };
+			netForces[i] += force;
+			netForces[j] -= force;
+		}
+	}
+
+	// Calculate new velocities and positions
+	for (size_t i{ 0 }; i < scene::movables.size(); ++i)
+	{
+		const glm::vec3 acceleration{ netForces[i] / scene::movables[i]->getMass() };
 		const glm::vec3 velocity{ scene::movables[i]->getVelocity() + acceleration * tStep };
 		const glm::vec3 position{ scene::movables[i]->getPosition() + velocity * tStep };
-        scene::movables[i]->setVelocity(velocity);
-        newSatellitePositions[i] = position;
-    }
-
-	// Double buffering
-    for (size_t i{ 0 }; i < scene::movables.size(); ++i)
-        scene::movables[i]->setPositionMove(newSatellitePositions[i]);
+		scene::movables[i]->setPosition(position);
+		scene::movables[i]->setVelocity(velocity);
+	}
 
     if (timeStep > MAX_TIME_STEP)
         updatePositionsEuler(timeStep - MAX_TIME_STEP);
-
-    delete[] newSatellitePositions;
 }
 
 void orbitalPhysics::updatePositionsVerlet(GLfloat& timeSinceLastUpdate)
