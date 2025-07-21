@@ -29,8 +29,6 @@
 			},
 			"mass": 525.0,
 			"radius": 5.0,
-			"stacks": 25,
-			"slices": 25,
 			"texture": "sun.jpg",
 			"resolution": {
 				"stacks": 25,

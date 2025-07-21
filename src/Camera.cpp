@@ -95,75 +95,81 @@ std::unique_ptr<SpotLight> camera::spotLight {};
 void camera::jsonSetup(nlohmann::json sceneData)
 {
 	const nlohmann::json& cam = sceneData["camera"];
-	if (!cam.contains("position"))
-	{
-		std::cerr << "\nJson file camera is missing position. Using default value.\n\n";
-		camera::position = glm::vec3(0.0f, 0.0f, 50.0f);
-	}
-	else
+
+	if (cam.contains("position") && cam["position"].is_array() && cam["position"].size() == 3)
 	{
 		const float cameraX{ cam["position"][0] };
 		const float cameraY{ cam["position"][1] };
 		const float cameraZ{ cam["position"][2] };
 		camera::position = glm::vec3(cameraX, cameraY, cameraZ);
 	}
+	else
+	{
+		std::cerr << "\nJson file camera is missing position. Using default value.\n\n";
+		camera::position = glm::vec3(0.0f, 0.0f, 50.0f);
+	}
 
-	if (!cam.contains("moveSpeed"))
+	if (cam.contains("moveSpeed"))
+		camera::moveSpeed = cam["moveSpeed"];
+	else
 	{
 		std::cerr << "\nJson file camera is missing move speed. Using default value.\n\n";
 		camera::moveSpeed = 10.0f;
 	}
-	else
-	{
-		camera::moveSpeed = cam["moveSpeed"];
-	}
 
-	if (!cam.contains("turnSpeed"))
+	if (cam.contains("turnSpeed"))
+		camera::turnSpeed = cam["turnSpeed"];
+	else
 	{
 		std::cerr << "\nJson file camera is missing turn speed. Using default values.\n\n";
 		camera::turnSpeed = 0.3f;
 	}
-	else
-	{
-		camera::turnSpeed = cam["turnSpeed"];
-	}
 
-	if (!cam.contains("spotLight"))
-	{
-		std::cerr << "\nJson file camera is missing spotlight. Using default values.\n\n";
-
-		constexpr int shadowWidth{ 1024 };
-		constexpr int shadowHeight{ 1024 };
-		constexpr float near{ 0.01f };
-		constexpr float far{ 100.0f };
-		constexpr glm::vec3 color{ 1.0f, 1.0f, 1.0f };
-		constexpr float ambientIntensity{ 0.0f };
-		constexpr float diffuseIntensity{ 0.0f };
-		constexpr glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
-		constexpr glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
-		constexpr float edge{ 20.0f };
-
-		camera::setSpotLight(shadowWidth, shadowHeight, 
-			 near, far,
-			 color[0], color[1], color[2],
-			 ambientIntensity, diffuseIntensity,
-			 camera::position,
-			 direction,
-			 attenuation[0], attenuation[1], attenuation[2],
-			 edge
-		);
-	}
-	else
+	if (cam.contains("spotLight"))
 	{
 		const nlohmann::json& spotLight = cam["spotLight"];
 
-		const int shadowWidth{ spotLight.value("shadowWidth", 1024) };
-		const int shadowHeight{ spotLight.value("shadowHeight", 1024) };
-		const float near{ spotLight.value("near", 0.01f) };
-		const float far{ spotLight.value("far", 100.0f) };
-		const float ambientIntensity{ spotLight.value("ambientIntensity", 0.0f) };
-		const float diffuseIntensity{ spotLight.value("diffuseIntensity", 10.0f) };
-		const float edge{ spotLight.value("edge", 20.0f) };
+		int shadowWidth{ 1024 };
+		if (spotLight.contains("shadowWidth"))
+			shadowWidth = spotLight["shadowWidth"];
+		else
+			std::cerr << "Json file camera is missing spotlight shadowWidth. Using default value\n";
+
+		int shadowHeight{ 1024 };
+		if (spotLight.contains("shadowHeight"))
+			shadowHeight = spotLight["shadowHeight"];
+		else
+			std::cerr << "Json file camera is missing spotlight shadowHeight. Using default value\n";
+
+		float near{ 0.01f };
+		if (spotLight.contains("near"))
+			near = spotLight["near"];
+		else
+			std::cerr << "Json file camera is missing spotlight near. Using default value\n";
+
+		float far{ 0.01f };
+		if (spotLight.contains("far"))
+			far = spotLight["far"];
+		else
+			std::cerr << "Json file camera is missing spotlight far. Using default value\n";
+
+		float ambientIntensity{ 0.0f };
+		if (spotLight.contains("ambientIntensity"))
+			ambientIntensity = spotLight["ambientIntensity"];
+		else
+			std::cerr << "Json file camera is missing spotlight ambientIntensity. Using default value\n";
+
+		float diffuseIntensity{ 10.0f };
+		if (spotLight.contains("diffuseIntensity"))
+			diffuseIntensity = spotLight["diffuseIntensity"];
+		else
+			std::cerr << "Json file camera is missing spotlight diffuseIntensity. Using default value\n";
+
+		float edge{ 20.0f };
+		if (spotLight.contains("edge"))
+			edge = spotLight["edge"];
+		else
+			std::cerr << "Json file camera is missing spotlight edge. Using default value\n";
 
 		glm::vec3 color{ 1.0f, 1.0f, 1.0f };
 		if (spotLight.contains("color") && spotLight["color"].is_array() && spotLight["color"].size() == 3)
@@ -190,6 +196,31 @@ void camera::jsonSetup(nlohmann::json sceneData)
 		}
 
 		setSpotLight(shadowWidth, shadowHeight, 
+			 near, far,
+			 color[0], color[1], color[2],
+			 ambientIntensity, diffuseIntensity,
+			 camera::position,
+			 direction,
+			 attenuation[0], attenuation[1], attenuation[2],
+			 edge
+		);
+	}
+	else
+	{
+		std::cerr << "\nJson file camera is missing spotlight. Using default values.\n\n";
+
+		constexpr int shadowWidth{ 1024 };
+		constexpr int shadowHeight{ 1024 };
+		constexpr float near{ 0.01f };
+		constexpr float far{ 100.0f };
+		constexpr glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+		constexpr float ambientIntensity{ 0.0f };
+		constexpr float diffuseIntensity{ 0.0f };
+		constexpr glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
+		constexpr glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
+		constexpr float edge{ 20.0f };
+
+		camera::setSpotLight(shadowWidth, shadowHeight, 
 			 near, far,
 			 color[0], color[1], color[2],
 			 ambientIntensity, diffuseIntensity,
