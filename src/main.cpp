@@ -22,7 +22,8 @@ namespace
         if (yScrollOffset == 0.0f) return;
 
         const GLfloat amountChange = yScrollOffset * 0.1f;
-        timeChange += (timeChange + amountChange > 3.0f || timeChange + amountChange < -0.1f) ? 0 : amountChange;
+        timeChange += (timeChange + amountChange > 3.0f || timeChange + amountChange < -0.1f) ? 0.0f : amountChange;
+		timeChange = std::max(0.0f, timeChange);
     }
 
     void printControls()
