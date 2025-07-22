@@ -298,6 +298,9 @@ void scene::readSceneJson(std::string filePath)
 			std::exit(EXIT_FAILURE);
 		}
 	}
+
+    if (orbitalPhysics::verlet)
+        setOldPositions();
 }
 
 void scene::setupSkybox()
@@ -312,44 +315,3 @@ void scene::setupSkybox()
     skybox::setup(skyboxFaces);
 }
 
-void scene::createObjects1Sun1Planet()
-{
-	readSceneJson("../jsonScenes/1planet1sun.json");
-
-    if (orbitalPhysics::verlet)
-        setOldPositions();
-}
-
-void scene::createObjectsDefault()
-{
-	readSceneJson("../jsonScenes/asteroidScene.json");
-//    std::unique_ptr<Model> asteroid { std::make_unique<Model>(0.25f, material) };
-//    asteroid->loadModel("../assets/models/asteroid.obj");
-//    asteroid->setPosition(glm::vec3{-44.0f, 0.0f, -2.5f});
-//    asteroid->setVelocity(glm::vec3{-3.0f, 27.0f, 0.0f});
-//    asteroid->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-//    asteroid->setRotationSpeed(200.0f);
-//    asteroid->setScaleFactor(0.5f);
-//	Model* asteroidPtr{ asteroid.get() };
-//    movables.push_back(std::move(asteroid));
-//	nonStars.push_back(asteroidPtr);
-//
-    if (orbitalPhysics::verlet)
-        setOldPositions();
-}
-
-void scene::createObjectsFigureEight()
-{
-	readSceneJson("../jsonScenes/figureEight.json");
-
-    if (orbitalPhysics::verlet)
-        setOldPositions();
-}
-
-void scene::createObjectsFancy()
-{
-	readSceneJson("../jsonScenes/blueSunScene.json");
-
-    if (orbitalPhysics::verlet)
-        setOldPositions();
-}

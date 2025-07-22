@@ -20,10 +20,5 @@ namespace scene
     extern GLint pointLightCount;
 
 	void readSceneJson(std::string filePath);
-
     void setupSkybox();
-    void createObjectsDefault();
-    void createObjectsFigureEight();
-    void createObjects1Sun1Planet();
-    void createObjectsFancy();
 }

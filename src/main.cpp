@@ -81,67 +81,28 @@ namespace
         }
     }
 
-    int getSelectedScene()
-    {
-        // Prompt user to select scene
-        while (true)
-        {
-            std::cout << "\033[92m" << "\nChoose a scene" << "\033[0m\n";
-            std::cout << "1: 1 planet 1 sun\n2: Lots of objects\n3: Figure eight\n4: Final release scene\n> ";
-            int selectedScene {};
-            std::cin >> selectedScene;
-
-            if (clearFailedExtraction() || (selectedScene < 1 || selectedScene > 4))
-            {
-                std::cout << "\033[91m" << "Invalid input" << "\033[0m\n";
-                continue;
-            }
-
-            return selectedScene;
-        }
-    }
-
-    void setupScene()
+    void setupScene(const std::string& jsonFilePath)
     {
         printControls();
         setNumericalScheme();
-        int selectedScene { getSelectedScene() };
+		window::initialize();
 
-        // If this isn't right here, we will get a segmentation fault
-        window::initialize();
-        
-        // Build scene based on user input
-        switch (selectedScene)
-        {
-        case 1:
-            scene::createObjects1Sun1Planet();
-            break;
-        case 2:
-            scene::createObjectsDefault();
-            break;
-        case 3:
-            scene::createObjectsFigureEight();
-            break;
-        case 4:
-            scene::createObjectsFancy();
-            break;
-        }
+		scene::readSceneJson(jsonFilePath);
 
-        // Projection defines how the 3D world is projected onto a 2D screen. We're using a perspective matrix
-        // Responsible for taking care of our perspective projection (or possibly orthographic). 
-        // Determines how 3D scene is projected onto our 2D screen. That's why it`s called a projection matrix. 
-        // Persective projections have an FOV. Also responsible for clipping (defined by far and near plane).
-        // This is different from the clipping performed by the fragment shader.
-        // Puts things into clip space. In clip space, the hardware can easily perform clipping for us between stages.
         const glm::mat4 projection {glm::perspective(glm::radians(60.0f), static_cast<GLfloat>(window::windowWidth) / static_cast<GLfloat>(window::windowHeight), 1.0f, 400.0f)};
         scene::setupSkybox();
         renderer::setup(projection);
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    setupScene();
+	if (argc != 2)
+	{
+		std::cout << "Must give 1 command line argument: json file name for setting up the scene\n";
+		std::exit(EXIT_FAILURE);
+	}
+    setupScene(argv[1]);
 
     // Loop until window is closed
     int counter {0};
