@@ -320,7 +320,6 @@ void scene::createObjects1Sun1Planet()
         setOldPositions();
 }
 
-void scene::createObjectsFigureEight(){}
 void scene::createObjectsFancy(){}
 
 void scene::createObjectsDefault()
@@ -340,65 +339,14 @@ void scene::createObjectsDefault()
     if (orbitalPhysics::verlet)
         setOldPositions();
 }
-//
-//void scene::createObjectsFigureEight()
-//{
-//    camera::position  = glm::vec3{0.0f, 0.0f, 50.0f};
-//    camera::moveSpeed = 10.0f;
-//    camera::turnSpeed = 0.3f;
-//    camera::setSpotLight(1024, 1024, 
-//                         0.01f, 100.0f,
-//                         1.0f, 1.0f, 1.0f,
-//                         0.0f, 10.0f,
-//                         camera::position,
-//                         glm::vec3(0.0f, -1.0f, 0.0f),
-//                         0.1f, 0.1f, 0.5f,
-//                         20.0f);
-//
-//    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun.jpg") };
-//    sunTexture->loadTexture();
-//    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
-//    earthTexture->loadTexture();
-//
-//    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
-//
-//    std::unique_ptr<Sun> sun1 { std::make_unique<Sun>(67.0f, 2.0f, 25, 25) };
-//    sun1->setPosition(glm::vec3{-15.0f, 0.0f, -2.5f});
-//    sun1->setTexturePointer(sunTexture);
-//    sun1->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 20.0f, 0.005f, 0.001f, 0.01f);
-//    sun1->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
-//    sun1->setAngle(90.0f);
-//    sun1->setRotationSpeed(-25.2f);
-//    pointLights[pointLightCount++] = sun1->getPointLight();
-//	Sun* sunPtr1{ sun1.get() };
-//	movables.push_back(std::move(sun1));
-//    stars.push_back(sunPtr1);
-//
-//    std::unique_ptr<Sun> sun2 { std::make_unique<Sun>(67.0f, 2.0f, 25, 25) };
-//    sun2->setPosition(glm::vec3{15.0f, 0.0f, -2.5f});
-//    sun2->setTexturePointer(sunTexture);
-//    sun2->setPointLight(1024, 1024, 0.01f, 100.0f, 1.0f, 1.0f, 1.0f, 0.1f, 20.0f, 0.005f, 0.001f, 0.01f);
-//    sun2->setRotation(glm::vec3{0.0f, 1.0f, 1.0f});
-//    sun2->setAngle(90.0f);
-//    sun2->setRotationSpeed(25.0f);
-//    pointLights[pointLightCount++] = sun2->getPointLight();
-//	Sun* sunPtr2{ sun2.get() };
-//	movables.push_back(std::move(sun2));
-//    stars.push_back(sunPtr2);
-//
-//    std::unique_ptr planet { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
-//    planet->setTexturePointer(earthTexture);
-//    planet->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
-//    planet->setVelocity(glm::vec3{17.0f, 24.675f, 0.0f});
-//    planet->setRotation(glm::vec3{-1.0f, 0.0f, -2.0f});
-//    planet->setRotationSpeed(100.0f);
-//	Planet* planetPtr{ planet.get() };
-//    movables.push_back(std::move(planet));
-//	nonStars.push_back(planetPtr);
-//
-//    if (orbitalPhysics::verlet)
-//        setOldPositions();
-//}
+
+void scene::createObjectsFigureEight()
+{
+	readSceneJson("../jsonScenes/figureEight.json");
+
+    if (orbitalPhysics::verlet)
+        setOldPositions();
+}
 //
 //void scene::createObjectsFancy()
 //{
