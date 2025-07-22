@@ -29,20 +29,20 @@
 			},
 			"mass": 525.0,
 			"radius": 5.0,
-			"texture": "sun.jpg",
 			"resolution": {
 				"stacks": 25,
 				"slices": 25
 			},
+			"texture": "../assets/textures/sun.jpg",
 			"pointLight": {
 				"shadowWidth": 1024,
 				"shadowHeight": 1024,
 				"near": 0.01,
 				"far": 100.0,
-				"color": [1.0, 1.0, 1.0],
 				"ambientIntensity": 5.0,
 				"diffuseIntensity": 300.0,
-				"attenuation": [0.1, 0.1, 0.01]
+				"attenuation": [0.1, 0.1, 0.01],
+				"color": [1.0, 1.0, 1.0]
 			}
 		},
 		{
@@ -60,7 +60,7 @@
 				"specularIntensity": 0.0,
 				"shine": 0
 			},
-			"texture": "earth.jpg",
+			"texture": "../assets/textures/earth.jpg",
 			"resolution": {
 				"stacks": 20,
 				"slices": 20
