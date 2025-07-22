@@ -1,0 +1,104 @@
+{
+	"camera": {
+		"position": [0.0, 0.0, 110.0],
+		"moveSpeed": 25.0,
+		"turnSpeed": 0.3,
+		"spotLight": {
+			"shadowWidth": 1024,
+			"shadowHeight": 1024,
+			"near": 0.01,
+			"far": 100.0,
+			"ambientIntensity": 0.0,
+			"diffuseIntensity": 10.0,
+			"edge": 20.0,
+			"color": [1.0, 1.0, 1.0],
+			"position": [0.0, 0.0, 0.0],
+			"direction": [0.0, -1.0, 0.0],
+			"attenuation": [0.1, 0.1, 0.5]
+		}
+	},
+	"objects": [
+		{
+			"type": "sun",
+			"position": [0.0, 0.0, -2.5],
+			"velocity": [0.0, 0.0, 0.0],
+			"rotation": {
+				"rotationVector": [1.0, 1.0, 0.0],
+				"rotationSpeed": -25.0,
+				"angle": 90.0
+			},
+			"mass": 429.3,
+			"radius": 7.0,
+			"resolution": {
+				"stacks": 25,
+				"slices": 25
+			},
+			"texture": "../assets/textures/sun.jpg",
+			"pointLight": {
+				"shadowWidth": 1024,
+				"shadowHeight": 1024,
+				"near": 1.0,
+				"far": 100.0,
+				"ambientIntensity": 0.2,
+				"diffuseIntensity": 15.0,
+				"attenuation": [0.0, 0.01, 1.0],
+				"color": [1.0, 1.0, 1.0]
+			}
+		},
+		{
+			"type": "planet",
+			"position": [0.0, -15.0, -2.5],
+			"velocity": [-55.0, 0.0, 0.0],
+			"rotation": {
+				"rotationVector": [1.0, 0.0, 2.0],
+				"rotationSpeed": 100.0,
+				"angle": 0.0
+			},
+			"mass": 4.0,
+			"radius": 1.0,
+			"material": "../assets/materials/planetMaterial.json",
+			"texture": "../assets/textures/earth.jpg",
+			"resolution": {
+				"stacks": 20,
+				"slices": 20
+			}
+		},
+		{
+			"type": "planet",
+			"position": [45.0, 0.0, -2.5],
+			"velocity": [0.0, -32.0, 0.0],
+			"rotation": {
+				"rotationVector": [-1.0, 0.0, -2.0],
+				"rotationSpeed": -100.0,
+				"angle": 0.0
+			},
+			"mass": 4.0,
+			"radius": 1.0,
+			"material": "../assets/materials/planetMaterial.json",
+			"texture": "../assets/textures/mars.jpg",
+			"resolution": {
+				"stacks": 20,
+				"slices": 20
+			}
+		},
+		{
+			"type": "planet",
+			"position": [42.0, 0.0, -2.5],
+			"velocity": [-3.0, -45.0, 0.0],
+			"rotation": {
+				"rotationVector": [1.0, 0.0, 2.0],
+				"rotationSpeed": 200.0,
+				"angle": 0.0
+			},
+			"mass": 1.25,
+			"radius": 0.5,
+			"material": "../assets/materials/planetMaterial.json",
+			"texture": "../assets/textures/moon.jpg",
+			"resolution": {
+				"stacks": 12,
+				"slices": 12
+			}
+		}
+
+	]
+}

@@ -40,7 +40,7 @@ namespace
 
 std::vector<std::unique_ptr<SpaceObject>> scene::movables {};
 std::vector<SpaceObject*> scene::lightEmitters {};
-std::vector<SpaceObject*> scene::nonStars {};
+std::vector<SpaceObject*> scene::litObjects {};
 std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount {};
 
@@ -320,77 +320,12 @@ void scene::createObjects1Sun1Planet()
         setOldPositions();
 }
 
-void scene::createObjectsDefault(){}
 void scene::createObjectsFigureEight(){}
 void scene::createObjectsFancy(){}
 
-//void scene::createObjectsDefault()
-//{
-//    camera::position  = glm::vec3{0.0f, 0.0f, 110.0f};
-//    camera::moveSpeed = 25.0f;
-//    camera::turnSpeed = 0.3f;
-//    camera::setSpotLight(1024, 1024, 
-//                         0.01f, 100.0f,
-//                         1.0f, 1.0f, 1.0f,
-//                         0.0f, 10.0f,
-//                         camera::position,
-//                         glm::vec3(0.0f, -1.0f, 0.0f),
-//                         0.1f, 0.1f, 0.5f,
-//                         20.0f);
-//
-//    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun.jpg") };
-//    sunTexture->loadTexture();
-//    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
-//    earthTexture->loadTexture();
-//    std::shared_ptr<Texture> marsTexture { std::make_shared<Texture>("../assets/textures/mars.jpg") };
-//    marsTexture->loadTexture();
-//    std::shared_ptr<Texture> moonTexture { std::make_shared<Texture>("../assets/textures/moon.jpg") };
-//    moonTexture->loadTexture();
-//
-//    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
-//
-//    std::unique_ptr<Sun> sun { std::make_unique<Sun>(429.3f, 7.0f, 25, 25) };
-//    sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
-//    sun->setPointLight(1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 0.2f, 15.0f, 0.0f, 0.001f, 1.0f);
-//    sun->setTexturePointer(sunTexture);
-//    sun->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
-//    sun->setAngle(90.0f);
-//    sun->setRotationSpeed(-25.0f);
-//    pointLights[pointLightCount++] = sun->getPointLight();
-//	Sun* sunPtr{ sun.get() };
-//	movables.push_back(std::move(sun));
-//	stars.push_back(sunPtr);
-//
-//    std::unique_ptr<Planet> planet { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
-//    planet->setTexturePointer(earthTexture);
-//    planet->setPosition(glm::vec3{0.0f, -15.0f, -2.5f});
-//    planet->setVelocity(glm::vec3{-55.0f, 0.0f, 0.0f});
-//    planet->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-//    planet->setRotationSpeed(100.0f);
-//	Planet* planetPtr{ planet.get() };
-//    movables.push_back(std::move(planet));
-//	nonStars.push_back(planetPtr);
-//
-//    std::unique_ptr<Planet> planet1 { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
-//    planet1->setTexturePointer(marsTexture);
-//    planet1->setPosition(glm::vec3{45.0f, 0.0f, -2.5f});
-//    planet1->setVelocity(glm::vec3{0.0f, -32.0f, 0.0f});
-//    planet1->setRotation(glm::vec3{-1.0f, 0.0f, -2.0f});
-//    planet1->setRotationSpeed(-100.0f);
-//	Planet* planet1Ptr{ planet1.get() };
-//    movables.push_back(std::move(planet1));
-//	nonStars.push_back(planet1Ptr);
-//
-//    std::unique_ptr<Moon> moon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
-//    moon->setTexturePointer(moonTexture);
-//    moon->setPosition(glm::vec3{42.0f, 0.0f, -2.5f});
-//    moon->setVelocity(glm::vec3{-3.0f, -45.0f, 0.0f});
-//    moon->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-//    moon->setRotationSpeed(200.0f);
-//	Moon* moonPtr{ moon.get() };
-//    movables.push_back(std::move(moon));
-//	nonStars.push_back(moonPtr);
-//
+void scene::createObjectsDefault()
+{
+	readSceneJson("../jsonScenes/asteroidScene.json");
 //    std::unique_ptr<Model> asteroid { std::make_unique<Model>(0.25f, material) };
 //    asteroid->loadModel("../assets/models/asteroid.obj");
 //    asteroid->setPosition(glm::vec3{-44.0f, 0.0f, -2.5f});
@@ -402,9 +337,9 @@ void scene::createObjectsFancy(){}
 //    movables.push_back(std::move(asteroid));
 //	nonStars.push_back(asteroidPtr);
 //
-//    if (orbitalPhysics::verlet)
-//        setOldPositions();
-//}
+    if (orbitalPhysics::verlet)
+        setOldPositions();
+}
 //
 //void scene::createObjectsFigureEight()
 //{
