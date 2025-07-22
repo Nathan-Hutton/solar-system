@@ -171,13 +171,15 @@ void camera::jsonSetup(nlohmann::json sceneData)
 		else
 			std::cerr << "Json file camera is missing spotlight edge. Using default value\n";
 
-		glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+		glm::vec3 color{ 1.0f };
 		if (spotLight.contains("color") && spotLight["color"].is_array() && spotLight["color"].size() == 3)
 		{
 			color.x = spotLight["color"][0];
 			color.y = spotLight["color"][1];
 			color.z = spotLight["color"][2];
 		}
+		else
+			std::cerr << "Json file camera is missing spotlight color. Using default value\n";
 
 		glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
 		if (spotLight.contains("direction") && spotLight["direction"].is_array() && spotLight["direction"].size() == 3)
@@ -186,6 +188,8 @@ void camera::jsonSetup(nlohmann::json sceneData)
 			direction.y = spotLight["direction"][1];
 			direction.z = spotLight["direction"][2];
 		}
+		else
+			std::cerr << "Json file camera is missing spotlight direction. Using default value\n";
 
 		glm::vec3 attenuation{ 0.1f, 0.1f, 0.5f };
 		if (spotLight.contains("attenuation") && spotLight["attenuation"].is_array() && spotLight["attenuation"].size() == 3)
@@ -194,6 +198,8 @@ void camera::jsonSetup(nlohmann::json sceneData)
 			attenuation[1] = spotLight["attenuation"][1];
 			attenuation[2] = spotLight["attenuation"][2];
 		}
+		else
+			std::cerr << "Json file camera is missing spotlight attenuation. Using default value\n";
 
 		setSpotLight(shadowWidth, shadowHeight, 
 			 near, far,
