@@ -320,8 +320,6 @@ void scene::createObjects1Sun1Planet()
         setOldPositions();
 }
 
-void scene::createObjectsFancy(){}
-
 void scene::createObjectsDefault()
 {
 	readSceneJson("../jsonScenes/asteroidScene.json");
@@ -347,112 +345,11 @@ void scene::createObjectsFigureEight()
     if (orbitalPhysics::verlet)
         setOldPositions();
 }
-//
-//void scene::createObjectsFancy()
-//{
-//    camera::position  = glm::vec3{0.0f, 0.0f, 150.0f};
-//    camera::moveSpeed = 30.0f;
-//    camera::turnSpeed = 0.3f;
-//    camera::setSpotLight(1024, 1024, 
-//                         0.01f, 100.0f,
-//                         1.0f, 1.0f, 1.0f,
-//                         0.0f, 10.0f,
-//                         camera::position,
-//                         glm::vec3(0.0f, -1.0f, 0.0f),
-//                         0.1f, 0.1f, 0.5f,
-//                         20.0f);
-//
-//    std::shared_ptr<Texture> sunTexture { std::make_shared<Texture>("../assets/textures/sun2.jpg") };
-//    sunTexture->loadTexture();
-//    std::shared_ptr<Texture> earthTexture { std::make_shared<Texture>("../assets/textures/earth.jpg") };
-//    earthTexture->loadTexture();
-//    std::shared_ptr<Texture> marsTexture { std::make_shared<Texture>("../assets/textures/mars.jpg") };
-//    marsTexture->loadTexture();
-//    std::shared_ptr<Texture> moonTexture { std::make_shared<Texture>("../assets/textures/moon.jpg") };
-//    moonTexture->loadTexture();
-//    std::shared_ptr<Texture> jupiterTexture { std::make_shared<Texture>("../assets/textures/jupiter.jpg") };
-//    jupiterTexture->loadTexture();
-//    std::shared_ptr<Texture> neptuneTexture { std::make_shared<Texture>("../assets/textures/neptune.jpg") };
-//    neptuneTexture->loadTexture();
-//    std::shared_ptr<Texture> venusTexture { std::make_shared<Texture>("../assets/textures/venus.jpg") };
-//    venusTexture->loadTexture();
-//    std::shared_ptr<Texture> cloudsTexture { std::make_shared<Texture>("../assets/textures/clouds.jpg") };
-//    cloudsTexture->loadTexture();
-//
-//    std::shared_ptr<Material> material { std::make_shared<Material>(0.0f, 0) };
-//
-//    std::unique_ptr<Sun> sun { std::make_unique<Sun>(425.0f, 15.0f, 30, 30) };
-//    sun->setPosition(glm::vec3{0.0f, 0.0f, -2.5f});
-//    sun->setPointLight(1024, 1024, 1.0f, 100.0f, 1.0f, 1.0f, 1.0f, 0.2f, 15.0f, 0.0f, 0.001f, 1.0f);
-//    sun->setTexturePointer(sunTexture);
-//    sun->setRotation(glm::vec3{1.0f, 1.0f, 0.0f});
-//    sun->setAngle(90.0f);
-//    sun->setRotationSpeed(-25.0f);
-//    pointLights[pointLightCount++] = sun->getPointLight();
-//	Sun* sunPtr{ sun.get() };
-//	movables.push_back(std::move(sun));
-//    stars.push_back(sunPtr);
-//
-//    std::unique_ptr<Planet> jupiter { std::make_unique<Planet>(4.0f, material, 4.0f, 20, 20) };
-//    jupiter->setTexturePointer(jupiterTexture);
-//    jupiter->setPosition(glm::vec3{0.5f, -20.0f, 65.0f});
-//    jupiter->setVelocity(glm::vec3{0.0f, 22.0f, 0.0f});
-//    jupiter->setRotation(glm::vec3{0.0f, 1.0f, 0.0f});
-//    jupiter->setRotationSpeed(30.0f);
-//	Planet* jupiterPtr{ jupiter.get() };
-//    movables.push_back(std::move(jupiter));
-//	nonStars.push_back(jupiterPtr);
-//
-//    std::unique_ptr<Planet> neptune { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
-//    neptune->setTexturePointer(neptuneTexture);
-//    neptune->setPosition(glm::vec3{55.5f, 0.0f, -2.5f});
-//    neptune->setVelocity(glm::vec3{0.0f, 27.0f, 0.0f});
-//    neptune->setRotation(glm::vec3{0.0f, 1.0f, 0.0f});
-//    neptune->setRotationSpeed(30.0f);
-//	Planet* neptunePtr{ neptune.get() };
-//    movables.push_back(std::move(neptune));
-//	nonStars.push_back(neptunePtr);
-//
-//    std::unique_ptr<Moon> neptuneMoon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
-//    neptuneMoon->setTexturePointer(moonTexture);
-//    neptuneMoon->setPosition(glm::vec3{59.0f, 0.0f, -2.5f});
-//    neptuneMoon->setVelocity(glm::vec3{0.0f, 29.0f, 10.0f});
-//    neptuneMoon->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-//    neptuneMoon->setRotationSpeed(200.0f);
-//	Moon* neptuneMoonPtr{ neptuneMoon.get() };
-//    movables.push_back(std::move(neptuneMoon));
-//	nonStars.push_back(neptuneMoonPtr);
-//
-//    std::unique_ptr<Planet> venus { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
-//    venus->setTexturePointer(venusTexture);
-//    venus->setPosition(glm::vec3{-65.5f, 0.0f, -22.5f});
-//    venus->setVelocity(glm::vec3{0.0f, 25.0f, 8.0f});
-//    venus->setRotation(glm::vec3{0.0f, 1.0f, 0.0f});
-//    venus->setRotationSpeed(30.0f);
-//	Planet* venusPtr{ venus.get() };
-//    movables.push_back(std::move(venus));
-//	nonStars.push_back(venusPtr);
-//
-//    std::unique_ptr<Moon> venusMoon { std::make_unique<Planet>(1.25f, material, 0.5f, 20, 20) };
-//    venusMoon->setTexturePointer(cloudsTexture);
-//    venusMoon->setPosition(glm::vec3{-65.5f, -3.0f, -22.5f});
-//    venusMoon->setVelocity(glm::vec3{-4.0f, 25.0f, 8.0f});
-//    venusMoon->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-//    venusMoon->setRotationSpeed(200.0f);
-//	Planet* venusMoonPtr{ venusMoon.get() };
-//    movables.push_back(std::move(venusMoon));
-//	nonStars.push_back(venusMoonPtr);
-//
-//    std::unique_ptr<Planet> mars { std::make_unique<Planet>(4.0f, material, 1.0f, 20, 20) };
-//    mars->setTexturePointer(marsTexture);
-//    mars->setPosition(glm::vec3{35.0f, -35.0f, 22.5f});
-//    mars->setVelocity(glm::vec3{-15.0f, 15.0f, 15.0f});
-//    mars->setRotation(glm::vec3{-1.0f, 0.0f, -2.0f});
-//    mars->setRotationSpeed(-100.0f);
-//	Planet* marsPtr{ mars.get() };
-//    movables.push_back(std::move(mars));
-//	nonStars.push_back(marsPtr);
-//
-//    if (orbitalPhysics::verlet)
-//        setOldPositions();
-//}
+
+void scene::createObjectsFancy()
+{
+	readSceneJson("../jsonScenes/blueSunScene.json");
+
+    if (orbitalPhysics::verlet)
+        setOldPositions();
+}
