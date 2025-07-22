@@ -3,8 +3,8 @@
 #include <vector>
 
 Planet::Planet(float mass, std::shared_ptr<Material> material, GLfloat radius, int stacks, int slices) 
-    : Sphere { mass, radius, stacks, slices } 
-    , m_material { material }
+    : Sphere{ mass, radius, stacks, slices } 
+    , m_material{ material }
 {}
 
 void Planet::render() const

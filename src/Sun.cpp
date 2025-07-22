@@ -1,7 +1,7 @@
 #include "Sun.h"
 
 Sun::Sun(GLfloat mass, GLfloat radius, int stacks, int slices) 
-    : Sphere(mass,radius, stacks, slices, false) 
+    : Sphere(mass,radius, stacks, slices, /*hasNormals=*/false) 
 {}
 
 void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,

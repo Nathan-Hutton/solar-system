@@ -19,14 +19,14 @@ namespace
 {
     void handleTimeChange(GLfloat yScrollOffset, GLfloat& timeChange)
     {
-		if (orbitalPhysics::verlet) return;
-        if (yScrollOffset == 0.0f) return;
+		if (orbitalPhysics::verlet || yScrollOffset == 0.0f) return;
 
         const GLfloat amountChange = yScrollOffset * 0.1f;
         timeChange += (timeChange + amountChange > 3.0f || timeChange + amountChange < -0.1f) ? 0.0f : amountChange;
 		timeChange = std::max(0.0f, timeChange);
     }
 
+	// TODO: Just have a "controls" button in ImGui that shows all of these instead
     void printControls()
     {
         std::cout << "**********\n";
