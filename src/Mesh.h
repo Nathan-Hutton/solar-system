@@ -8,11 +8,10 @@
 class Mesh
 {
     public:
-        Mesh();
+        Mesh(const GLfloat* const vertices, const GLuint* const indices,
+				GLsizei numVertices, GLsizei numIndices,
+				bool hasNormals=true, bool threeVertices=true);
 
-        void createMesh(const GLfloat* const vertices, const GLuint* const indices, 
-                GLuint numOfVertices, GLuint numIndices,
-                bool hasNormals=true, bool threeVertices=true);
         void render() const;
 
         ~Mesh();

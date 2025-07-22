@@ -157,8 +157,8 @@ namespace
             0, 1, 3,  // First Triangle (Top Right, Bottom Right, Top Left)
             1, 2, 3   // Second Triangle (Bottom Right, Bottom Left, Top Left)
         };
-        postProcessingResources.framebufferQuad = std::make_unique<Mesh>();
-        postProcessingResources.framebufferQuad->createMesh(quadVertices, quadIndices, 16, 6, false, false);
+        postProcessingResources.framebufferQuad = std::make_unique<Mesh>(quadVertices, quadIndices, 16, 6, /*hasNormals=*/false, /*threeVertices=*/false);
+
         // HDR
         glGenFramebuffers(1, &postProcessingResources.postProcessingFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.postProcessingFBO);

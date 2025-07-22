@@ -57,12 +57,11 @@ namespace
 Sphere::Sphere(GLfloat mass, GLfloat radius, int stacks, int slices, bool usingNormals) 
     : SpaceObject{mass}
     , m_radius(radius)
-    , m_sphereMesh { new Mesh{} }
 {
     std::vector<GLfloat> vertices {};
     std::vector<GLuint> indices {};
     generateSphereData(vertices, indices, stacks, slices, radius, usingNormals);
-    m_sphereMesh->createMesh(vertices.data(), indices.data(), vertices.size(), indices.size(), usingNormals);
+    m_sphereMesh = new Mesh{ vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size()), usingNormals };
 }
 
 void Sphere::setWorldProperties(glm::mat4& model) const

@@ -1,27 +1,19 @@
 #include "Mesh.h"
 
-Mesh::Mesh()
-    : m_VAO { 0 }
-    , m_VBO { 0 }
-    , m_IBO { 0 }
-    , m_indexCount { 0 }
-{}
-
-void Mesh::createMesh(const GLfloat* const vertices, const GLuint* const indices, 
-        GLuint numOfVertices, GLuint numOfIndices,
-        bool hasNormals, bool threeVertices)
+Mesh::Mesh(const GLfloat* const vertices, const GLuint* const indices,
+		GLsizei numVertices, GLsizei numIndices,
+		bool hasNormals, bool threeVertices)
+	: m_indexCount{ numIndices }
 {
-    m_indexCount = numOfIndices;
-
     glGenVertexArrays(1, &m_VAO);
     glBindVertexArray(m_VAO);
     glGenBuffers(1, &m_IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numOfIndices, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numIndices, indices, GL_STATIC_DRAW);
 
     glGenBuffers(1, &m_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numOfVertices, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, vertices, GL_STATIC_DRAW);
 
     const int vertexSize {threeVertices ? 3 : 2};
     const int stride{ static_cast<int>(sizeof(GLfloat)) * (vertexSize + (hasNormals ? 5 : 2)) };

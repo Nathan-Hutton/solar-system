@@ -80,8 +80,7 @@ void skybox::setup(const std::array<std::string, 6>& faceLocations)
         1.0f, -1.0f, 1.0f,		0.0f, 0.0f
     };
 
-    skyMesh = new Mesh{};
-    skyMesh->createMesh(skyboxVertices, skyboxIndices, 64, 36, false);
+    skyMesh = new Mesh{ skyboxVertices, skyboxIndices, 64, 36, /*hasNormals=*/false };
 }
 
 void skybox::drawSkybox(glm::mat4& view, const glm::mat4& projection)
