@@ -48,18 +48,15 @@
 		{
 			"type": "planet",
 			"position": [25.0, 0.0, -2.5],
-			"velocity": [0.0, 0.0, 0.0],
+			"velocity": [0.0, 35.0, 0.0],
 			"rotation": {
 				"rotationVector": [1.0, 0.0, 2.0],
 				"rotationSpeed": 100.0,
 				"angle": 0.0
 			},
-			"mass": 1.0,
-			"radius": 4.0,
-			"material": {
-				"specularIntensity": 0.0,
-				"shine": 0
-			},
+			"mass": 4.0,
+			"radius": 1.0,
+			"material": "../assets/materials/planetMaterial.json",
 			"texture": "../assets/textures/earth.jpg",
 			"resolution": {
 				"stacks": 20,

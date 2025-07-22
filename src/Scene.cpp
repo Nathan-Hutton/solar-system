@@ -39,7 +39,7 @@ namespace
 }
 
 std::vector<std::unique_ptr<SpaceObject>> scene::movables {};
-std::vector<SpaceObject*> scene::stars {};
+std::vector<SpaceObject*> scene::lightEmitters {};
 std::vector<SpaceObject*> scene::nonStars {};
 std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount {};
@@ -131,13 +131,13 @@ void scene::readSceneJson(std::string filePath)
 		else
 			std::cerr << "Object " << i << " rotation info missing. Using defaults\n";
 
-		float mass{ 1.0f };
+		float mass{ 4.0f };
 		if (object.contains("mass"))
 			mass = object["mass"];
 		else
 			std::cerr << "Object " << i << " mass info missing. Using defaults\n";
 
-		float radius{ 5.0f };
+		float radius{ 1.0f };
 		if (object.contains("radius"))
 			radius = object["radius"];
 		else
@@ -257,12 +257,40 @@ void scene::readSceneJson(std::string filePath)
 
 			Sun* sunPtr{ sun.get() };
 			movables.push_back(std::move(sun));
-			stars.push_back(sunPtr);
+			lightEmitters.push_back(sunPtr);
 		}
 		else if (object["type"] == "planet")
 		{
 			if (object.contains("pointLight"))
 				std::cerr << "Object " << i << " is a planet but contains a pointlight\n";
+
+			std::shared_ptr<Material> material;
+			if (object.contains("material"))
+			{
+				const std::string materialFilePath{ object["material"] };
+				if (!resourceManager::materialExists(materialFilePath))
+					resourceManager::loadMaterialIntoCache(materialFilePath);
+
+				material = resourceManager::getMaterial(materialFilePath);
+			}
+			else
+			{
+				std::cerr << "Object " << i << " is a planet and material info missing. Using default\n";
+				if (!resourceManager::materialExists("../assets/materials/planetMaterial.json"))
+					resourceManager::loadMaterialIntoCache("../assets/materials/planetMaterial.json");
+
+				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
+			}
+			
+			std::unique_ptr<Planet> planet { std::make_unique<Planet>(mass, material, radius, stacks, slices) };
+			planet->setTexturePointer(texture);
+			planet->setPosition(position);
+			planet->setVelocity(velocity);
+			planet->setRotation(rotationVector);
+			planet->setRotationSpeed(rotationSpeed);
+			Planet* planetPtr{ planet.get() };
+			movables.push_back(std::move(planet));
+			litObjects.push_back(planetPtr);
 		}
 		else
 		{
@@ -287,18 +315,6 @@ void scene::setupSkybox()
 void scene::createObjects1Sun1Planet()
 {
 	readSceneJson("../jsonScenes/1planet1sun.json");
-
-	resourceManager::loadMaterialIntoCache("../assets/materials/planetMaterial.json");
-
-    std::unique_ptr<Planet> planet { std::make_unique<Planet>(4.0f, resourceManager::getMaterial("../assets/materials/planetMaterial.json"), 1.0f, 20, 20) };
-    planet->setTexturePointer(resourceManager::getTexture("../assets/textures/earth.jpg"));
-    planet->setPosition(glm::vec3{25.5f, 0.0f, -2.5f});
-    planet->setVelocity(glm::vec3{0.0f, 35.0f, 0.0f});
-    planet->setRotation(glm::vec3{1.0f, 0.0f, 2.0f});
-    planet->setRotationSpeed(100.0f);
-	Planet* planetPtr{ planet.get() };
-    movables.push_back(std::move(planet));
-	nonStars.push_back(planetPtr);
 
     if (orbitalPhysics::verlet)
         setOldPositions();
