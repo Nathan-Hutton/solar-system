@@ -19,6 +19,7 @@ namespace
 {
     void handleTimeChange(GLfloat yScrollOffset, GLfloat& timeChange)
     {
+		if (orbitalPhysics::verlet) return;
         if (yScrollOffset == 0.0f) return;
 
         const GLfloat amountChange = yScrollOffset * 0.1f;
