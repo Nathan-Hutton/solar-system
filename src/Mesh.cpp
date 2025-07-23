@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 Mesh::Mesh(const GLfloat* const vertices, const GLuint* const indices,
 		GLsizei numVertices, GLsizei numIndices,
 		bool hasNormals, bool threeVertices)
@@ -33,6 +35,60 @@ Mesh::Mesh(const GLfloat* const vertices, const GLuint* const indices,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+Mesh* Mesh::getSphereMesh(float radius, int stacks, int slices, bool hasNormals)
+{
+	std::vector<GLfloat> vertices;
+	std::vector<GLuint> indices;
+
+	for (int i {0}; i <= stacks; ++i) {
+		const float V {i / static_cast<float>(stacks)};
+		const float phi {V * glm::pi<float>()};
+
+		for (int j {0}; j <= slices; ++j) {
+			const float U {j / static_cast<float>(slices)};
+			const float theta {U * glm::pi<float>() * 2};
+
+			const float x {cosf(theta) * sinf(phi) * radius};
+			const float y {cosf(phi) * radius};
+			const float z {sinf(theta) * sinf(phi) * radius};
+
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(z);
+
+			// Calculate texture coordinates
+			vertices.push_back(U);
+			vertices.push_back(V);
+
+			if (hasNormals)
+			{
+				glm::vec3 normal{x,y,z};
+				normal = glm::normalize(-normal);
+				vertices.push_back(normal.x);
+				vertices.push_back(normal.y);
+				vertices.push_back(normal.z);
+			}
+		}
+	}
+
+	for (int i = 0; i < stacks; ++i) {
+		for (int j = 0; j < slices; ++j) {
+			int first = (i * (slices + 1)) + j;
+			int second = first + slices + 1;
+
+			indices.push_back(first);
+			indices.push_back(first + 1);
+			indices.push_back(second);
+
+			indices.push_back(second);
+			indices.push_back(first + 1);
+			indices.push_back(second + 1);
+		}
+	}
+
+	return new Mesh{ vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size()), hasNormals };
 }
 
 void Mesh::render() const

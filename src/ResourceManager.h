@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Texture.h"
+#include "Material.h"
 #include "Mesh.h"
 
 // TODO: Add shaders here

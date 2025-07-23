@@ -1,8 +1,6 @@
 #pragma once
 
 #include <GL/glew.h>
-#include "Texture.h"
-#include "Material.h"
 #include <vector>
 
 class Mesh
@@ -11,6 +9,8 @@ class Mesh
         Mesh(const GLfloat* const vertices, const GLuint* const indices,
 				GLsizei numVertices, GLsizei numIndices,
 				bool hasNormals=true, bool threeVertices=true);
+
+		static Mesh* getSphereMesh(float radius, int stacks, int slices, bool hasNormals=true);
 
         void render() const;
 

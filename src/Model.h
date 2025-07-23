@@ -9,6 +9,7 @@
 
 #include "SpaceObject.h"
 #include "Mesh.h"
+#include "Texture.h"
 
 // A mesh is a collection of vertices whereas a model is either a mesh or a collection
 // of meshes that represents a more advanced object
