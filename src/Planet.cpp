@@ -6,12 +6,6 @@ Planet::Planet(float mass, std::shared_ptr<Mesh> sphereMesh, std::shared_ptr<Mat
     : Sphere{ mass, sphereMesh, material } 
 {}
 
-void Planet::render() const
-{
-    m_texture->useTexture();
-    m_sphereMesh->render();
-}
-
 void Planet::setUniformVariables(GLuint uniformSpecularIntensity, GLuint uniformShininess)
 {
     m_specularIntensityLocation   = uniformSpecularIntensity;

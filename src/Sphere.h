@@ -13,7 +13,7 @@ class Sphere : public SpaceObject
         explicit Sphere(GLfloat mass=1.0f, std::shared_ptr<Mesh> sphereMesh=std::shared_ptr<Mesh>(), std::shared_ptr<Material> material=nullptr);
 
         void setTexturePointer(std::shared_ptr<Texture> texture) { m_texture = texture; }
-        void render() const override = 0;
+        void render() const;
         void setWorldProperties(glm::mat4& model) const override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override = 0;
 

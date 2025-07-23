@@ -14,7 +14,6 @@ class Sun final : public Sphere
             GLfloat ambientIntensity, GLfloat diffuseIntensity,
             GLfloat exponential, GLfloat linear, GLfloat constant);
         PointLight* getPointLight() const { return m_light; }
-        void render() const override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
         
         // TODO: Make the destructor decrease pointLightCount
