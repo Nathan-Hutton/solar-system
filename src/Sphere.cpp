@@ -6,12 +6,6 @@ Sphere::Sphere(GLfloat mass, std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture
     : SpaceObject{ mass, mesh, texture, material }
 {}
 
-void Sphere::render() const
-{
-    m_texture->useTexture();
-    m_mesh->render();
-}
-
 void Sphere::setWorldProperties(glm::mat4& model) const
 {
     model = glm::translate(model, getPosition());

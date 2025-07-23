@@ -37,7 +37,11 @@ class SpaceObject
         GLfloat getRotationSpeed() const { return m_rotationSpeed; }
         void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
 		std::shared_ptr<Material> getMaterial() { return m_material; }
-        virtual void render() const = 0;
+        void render() const 
+		{ 
+			m_texture->useTexture();
+			m_mesh->render();
+		}
         virtual void setWorldProperties(glm::mat4& model) const = 0;
 		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
         GLfloat getCollisionDistance() const { return m_collisionDistance; }
