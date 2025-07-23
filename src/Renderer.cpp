@@ -268,12 +268,18 @@ namespace
     {
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
-        for (const SpaceObject* object : objects)
+        for (SpaceObject* object : objects)
         {
             glm::mat4 model {1.0f};
             object->setWorldProperties(model);
             glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
             glUniformMatrix4fv(uniformModelToClipSpace, 1, GL_FALSE, glm::value_ptr(worldToClip * model));
+
+			std::shared_ptr<Material> material{ object->getMaterial() };
+			if (material != nullptr)
+			{
+				material->useMaterial(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
+			}
             object->render();
         }
     }

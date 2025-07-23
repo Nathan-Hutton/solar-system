@@ -32,6 +32,7 @@ class SpaceObject
         void setAngle(GLfloat angle) { m_angle = angle; }
         GLfloat getRotationSpeed() const { return m_rotationSpeed; }
         void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
+		std::shared_ptr<Material> getMaterial() { return m_material; }
         virtual void render() const = 0;
         virtual void setWorldProperties(glm::mat4& model) const = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;

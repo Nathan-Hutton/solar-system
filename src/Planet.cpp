@@ -8,7 +8,6 @@ Planet::Planet(float mass, std::shared_ptr<Mesh> sphereMesh, std::shared_ptr<Mat
 
 void Planet::render() const
 {
-    m_material->useMaterial(m_specularIntensityLocation, m_specularIntensityLocation);
     m_texture->useTexture();
     m_sphereMesh->render();
 }
