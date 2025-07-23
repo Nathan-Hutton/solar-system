@@ -19,7 +19,10 @@ namespace resourceManager
 	std::shared_ptr<Material> getMaterial(const std::string& path);
 	void loadMaterialIntoCache(const std::string& path);
 
-	bool meshExists(const std::string& path);
-	std::shared_ptr<Mesh> getMesh(const std::string& path);
-	void loadMeshIntoCache(const std::string& path);
+	bool fileMeshExists(const std::string& path);
+	bool sphereMeshExists(float radius, int stacks, int slices, bool hasNormals);
+	//std::shared_ptr<Mesh> getFileMesh(const std::string& path);
+	std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals);
+	void loadFileMeshIntoCache(const std::string& path);
+	void loadSphereMeshIntoCache(float radius, int stacks, int slices, bool hasNormals);
 };

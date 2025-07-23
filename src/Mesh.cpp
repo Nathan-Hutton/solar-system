@@ -37,7 +37,7 @@ Mesh::Mesh(const GLfloat* const vertices, const GLuint* const indices,
     glBindVertexArray(0);
 }
 
-Mesh* Mesh::getSphereMesh(float radius, int stacks, int slices, bool hasNormals)
+std::shared_ptr<Mesh> Mesh::getSphereMesh(float radius, int stacks, int slices, bool hasNormals)
 {
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;
@@ -88,7 +88,7 @@ Mesh* Mesh::getSphereMesh(float radius, int stacks, int slices, bool hasNormals)
 		}
 	}
 
-	return new Mesh{ vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size()), hasNormals };
+	return std::make_shared<Mesh>( vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size()), hasNormals );
 }
 
 void Mesh::render() const

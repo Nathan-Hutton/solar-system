@@ -2,7 +2,7 @@ Meshes in json:
 - Get rid of the model class. Just extend the mesh class to be able to read in obj triangle mesh files.
 - Have mesh either be sphere or objFile. If sphere, we specify args radius, stacks, and slices. If objFile, we just specify path.
 - Make just one object class. Have a bool for whether it emitsLight and a pointLight* that can be a nullptr. If it emits light, make sure the normals aren't generated.
-- In the Mesh class, just make a static method that returns a Mesh that is a sphere.
+- Make the meshes use shared pointers
 
 - Simplify skybox
 - Should make lightEmitters and litObjects use shared_ptr instead of raw pointers

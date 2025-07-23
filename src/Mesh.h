@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <vector>
+#include <memory>
 
 class Mesh
 {
@@ -10,7 +11,7 @@ class Mesh
 				GLsizei numVertices, GLsizei numIndices,
 				bool hasNormals=true, bool threeVertices=true);
 
-		static Mesh* getSphereMesh(float radius, int stacks, int slices, bool hasNormals=true);
+		static std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals=true);
 
         void render() const;
 

@@ -160,7 +160,6 @@ void scene::readSceneJson(std::string filePath)
 		else
 			std::cerr << "Object " << i << " resolution info missing. Using defaults\n";
 
-
 		std::shared_ptr<Texture> texture;
 		if (object.contains("texture"))
 		{
@@ -179,9 +178,15 @@ void scene::readSceneJson(std::string filePath)
 			texture = resourceManager::getTexture("../assets/textures/plain.png");
 		}
 
+		const bool hasNormals{ object["type"] == "planet" ? true : false };
+		if (!resourceManager::sphereMeshExists(radius, stacks, slices, hasNormals))
+			resourceManager::loadSphereMeshIntoCache(radius, stacks, slices, hasNormals);
+
+		std::shared_ptr<Mesh> sphereMesh{ resourceManager::getSphereMesh(radius, stacks, slices, hasNormals) };
+
 		if (object["type"] == "sun")
 		{
-			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, radius, stacks, slices) };
+			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, radius, stacks, slices, sphereMesh) };
 			sun->setPosition(position);
 			sun->setTexturePointer(texture);
 			sun->setRotation(rotationVector);
@@ -282,7 +287,7 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<Planet> planet { std::make_unique<Planet>(mass, material, radius, stacks, slices) };
+			std::unique_ptr<Planet> planet { std::make_unique<Planet>(mass, material, radius, stacks, slices, sphereMesh) };
 			planet->setTexturePointer(texture);
 			planet->setPosition(position);
 			planet->setVelocity(velocity);

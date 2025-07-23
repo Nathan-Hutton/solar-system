@@ -6,7 +6,8 @@ namespace
 {
 	std::unordered_map<std::string, std::shared_ptr<Texture>> textureCache;
 	std::unordered_map<std::string, std::shared_ptr<Material>> materialCache;
-	std::unordered_map<std::string, std::shared_ptr<Mesh>> meshCache;
+	std::unordered_map<std::string, std::shared_ptr<Mesh>> fileMeshCache;
+	std::unordered_map<std::string, std::shared_ptr<Mesh>> sphereMeshCache;
 }
 
 namespace resourceManager
@@ -62,5 +63,62 @@ namespace resourceManager
 
 		std::shared_ptr<Material> material{ std::make_shared<Material>(path) };
 		materialCache[path] = material;
+	}
+
+	// Meshes
+	bool fileMeshExists(const std::string& path)
+	{
+		return fileMeshCache.contains(path);
+	}
+
+	bool sphereMeshExists(float radius, int stacks, int slices, bool hasNormals)
+	{
+		return sphereMeshCache.contains(std::to_string(static_cast<int>(radius)) + '-' + std::to_string(stacks) + '-' + std::to_string(slices) + '-' + std::to_string(hasNormals));
+	}
+
+	std::shared_ptr<Mesh> getFileMesh(const std::string& path)
+	{
+		if (!fileMeshExists(path))
+			throw std::runtime_error("Requested file mesh does not exist in cache: " + path);
+
+		return fileMeshCache.at(path);
+	}
+
+	//std::shared_ptr<Mesh> getFileMesh(const std::string& path)
+	//{
+
+	//}
+
+	std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals)
+	{
+		if (!sphereMeshExists(radius, stacks, slices, hasNormals))
+			throw std::runtime_error("Requested sphere mesh does not exist in cache: " + std::to_string(static_cast<int>(radius)) + '-' + std::to_string(stacks) + '-' + std::to_string(slices) + '-' + std::to_string(hasNormals));
+
+		return sphereMeshCache.at(std::to_string(static_cast<int>(radius)) + '-' + std::to_string(stacks) + '-' + std::to_string(slices) + '-' + std::to_string(hasNormals));
+	}
+
+	
+	void loadFileMeshIntoCache(const std::string& path)
+	{
+		if (fileMeshExists(path))
+		{
+			std::cerr << "Trying to load mesh " << path << " more than once\n";
+			return;
+		}
+
+		//TODO: Finish this
+	}
+
+	void loadSphereMeshIntoCache(float radius, int stacks, int slices, bool hasNormals)
+	{
+
+		const std::string sphereName{ std::to_string(static_cast<int>(radius)) + '-' + std::to_string(stacks) + '-' + std::to_string(slices) + '-' + std::to_string(hasNormals) };
+		if (sphereMeshExists(radius, stacks, slices, hasNormals))
+		{
+			std::cerr << "Trying to load sphere " << sphereName << " more than once\n";
+			return;
+		}
+		std::shared_ptr<Mesh> sphereMesh{ Mesh::getSphereMesh(radius, stacks, slices, hasNormals) };
+		sphereMeshCache[sphereName] = sphereMesh;
 	}
 }
