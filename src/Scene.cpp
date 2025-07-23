@@ -7,7 +7,6 @@
 #include "ResourceManager.h"
 #include "OrbitalPhysics.h"
 #include "Sun.h"
-#include "Planet.h"
 #include "Model.h"
 #include "Material.h"
 #include "Scene.h"
