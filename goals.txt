@@ -20,3 +20,6 @@ Meshes in json:
 - Make Planet::render() and Sun::render() identical (easy)
 - Just use Sphere::render()
 - Remove m_specularIntensityLocation and m_shininessLocation from Sphere class, put it all in the shader or renderer class
+- Give SpaceObject a std::shared_ptr<Material>. If it's null in the renderObjectsVector method, then don't bother with material uniform variables
+
+- Make protected variables private

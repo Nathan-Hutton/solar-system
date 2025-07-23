@@ -266,16 +266,6 @@ namespace
 
     void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
     {
-        // Apply rotations, transformations, and render objects
-        // Objects vertices are first transformed by the model matrix, then the view matrix
-        // to bring them into camera space, positioning them relative to the camera,
-        // then the projection matrix is applied to the view space coordinates to project them
-        // onto our 2D screen. 
-        // In the shader: gl_Position = projection * view * model * vec4(pos, 1.0);
-
-        // Model matrix positions and orients objects in the world.
-        // Takes coordinates local to the ojbect and transforms them into coordinates relative to world space.
-
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
         for (const SpaceObject* object : objects)

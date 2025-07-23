@@ -10,7 +10,7 @@
 class Sphere : public SpaceObject
 {
     public:
-        explicit Sphere(GLfloat mass=1.0f, std::shared_ptr<Mesh> sphereMesh=std::shared_ptr<Mesh>());
+        explicit Sphere(GLfloat mass=1.0f, std::shared_ptr<Mesh> sphereMesh=std::shared_ptr<Mesh>(), std::shared_ptr<Material> material=nullptr);
 
         void setTexturePointer(std::shared_ptr<Texture> texture) { m_texture = texture; }
         void render() const override = 0;

@@ -108,7 +108,7 @@ void Model::loadMesh(aiMesh* mesh)
     //    }
     //}
 
-    Mesh *newMesh{ new Mesh{vertices.data(), indices.data(), vertices.size(), indices.size()} };
+    Mesh *newMesh{ new Mesh{vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size())} };
     m_meshList.push_back(newMesh);
     m_meshToTex.push_back(mesh->mMaterialIndex);
 }

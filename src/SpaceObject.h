@@ -10,11 +10,12 @@
 class SpaceObject
 {
     public:
-        explicit SpaceObject(GLfloat mass=1.0f) 
-            : m_mass { mass }
-            , m_position { 0.0f }
-            , m_velocity { 0.0f }
-            , m_rotation { 0.0f }
+        explicit SpaceObject(GLfloat mass=1.0f, std::shared_ptr<Material> material=nullptr) 
+            : m_mass{ mass }
+			, m_material{ material }
+            , m_position{ 0.0f }
+            , m_velocity{ 0.0f }
+            , m_rotation{ 0.0f }
         {}
 
         GLfloat getMass() const { return m_mass; }
@@ -41,6 +42,11 @@ class SpaceObject
 
     private:
         const GLfloat m_mass{};
+
+	protected:
+        std::shared_ptr<Material> m_material;
+
+	private:
         glm::vec3 m_position{};
         glm::vec3 m_velocity{};
         glm::vec3 m_rotation{};
@@ -48,4 +54,5 @@ class SpaceObject
         GLfloat m_angle{};
         GLfloat m_rotationSpeed{};
 		float m_collisionDistance{};
+
 };

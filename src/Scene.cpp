@@ -288,7 +288,7 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<Planet> planet { std::make_unique<Planet>(mass, material, sphereMesh) };
+			std::unique_ptr<Planet> planet { std::make_unique<Planet>(mass, sphereMesh, material) };
 			planet->setTexturePointer(texture);
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
