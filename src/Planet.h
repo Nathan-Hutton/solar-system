@@ -7,7 +7,7 @@
 class Planet final : public Sphere
 {
 	public:
-		explicit Planet(float mass=1.0f, std::shared_ptr<Material> material=std::make_shared<Material>(), GLfloat radius=0.5f, int stacks=20, int slices=20, std::shared_ptr<Mesh> sphereMesh=std::shared_ptr<Mesh>());
+		explicit Planet(float mass=1.0f, std::shared_ptr<Material> material=std::make_shared<Material>(), GLfloat radius=0.5f, std::shared_ptr<Mesh> sphereMesh=std::shared_ptr<Mesh>());
         void render() const override;
         void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) override;
 
