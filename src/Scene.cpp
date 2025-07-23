@@ -185,9 +185,8 @@ void scene::readSceneJson(std::string filePath)
 
 		if (object["type"] == "sun")
 		{
-			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, sphereMesh) };
+			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, sphereMesh, texture) };
 			sun->setPosition(position);
-			sun->setTexturePointer(texture);
 			sun->setRotation(rotationVector);
 			sun->setAngle(angle);
 			sun->setRotationSpeed(rotationSpeed);
@@ -287,8 +286,7 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<Sphere> planet { std::make_unique<Sphere>(mass, sphereMesh, material) };
-			planet->setTexturePointer(texture);
+			std::unique_ptr<Sphere> planet { std::make_unique<Sphere>(mass, sphereMesh, texture, material) };
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);

@@ -2,15 +2,14 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Sphere::Sphere(GLfloat mass, std::shared_ptr<Mesh> sphereMesh, std::shared_ptr<Material> material) 
-    : SpaceObject{ mass, material }
-	, m_sphereMesh{ sphereMesh }
+Sphere::Sphere(GLfloat mass, std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, std::shared_ptr<Material> material) 
+    : SpaceObject{ mass, mesh, texture, material }
 {}
 
 void Sphere::render() const
 {
     m_texture->useTexture();
-    m_sphereMesh->render();
+    m_mesh->render();
 }
 
 void Sphere::setWorldProperties(glm::mat4& model) const

@@ -1,7 +1,7 @@
 #include "Sun.h"
 
-Sun::Sun(GLfloat mass, std::shared_ptr<Mesh> sphereMesh) 
-    : Sphere{ mass, sphereMesh, nullptr } 
+Sun::Sun(GLfloat mass, std::shared_ptr<Mesh> sphereMesh, std::shared_ptr<Texture> texture) 
+    : Sphere{ mass, sphereMesh, texture, nullptr } 
 {}
 
 void Sun::setPointLight(GLuint shadowWidth, GLuint shadowHeight,

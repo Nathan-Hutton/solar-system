@@ -5,13 +5,17 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include "Mesh.h"
+#include "Texture.h"
 #include "Material.h"
 
 class SpaceObject
 {
     public:
-        explicit SpaceObject(GLfloat mass=1.0f, std::shared_ptr<Material> material=nullptr) 
+        explicit SpaceObject(GLfloat mass=1.0f, std::shared_ptr<Mesh> mesh=nullptr, std::shared_ptr<Texture> texture=nullptr, std::shared_ptr<Material> material=nullptr) 
             : m_mass{ mass }
+			, m_mesh{ mesh }
+			, m_texture{ texture }
 			, m_material{ material }
             , m_position{ 0.0f }
             , m_velocity{ 0.0f }
@@ -44,6 +48,8 @@ class SpaceObject
         const GLfloat m_mass{};
 
 	protected:
+		std::shared_ptr<Mesh> m_mesh {};
+        std::shared_ptr<Texture> m_texture {};
         std::shared_ptr<Material> m_material;
 
 	private:

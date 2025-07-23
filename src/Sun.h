@@ -6,7 +6,7 @@
 class Sun final : public Sphere
 {
     public:
-        explicit Sun(GLfloat mass=2.0f, std::shared_ptr<Mesh> sphereMesh=std::shared_ptr<Mesh>());
+        explicit Sun(GLfloat mass=2.0f, std::shared_ptr<Mesh> sphereMesh=nullptr, std::shared_ptr<Texture> texture=nullptr);
 
         void setPointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,

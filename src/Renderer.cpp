@@ -4,6 +4,7 @@
 #include <array>
 #include <memory>
 #include <sstream>
+#include <iostream>
 
 #include <glm/gtc/type_ptr.hpp>
 
