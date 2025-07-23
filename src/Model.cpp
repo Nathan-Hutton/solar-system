@@ -97,16 +97,16 @@ void Model::loadMesh(aiMesh* mesh)
 
     // Get rid of this if we ever make collision detection
     // We're calculating the greatest distance between vectors in the model
-    for (size_t i {0}; i < vertices.size(); i+=8)
-    {
-        const glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
-        for (size_t j {0}; i < vertices.size(); ++i)
-        {
-            const glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
-            const GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
-            m_greatestDistanceBetweenVertices = std::max(m_greatestDistanceBetweenVertices, displacementVectorLength);
-        }
-    }
+    //for (size_t i {0}; i < vertices.size(); i+=8)
+    //{
+    //    const glm::vec3 vertex1 {vertices[i], vertices[i+1], vertices[i+2]};
+    //    for (size_t j {0}; i < vertices.size(); ++i)
+    //    {
+    //        const glm::vec3 vertex2 {vertices[j], vertices[j+1], vertices[j+2]};
+    //        const GLfloat displacementVectorLength {glm::length(vertex1 - vertex2)};
+    //        m_greatestDistanceBetweenVertices = std::max(m_greatestDistanceBetweenVertices, displacementVectorLength);
+    //    }
+    //}
 
     Mesh *newMesh{ new Mesh{vertices.data(), indices.data(), vertices.size(), indices.size()} };
     m_meshList.push_back(newMesh);

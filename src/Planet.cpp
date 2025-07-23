@@ -2,8 +2,8 @@
 
 #include <vector>
 
-Planet::Planet(float mass, std::shared_ptr<Material> material, GLfloat radius, std::shared_ptr<Mesh> sphereMesh) 
-    : Sphere{ mass, radius, sphereMesh } 
+Planet::Planet(float mass, std::shared_ptr<Material> material, std::shared_ptr<Mesh> sphereMesh) 
+    : Sphere{ mass, sphereMesh } 
     , m_material{ material }
 {}
 

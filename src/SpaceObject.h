@@ -34,16 +34,18 @@ class SpaceObject
         virtual void render() const = 0;
         virtual void setWorldProperties(glm::mat4& model) const = 0;
         virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
-        virtual GLfloat getCollisionDistance() const = 0;
+		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
+        GLfloat getCollisionDistance() const { return m_collisionDistance; }
 
         virtual ~SpaceObject() = default;
 
     private:
-        const GLfloat m_mass {};
-        glm::vec3 m_position {};
-        glm::vec3 m_velocity {};
-        glm::vec3 m_rotation {};
-        glm::vec3 m_oldPosition {};
-        GLfloat m_angle {};
-        GLfloat m_rotationSpeed {};
+        const GLfloat m_mass{};
+        glm::vec3 m_position{};
+        glm::vec3 m_velocity{};
+        glm::vec3 m_rotation{};
+        glm::vec3 m_oldPosition{};
+        GLfloat m_angle{};
+        GLfloat m_rotationSpeed{};
+		float m_collisionDistance{};
 };
