@@ -288,14 +288,14 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<Planet> planet { std::make_unique<Planet>(mass, sphereMesh, material) };
+			std::unique_ptr<Sphere> planet { std::make_unique<Sphere>(mass, sphereMesh, material) };
 			planet->setTexturePointer(texture);
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);
 			planet->setRotationSpeed(rotationSpeed);
 			planet->setCollisionDistance(radius);
-			Planet* planetPtr{ planet.get() };
+			Sphere* planetPtr{ planet.get() };
 			movables.push_back(std::move(planet));
 			litObjects.push_back(planetPtr);
 		}

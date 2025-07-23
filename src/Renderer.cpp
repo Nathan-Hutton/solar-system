@@ -244,13 +244,6 @@ namespace
             throw std::runtime_error("Framebuffer error in Renderer namespace when trying to make postProcessingResources FBO");
     }
 
-
-    void setSpecularUniformVariables()
-    {
-        for (SpaceObject* satellite : scene::litObjects)
-            satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
-    }
-
     void setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices)
     {
         for (size_t i {0}; i < 6; ++i)
@@ -413,8 +406,6 @@ void renderer::toggleShadows()
     uniformVariables.uniformEyePositionPlanets          = glGetUniformLocation(shaders.mainShader->getShaderID(), "eyePosition");
     uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.specularIntensity");
     uniformVariables.uniformShininessPlanets            = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.shininess");
-
-    setSpecularUniformVariables();
 }
 
 void renderer::setup(const glm::mat4& projection)
@@ -422,7 +413,6 @@ void renderer::setup(const glm::mat4& projection)
     g_projection = projection;
     createShaders();
     setupPostProcessingObjects();
-    setSpecularUniformVariables();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 

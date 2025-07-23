@@ -35,7 +35,6 @@ class SpaceObject
 		std::shared_ptr<Material> getMaterial() { return m_material; }
         virtual void render() const = 0;
         virtual void setWorldProperties(glm::mat4& model) const = 0;
-        virtual void setUniformVariables(GLuint uniformSpecularIntesnity, GLuint uniformShininess) = 0;
 		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
         GLfloat getCollisionDistance() const { return m_collisionDistance; }
 
