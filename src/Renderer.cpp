@@ -247,7 +247,7 @@ namespace
 
     void setSpecularUniformVariables()
     {
-        for (std::unique_ptr<SpaceObject>& satellite : scene::movables)
+        for (SpaceObject* satellite : scene::litObjects)
             satellite->setUniformVariables(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
     }
 

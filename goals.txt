@@ -13,3 +13,10 @@ Meshes in json:
 - See if we even need to set things like the material properties in the uniform variables each frame or if that's preserved
 - See if we can make SpaceObject pointer const in renderVector() method in Renderer.cpp
 - Make collider it's own thing
+
+- Put m_specularIntensityLocation and m_shininessLocation in Renderer.cpp. Along with setUniformVariables(). Variables are from Planet.cpp. setUniformVariables is a virtual method in Sphere.
+- Put m_material and m_lightEmitting in Sphere class
+- Put m_specularIntensityLocation and m_shininessLocation in sphere class
+- Make Planet::render() and Sun::render() identical (easy)
+- Just use Sphere::render()
+- Remove m_specularIntensityLocation and m_shininessLocation from Sphere class, put it all in the shader or renderer class
