@@ -53,11 +53,16 @@ class SpaceObject
 			m_texture->useTexture();
 			m_mesh->render();
 		}
-        virtual void setWorldProperties(glm::mat4& model) const = 0;
+        void setWorldProperties(glm::mat4& model) const
+		{
+			model = glm::translate(model, getPosition());
+			model = glm::rotate(model, glm::radians(getAngle()), getRotation());
+		}
+
 		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
         GLfloat getCollisionDistance() const { return m_collisionDistance; }
 
-        virtual ~SpaceObject() 
+        ~SpaceObject() 
 		{
 			if (m_pLight != nullptr)
 				delete m_pLight;

@@ -11,7 +11,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Skybox.h"
-#include "Sphere.h"
+#include "SpaceObject.h"
 #include <nlohmann/json.hpp>
 
 namespace 
@@ -260,7 +260,7 @@ void scene::readSceneJson(std::string filePath)
 
 			pointLights[pointLightCount++] = pLight;
 
-			std::unique_ptr<Sphere> sun { std::make_unique<Sphere>(mass, true, sphereMesh, texture, nullptr, pLight) };
+			std::unique_ptr<SpaceObject> sun { std::make_unique<SpaceObject>(mass, true, sphereMesh, texture, nullptr, pLight) };
 			sun->setPosition(position);
 			sun->setRotation(rotationVector);
 			sun->setAngle(angle);
@@ -294,13 +294,13 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<Sphere> planet { std::make_unique<Sphere>(mass, false, sphereMesh, texture, material, nullptr) };
+			std::unique_ptr<SpaceObject> planet { std::make_unique<SpaceObject>(mass, false, sphereMesh, texture, material, nullptr) };
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);
 			planet->setRotationSpeed(rotationSpeed);
 			planet->setCollisionDistance(radius);
-			Sphere* planetPtr{ planet.get() };
+			SpaceObject* planetPtr{ planet.get() };
 			movables.push_back(std::move(planet));
 			litObjects.push_back(planetPtr);
 		}
