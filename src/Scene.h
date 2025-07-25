@@ -16,7 +16,7 @@ namespace scene
     extern std::vector<std::shared_ptr<SpaceObject>> movables;
     extern std::vector<std::shared_ptr<SpaceObject>> lightEmitters;
     extern std::vector<std::shared_ptr<SpaceObject>> litObjects;
-    extern std::array<PointLight*, MAX_POINT_LIGHTS> pointLights;
+    extern std::array<std::shared_ptr<PointLight>, MAX_POINT_LIGHTS> pointLights;
     extern GLint pointLightCount;
 
 	void readSceneJson(std::string filePath);

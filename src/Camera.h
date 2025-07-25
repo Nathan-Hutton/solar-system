@@ -12,7 +12,7 @@ namespace camera {
     extern glm::vec3 position;
     extern GLfloat moveSpeed;
     extern GLfloat turnSpeed;
-    extern std::unique_ptr<SpotLight> spotLight;
+    extern std::shared_ptr<SpotLight> spotLight;
 
 	void jsonSetup(nlohmann::json sceneData);
     void keyControl(bool* keys, GLfloat deltaTime);

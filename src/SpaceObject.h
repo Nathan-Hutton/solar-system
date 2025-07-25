@@ -19,7 +19,7 @@ class SpaceObject
 				std::shared_ptr<Mesh> mesh=nullptr,
 				std::shared_ptr<Texture> texture=nullptr,
 				std::shared_ptr<Material> material=nullptr,
-				PointLight* pLight=nullptr
+				std::shared_ptr<PointLight> pLight=nullptr
 			) 
             : m_mass{ mass }
 			, m_mesh{ mesh }
@@ -47,7 +47,7 @@ class SpaceObject
         GLfloat getRotationSpeed() const { return m_rotationSpeed; }
         void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
 		std::shared_ptr<Material> getMaterial() { return m_material; }
-        PointLight* getPointLight() const { return m_pLight; }
+		std::shared_ptr<PointLight> getPointLight() const { return m_pLight; }
         void render() const 
 		{ 
 			m_texture->useTexture();
@@ -62,11 +62,7 @@ class SpaceObject
 		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
         GLfloat getCollisionDistance() const { return m_collisionDistance; }
 
-        ~SpaceObject() 
-		{
-			if (m_pLight != nullptr)
-				delete m_pLight;
-		}
+        ~SpaceObject() {}
 
     private:
         const GLfloat m_mass{};
@@ -81,5 +77,5 @@ class SpaceObject
         GLfloat m_angle{};
         GLfloat m_rotationSpeed{};
 		float m_collisionDistance{};
-		PointLight* m_pLight{ nullptr };
+		std::shared_ptr<PointLight> m_pLight{ nullptr };
 };

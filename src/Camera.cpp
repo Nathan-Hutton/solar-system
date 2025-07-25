@@ -90,7 +90,7 @@ glm::vec3 camera::position {glm::vec3{0.0f}};
 GLfloat camera::moveSpeed {5.0f};
 GLfloat camera::turnSpeed {1.0f};
 
-std::unique_ptr<SpotLight> camera::spotLight {};
+std::shared_ptr<SpotLight> camera::spotLight {};
 
 void camera::jsonSetup(nlohmann::json sceneData)
 {

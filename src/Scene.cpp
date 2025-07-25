@@ -40,7 +40,7 @@ namespace
 std::vector<std::shared_ptr<SpaceObject>> scene::movables {};
 std::vector<std::shared_ptr<SpaceObject>> scene::lightEmitters {};
 std::vector<std::shared_ptr<SpaceObject>> scene::litObjects {};
-std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
+std::array<std::shared_ptr<PointLight>, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount{};
 
 void scene::readSceneJson(std::string filePath)
@@ -249,14 +249,14 @@ void scene::readSceneJson(std::string filePath)
 			else
 				std::cerr << "Object " << i << " is a sun but contains no pointlight. Using defaults.\n";
 
-			PointLight* pLight{ new PointLight{
+			std::shared_ptr<PointLight> pLight{ std::make_shared<PointLight>(
 				static_cast<GLuint>(shadowWidth), static_cast<GLuint>(shadowHeight),
 				near, far,
 				color.x, color.y, color.z,
 				ambientIntensity, diffuseIntensity,
 				position,
 				attenuation[0], attenuation[1], attenuation[2]
-			}};
+			)};
 
 			pointLights[pointLightCount++] = pLight;
 

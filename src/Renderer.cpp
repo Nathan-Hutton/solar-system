@@ -278,7 +278,7 @@ namespace
         }
     }
 
-    void omniShadowMapPass(const PointLight* const light)
+    void omniShadowMapPass(const std::shared_ptr<PointLight> light)
     {
         shaders.omniShadowShader->useShader();
 
@@ -424,7 +424,7 @@ void renderer::omniShadowMapPasses()
 
     for (int i {0}; i < scene::pointLightCount; ++i)
         omniShadowMapPass(scene::pointLights[i]);
-    omniShadowMapPass(camera::spotLight.get());
+    omniShadowMapPass(camera::spotLight);
 }
 
 void renderer::renderPass()
