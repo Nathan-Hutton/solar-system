@@ -50,13 +50,9 @@ class SpaceObject
 
     private:
         const GLfloat m_mass{};
-
-	protected:
 		std::shared_ptr<Mesh> m_mesh {};
         std::shared_ptr<Texture> m_texture {};
         std::shared_ptr<Material> m_material;
-
-	private:
         glm::vec3 m_position{};
         glm::vec3 m_velocity{};
         glm::vec3 m_rotation{};
