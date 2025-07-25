@@ -258,11 +258,11 @@ namespace
 {
     bool shadowsEnabled {false};
 
-    void renderObjectsVector(const std::vector<SpaceObject*>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
+    void renderObjectsVector(const std::vector<std::shared_ptr<SpaceObject>>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
     {
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
-        for (SpaceObject* object : objects)
+        for (std::shared_ptr<SpaceObject> object : objects)
         {
             glm::mat4 model {1.0f};
             object->setWorldProperties(model);
@@ -300,7 +300,7 @@ namespace
 
         // Draw just to the depth buffer
         //glActiveTexture(GL_TEXTURE2);
-        for (const std::unique_ptr<SpaceObject>& satellite : scene::movables)
+        for (const std::shared_ptr<SpaceObject>& satellite : scene::movables)
         {
             glm::mat4 model {1.0f};
             satellite->setWorldProperties(model);

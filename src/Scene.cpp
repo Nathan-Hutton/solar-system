@@ -19,12 +19,12 @@ namespace
     // This method will set old positions for all movables in case we're using Verlet numerical integration
     void setOldPositions()
     {
-        for (std::unique_ptr<SpaceObject>& satellite1 : scene::movables)
+        for (std::shared_ptr<SpaceObject>& satellite1 : scene::movables)
         {
             glm::vec3 force {0};
             
             // Add up forces for other movables
-            for (const std::unique_ptr<SpaceObject>&  satellite2 : scene::movables)
+            for (const std::shared_ptr<SpaceObject>&  satellite2 : scene::movables)
             {
                 if (satellite1 == satellite2) continue;
                 force += orbitalPhysics::getForce(satellite1.get(), satellite2.get());
@@ -37,11 +37,11 @@ namespace
     }
 }
 
-std::vector<std::unique_ptr<SpaceObject>> scene::movables {};
-std::vector<SpaceObject*> scene::lightEmitters {};
-std::vector<SpaceObject*> scene::litObjects {};
+std::vector<std::shared_ptr<SpaceObject>> scene::movables {};
+std::vector<std::shared_ptr<SpaceObject>> scene::lightEmitters {};
+std::vector<std::shared_ptr<SpaceObject>> scene::litObjects {};
 std::array<PointLight*, scene::MAX_POINT_LIGHTS> scene::pointLights;
-GLint scene::pointLightCount {};
+GLint scene::pointLightCount{};
 
 void scene::readSceneJson(std::string filePath)
 {
@@ -260,16 +260,15 @@ void scene::readSceneJson(std::string filePath)
 
 			pointLights[pointLightCount++] = pLight;
 
-			std::unique_ptr<SpaceObject> sun { std::make_unique<SpaceObject>(mass, true, sphereMesh, texture, nullptr, pLight) };
+			std::shared_ptr<SpaceObject> sun { std::make_unique<SpaceObject>(mass, true, sphereMesh, texture, nullptr, pLight) };
 			sun->setPosition(position);
 			sun->setRotation(rotationVector);
 			sun->setAngle(angle);
 			sun->setRotationSpeed(rotationSpeed);
 			sun->setCollisionDistance(radius);
 
-			SpaceObject* sunPtr{ sun.get() };
-			movables.push_back(std::move(sun));
-			lightEmitters.push_back(sunPtr);
+			movables.push_back(sun);
+			lightEmitters.push_back(sun);
 		}
 		else if (object["type"] == "planet")
 		{
@@ -294,15 +293,15 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<SpaceObject> planet { std::make_unique<SpaceObject>(mass, false, sphereMesh, texture, material, nullptr) };
+			std::shared_ptr<SpaceObject> planet{ std::make_unique<SpaceObject>(mass, false, sphereMesh, texture, material, nullptr) };
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);
 			planet->setRotationSpeed(rotationSpeed);
 			planet->setCollisionDistance(radius);
-			SpaceObject* planetPtr{ planet.get() };
-			movables.push_back(std::move(planet));
-			litObjects.push_back(planetPtr);
+
+			movables.push_back(planet);
+			litObjects.push_back(planet);
 		}
 		else
 		{

@@ -13,9 +13,9 @@
 namespace scene
 {
     inline constexpr int MAX_POINT_LIGHTS {3};
-    extern std::vector<std::unique_ptr<SpaceObject>> movables;
-    extern std::vector<SpaceObject*> lightEmitters;
-    extern std::vector<SpaceObject*> litObjects;
+    extern std::vector<std::shared_ptr<SpaceObject>> movables;
+    extern std::vector<std::shared_ptr<SpaceObject>> lightEmitters;
+    extern std::vector<std::shared_ptr<SpaceObject>> litObjects;
     extern std::array<PointLight*, MAX_POINT_LIGHTS> pointLights;
     extern GLint pointLightCount;
 
