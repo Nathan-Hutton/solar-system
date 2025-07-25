@@ -185,13 +185,6 @@ void scene::readSceneJson(std::string filePath)
 
 		if (object["type"] == "sun")
 		{
-			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, sphereMesh, texture) };
-			sun->setPosition(position);
-			sun->setRotation(rotationVector);
-			sun->setAngle(angle);
-			sun->setRotationSpeed(rotationSpeed);
-			sun->setCollisionDistance(radius);
-
 			int shadowWidth{ 1024 };
 			int shadowHeight{ 1024 };
 			float near{ 0.01f };
@@ -256,8 +249,23 @@ void scene::readSceneJson(std::string filePath)
 			else
 				std::cerr << "Object " << i << " is a sun but contains no pointlight. Using defaults.\n";
 
-			sun->setPointLight(shadowWidth, shadowHeight, near, far, color.x, color.y, color.z, ambientIntensity, diffuseIntensity, attenuation[0], attenuation[1], attenuation[2]);
-			pointLights[pointLightCount++] = sun->getPointLight();
+			PointLight* pLight = new PointLight{
+				static_cast<GLuint>(shadowWidth), static_cast<GLuint>(shadowHeight),
+				near, far,
+				color.x, color.y, color.z,
+				ambientIntensity, diffuseIntensity,
+				position,
+				attenuation[0], attenuation[1], attenuation[2]
+			};
+
+			pointLights[pointLightCount++] = pLight;
+
+			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, sphereMesh, texture, pLight) };
+			sun->setPosition(position);
+			sun->setRotation(rotationVector);
+			sun->setAngle(angle);
+			sun->setRotationSpeed(rotationSpeed);
+			sun->setCollisionDistance(radius);
 
 			Sun* sunPtr{ sun.get() };
 			movables.push_back(std::move(sun));
@@ -286,7 +294,7 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::unique_ptr<Sphere> planet { std::make_unique<Sphere>(mass, sphereMesh, texture, material) };
+			std::unique_ptr<Sphere> planet { std::make_unique<Sphere>(mass, false, sphereMesh, texture, material, nullptr) };
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);

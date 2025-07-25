@@ -1,23 +1,16 @@
 Meshes in json:
 - Get rid of the model class. Just extend the mesh class to be able to read in obj triangle mesh files.
-- Have mesh either be sphere or objFile. If sphere, we specify args radius, stacks, and slices. If objFile, we just specify path.
 - Make just one object class. Have a bool for whether it emitsLight and a pointLight* that can be a nullptr. If it emits light, make sure the normals aren't generated.
 - Make the meshes use shared pointers
 
 - Simplify skybox
 - Should make lightEmitters and litObjects use shared_ptr instead of raw pointers
-- Uniform variables should be stored in a shader class, not something like Planet
 - No need for Texture class to have m_fileLocation private variable
 - Don't use MainShader class and whatnot
 
 - See if we even need to set things like the material properties in the uniform variables each frame or if that's preserved
 - See if we can make SpaceObject pointer const in renderVector() method in Renderer.cpp
-- Make collider it's own thing
+- Make collider its own thing
 
-- Put m_specularIntensityLocation and m_shininessLocation in Renderer.cpp. Along with setUniformVariables(). Variables are from Planet.cpp. setUniformVariables is a virtual method in Sphere.
-- Put m_material and m_lightEmitting in Sphere class
-- Put m_specularIntensityLocation and m_shininessLocation in sphere class
-- Make Planet::render() and Sun::render() identical (easy)
-- Just use Sphere::render()
-- Remove m_specularIntensityLocation and m_shininessLocation from Sphere class, put it all in the shader or renderer class
 - Give SpaceObject a std::shared_ptr<Material>. If it's null in the renderObjectsVector method, then don't bother with material uniform variables
+- Make color a glm::vec3 for pointlight

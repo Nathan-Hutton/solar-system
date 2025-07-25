@@ -8,18 +8,28 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Material.h"
+#include "PointLight.h"
 
 class SpaceObject
 {
     public:
-        explicit SpaceObject(GLfloat mass=1.0f, std::shared_ptr<Mesh> mesh=nullptr, std::shared_ptr<Texture> texture=nullptr, std::shared_ptr<Material> material=nullptr) 
+        explicit SpaceObject(
+				GLfloat mass=1.0f,
+				bool emitsLight=false,
+				std::shared_ptr<Mesh> mesh=nullptr,
+				std::shared_ptr<Texture> texture=nullptr,
+				std::shared_ptr<Material> material=nullptr,
+				PointLight* pLight=nullptr
+			) 
             : m_mass{ mass }
 			, m_mesh{ mesh }
+			, m_emitsLight{ emitsLight }
 			, m_texture{ texture }
 			, m_material{ material }
             , m_position{ 0.0f }
             , m_velocity{ 0.0f }
             , m_rotation{ 0.0f }
+			, m_pLight{ pLight }
         {}
 
         GLfloat getMass() const { return m_mass; }
@@ -37,6 +47,7 @@ class SpaceObject
         GLfloat getRotationSpeed() const { return m_rotationSpeed; }
         void setRotationSpeed(GLfloat speed) { m_rotationSpeed = speed; }
 		std::shared_ptr<Material> getMaterial() { return m_material; }
+        PointLight* getPointLight() const { return m_pLight; }
         void render() const 
 		{ 
 			m_texture->useTexture();
@@ -46,13 +57,18 @@ class SpaceObject
 		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
         GLfloat getCollisionDistance() const { return m_collisionDistance; }
 
-        virtual ~SpaceObject() = default;
+        virtual ~SpaceObject() 
+		{
+			if (m_pLight != nullptr)
+				delete m_pLight;
+		}
 
     private:
         const GLfloat m_mass{};
-		std::shared_ptr<Mesh> m_mesh {};
-        std::shared_ptr<Texture> m_texture {};
-        std::shared_ptr<Material> m_material;
+		std::shared_ptr<Mesh> m_mesh{};
+		const bool m_emitsLight{};
+        std::shared_ptr<Texture> m_texture{};
+        std::shared_ptr<Material> m_material{};
         glm::vec3 m_position{};
         glm::vec3 m_velocity{};
         glm::vec3 m_rotation{};
@@ -60,5 +76,5 @@ class SpaceObject
         GLfloat m_angle{};
         GLfloat m_rotationSpeed{};
 		float m_collisionDistance{};
-
+		PointLight* m_pLight{ nullptr };
 };
