@@ -260,7 +260,7 @@ void scene::readSceneJson(std::string filePath)
 
 			pointLights[pointLightCount++] = pLight;
 
-			std::shared_ptr<SpaceObject> sun { std::make_unique<SpaceObject>(mass, true, sphereMesh, texture, nullptr, pLight) };
+			std::shared_ptr<SpaceObject> sun { std::make_shared<SpaceObject>(mass, true, sphereMesh, texture, nullptr, pLight) };
 			sun->setPosition(position);
 			sun->setRotation(rotationVector);
 			sun->setAngle(angle);
@@ -293,7 +293,7 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::shared_ptr<SpaceObject> planet{ std::make_unique<SpaceObject>(mass, false, sphereMesh, texture, material, nullptr) };
+			std::shared_ptr<SpaceObject> planet{ std::make_shared<SpaceObject>(mass, false, sphereMesh, texture, material, nullptr) };
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);
