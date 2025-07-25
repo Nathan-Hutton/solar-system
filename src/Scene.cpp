@@ -6,12 +6,12 @@
 
 #include "ResourceManager.h"
 #include "OrbitalPhysics.h"
-#include "Sun.h"
 #include "Model.h"
 #include "Material.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Skybox.h"
+#include "Sphere.h"
 #include <nlohmann/json.hpp>
 
 namespace 
@@ -249,25 +249,25 @@ void scene::readSceneJson(std::string filePath)
 			else
 				std::cerr << "Object " << i << " is a sun but contains no pointlight. Using defaults.\n";
 
-			PointLight* pLight = new PointLight{
+			PointLight* pLight{ new PointLight{
 				static_cast<GLuint>(shadowWidth), static_cast<GLuint>(shadowHeight),
 				near, far,
 				color.x, color.y, color.z,
 				ambientIntensity, diffuseIntensity,
 				position,
 				attenuation[0], attenuation[1], attenuation[2]
-			};
+			}};
 
 			pointLights[pointLightCount++] = pLight;
 
-			std::unique_ptr<Sun> sun { std::make_unique<Sun>(mass, sphereMesh, texture, pLight) };
+			std::unique_ptr<Sphere> sun { std::make_unique<Sphere>(mass, true, sphereMesh, texture, nullptr, pLight) };
 			sun->setPosition(position);
 			sun->setRotation(rotationVector);
 			sun->setAngle(angle);
 			sun->setRotationSpeed(rotationSpeed);
 			sun->setCollisionDistance(radius);
 
-			Sun* sunPtr{ sun.get() };
+			SpaceObject* sunPtr{ sun.get() };
 			movables.push_back(std::move(sun));
 			lightEmitters.push_back(sunPtr);
 		}
