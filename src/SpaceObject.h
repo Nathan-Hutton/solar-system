@@ -16,7 +16,7 @@ class SpaceObject
     public:
         explicit SpaceObject(
 				GLfloat mass=1.0f,
-				bool emitsLight=false,
+				bool objectGlows=false,
 				std::shared_ptr<Mesh> mesh=nullptr,
 				std::shared_ptr<Texture> texture=nullptr,
 				std::shared_ptr<Material> material=nullptr,
@@ -24,7 +24,7 @@ class SpaceObject
 			) 
             : m_mass{ mass }
 			, m_mesh{ mesh }
-			, m_emitsLight{ emitsLight }
+			, m_objectGlows{ objectGlows }
 			, m_texture{ texture }
 			, m_material{ material }
             , m_position{ 0.0f }
@@ -68,7 +68,7 @@ class SpaceObject
     private:
         const GLfloat m_mass{};
 		std::shared_ptr<Mesh> m_mesh{};
-		const bool m_emitsLight{};
+		const bool m_objectGlows{};
         std::shared_ptr<Texture> m_texture{};
         std::shared_ptr<Material> m_material{};
         glm::vec3 m_position{};

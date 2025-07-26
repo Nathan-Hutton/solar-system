@@ -163,10 +163,10 @@ void scene::readSceneJson(std::string filePath)
 		}
 
 		bool objectGlows{ false };
-		if (!object.contains("emitsLight"))
-			std::cerr << "Object " << i << " is missing emitsLight boolean. Defaulting to false.\n";
+		if (!object.contains("objectGlows"))
+			std::cerr << "Object " << i << " is missing objectGlows boolean. Defaulting to false.\n";
 		else
-			objectGlows = object["emitsLight"];
+			objectGlows = object["objectGlows"];
 
 		const nlohmann::json& meshInfo = object["mesh"];
 		std::shared_ptr<Mesh> mesh;
@@ -233,7 +233,7 @@ void scene::readSceneJson(std::string filePath)
 		if (object.contains("pointLight"))
 		{
 			if (!objectGlows)
-				std::cerr << "Object " << i << " contains pointLight but has emitsLight bool set to false\n";
+				std::cerr << "Object " << i << " contains pointLight but has objectGlows bool set to false\n";
 
 			const nlohmann::json& pointLight = object["pointLight"];
 
@@ -310,7 +310,7 @@ void scene::readSceneJson(std::string filePath)
 		if (object.contains("material"))
 		{
 			if (objectGlows)
-				std::cerr << "Object " << i << " emitsLight bool set to true but contains a material\n";
+				std::cerr << "Object " << i << " objectGlows bool set to true but contains a material\n";
 
 			if (object.contains("material"))
 			{
@@ -322,7 +322,7 @@ void scene::readSceneJson(std::string filePath)
 			}
 			else
 			{
-				std::cerr << "Object " << i << " emitsLight flag set to false but material info is missing. Using default\n";
+				std::cerr << "Object " << i << " objectGlows flag set to false but material info is missing. Using default\n";
 				if (!resourceManager::materialExists("../assets/materials/planetMaterial.json"))
 					resourceManager::loadMaterialIntoCache("../assets/materials/planetMaterial.json");
 

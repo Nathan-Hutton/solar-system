@@ -19,7 +19,7 @@
 	},
 	"objects": [
 		{
-			"emitsLight": true,
+			"objectGlows": true,
 			"position": [0.0, 0.0, -2.5],
 			"velocity": [0.0, 0.0, 0.0],
 			"rotation": {
@@ -49,7 +49,7 @@
 			}
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [0.0, -15.0, -2.5],
 			"velocity": [-55.0, 0.0, 0.0],
 			"rotation": {
@@ -70,7 +70,7 @@
 			"texture": "../assets/textures/earth.jpg"
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [45.0, 0.0, -2.5],
 			"velocity": [0.0, -32.0, 0.0],
 			"rotation": {
@@ -91,7 +91,7 @@
 			"texture": "../assets/textures/mars.jpg"
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [42.0, 0.0, -2.5],
 			"velocity": [-3.0, -45.0, 0.0],
 			"rotation": {
@@ -112,7 +112,7 @@
 			}
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [-44.0, 0.0, -2.5],
 			"velocity": [-3.0, 27.0, 0.0],
 			"rotation": {

@@ -19,7 +19,7 @@
 	},
 	"objects": [
 		{
-			"emitsLight": true,
+			"objectGlows": true,
 			"position": [0.0, 0.0, -2.5],
 			"velocity": [0.0, 0.0, 0.0],
 			"rotation": {
@@ -49,7 +49,7 @@
 			}
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [0.5, -20, 65.0],
 			"velocity": [0.0, 22.0, 0.0],
 			"rotation": {
@@ -70,7 +70,7 @@
 			"texture": "../assets/textures/jupiter.jpg"
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [55.5, 0.0, -2.5],
 			"velocity": [0.0, 27.0, 0.0],
 			"rotation": {
@@ -91,7 +91,7 @@
 			"texture": "../assets/textures/neptune.jpg"
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [59.0, 0.0, -2.5],
 			"velocity": [0.0, 29.0, 10.0],
 			"rotation": {
@@ -112,7 +112,7 @@
 			"texture": "../assets/textures/moon.jpg"
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [-65.0, 0.0, -22.5],
 			"velocity": [0.0, 25.0, 8.0],
 			"rotation": {
@@ -133,7 +133,7 @@
 			}
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [-65.0, -3.0, -22.5],
 			"velocity": [-4.0, 25.0, 8.0],
 			"rotation": {
@@ -154,7 +154,7 @@
 			}
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [35.0, -35.0, 22.5],
 			"velocity": [-15.0, 15.0, 15.0],
 			"rotation": {

@@ -19,7 +19,7 @@
 	},
 	"objects": [
 		{
-			"emitsLight": true,
+			"objectGlows": true,
 			"position": [-15.0, 0.0, -2.5],
 			"velocity": [0.0, 0.0, 0.0],
 			"rotation": {
@@ -49,7 +49,7 @@
 			}
 		},
 		{
-			"emitsLight": true,
+			"objectGlows": true,
 			"position": [15.0, 0.0, -2.5],
 			"velocity": [0.0, 0.0, 0.0],
 			"rotation": {
@@ -79,7 +79,7 @@
 			}
 		},
 		{
-			"emitsLight": false,
+			"objectGlows": false,
 			"position": [0.0, 0.0, -2.5],
 			"velocity": [17.0, 24.675, 0.0],
 			"rotation": {
