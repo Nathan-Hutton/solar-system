@@ -329,7 +329,7 @@ namespace
         // The world is actually moved to and rotated around the camera with the view matrix. The camera is stationary.
         //glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
 
-        renderObjectsVector(scene::lightEmitters, uniformVariables.uniformModelSuns, uniformVariables.uniformModelToClipSpaceSuns, worldToClip);
+        renderObjectsVector(scene::glowingObjects, uniformVariables.uniformModelSuns, uniformVariables.uniformModelToClipSpaceSuns, worldToClip);
 
         // =================================================
         // RENDER PLANETS, MOONS, ASTEROIDS, and the SKYBOX
@@ -341,7 +341,7 @@ namespace
         // Eye position is for specular lighting
         glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera::position));
 
-        renderObjectsVector(scene::litObjects, uniformVariables.uniformModelPlanets, uniformVariables.uniformModelToClipSpacePlanets, worldToClip);
+        renderObjectsVector(scene::shadedObjects, uniformVariables.uniformModelPlanets, uniformVariables.uniformModelToClipSpacePlanets, worldToClip);
 
         // ==============
         // RENDER SKYBOX

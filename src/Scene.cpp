@@ -36,9 +36,9 @@ namespace
     }
 }
 
-std::vector<std::shared_ptr<SpaceObject>> scene::movables {};
-std::vector<std::shared_ptr<SpaceObject>> scene::lightEmitters {};
-std::vector<std::shared_ptr<SpaceObject>> scene::litObjects {};
+std::vector<std::shared_ptr<SpaceObject>> scene::movables{};
+std::vector<std::shared_ptr<SpaceObject>> scene::glowingObjects{};
+std::vector<std::shared_ptr<SpaceObject>> scene::shadedObjects{};
 std::array<std::shared_ptr<PointLight>, scene::MAX_POINT_LIGHTS> scene::pointLights;
 GLint scene::pointLightCount{};
 
@@ -339,9 +339,9 @@ void scene::readSceneJson(std::string filePath)
 		spaceObject->setCollisionDistance(collisionDistance);
 
 		if (objectGlows)
-			lightEmitters.push_back(spaceObject);
+			glowingObjects.push_back(spaceObject);
 		else
-			litObjects.push_back(spaceObject);
+			shadedObjects.push_back(spaceObject);
 
 		movables.push_back(spaceObject);
 	}

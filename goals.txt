@@ -1,15 +1,8 @@
 Meshes in json:
-- Make just one object class. Have a bool for whether it emitsLight and a pointLight* that can be a nullptr. If it emits light, make sure the normals aren't generated.
-- Make the meshes use shared pointers
-
 - Simplify skybox
-- Should make lightEmitters and litObjects use shared_ptr instead of raw pointers
-- No need for Texture class to have m_fileLocation private variable
 - Don't use MainShader class and whatnot
 
 - See if we even need to set things like the material properties in the uniform variables each frame or if that's preserved
 - Make collider its own thing
 - Potentially use lodepng for skybox instead of whatever we use
 - Use lodepng for m_texture as well
-
-- Name to glowingObjects and shadedObjects

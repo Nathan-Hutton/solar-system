@@ -35,7 +35,6 @@ namespace resourceManager
 		}
 
 		std::shared_ptr<Texture> texture{ std::make_shared<Texture>(path) };
-		texture->loadTexture();
 		textureCache[path] = texture;
 	}
 

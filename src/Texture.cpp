@@ -6,13 +6,13 @@
 #include "stb_image.h"
 
 // Load the texture at fileLocation
-bool Texture::loadTexture()
+Texture::Texture(const std::string fileLocation)
 {
     // 1 char is equal to one byte, so this is an array of bytes really
-    int bitDepth {};
-    unsigned char *textData {stbi_load(m_fileLocation.c_str(), &m_width, &m_height, &bitDepth, 0)};
+    int bitDepth, width, height;
+    unsigned char *textData {stbi_load(fileLocation.c_str(), &width, &height, &bitDepth, 0)};
     if (!textData)
-        throw std::runtime_error("Failed to find " + m_fileLocation + '\n');
+        throw std::runtime_error("Failed to find " + fileLocation + '\n');
 
     // Create 1 texture object and store its name (ID) in an array which textureID points to
     glGenTextures(1, &m_textureID);
@@ -32,9 +32,9 @@ bool Texture::loadTexture()
 
     // Specify our texture.
     if (bitDepth == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
     else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
 
     // Mipmaps are smaller versions of textures used for rendering at different distances.
     // Imporves performance and reduces artifacts (look at some of the imported models, for example)
@@ -47,14 +47,10 @@ bool Texture::loadTexture()
 
     // since the data has been copied to the glTextImage2D we don't need the raw data anymore so we free it
     stbi_image_free(textData);
-    return true;
 }
 
 Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureID);
     m_textureID       = 0;
-    m_width           = 0;
-    m_height          = 0;
-    m_fileLocation    = "";
 }

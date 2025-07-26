@@ -6,9 +6,7 @@
 class Texture
 {
     public:
-        explicit Texture(std::string fileLocation) : m_fileLocation { fileLocation } {}
-
-        bool loadTexture();
+        explicit Texture(const std::string fileLocation);
 
         // Specify which texture unit we'll be using for texture operations.
         // We'll only have 1 active at a time.
@@ -20,7 +18,4 @@ class Texture
 
     private:
         GLuint m_textureID {};
-        int m_width {}, m_height {};
-
-        std::string m_fileLocation {};
 };
