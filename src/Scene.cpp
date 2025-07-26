@@ -86,6 +86,8 @@ void scene::readSceneJson(std::string filePath)
 			std::exit(EXIT_FAILURE);
 		}
 
+		std::shared_ptr<SpaceObject> spaceObject;
+
 		glm::vec3 position{ 0.0f };
 		if (object.contains("position") && object["position"].is_array() && object["position"].size() == 3)
 		{
@@ -105,6 +107,13 @@ void scene::readSceneJson(std::string filePath)
 		}
 		else
 			std::cerr << "Object " << i << " is missing velocity info. Using defaults\n";
+
+		float mass{ 4.0f };
+		if (object.contains("mass"))
+			mass = object["mass"];
+		else
+			std::cerr << "Object " << i << " mass info missing. Using defaults\n";
+
 
 		glm::vec3 rotationVector{ 0.0f };
 		float rotationSpeed{ 0.0f };
@@ -135,12 +144,6 @@ void scene::readSceneJson(std::string filePath)
 		else
 			std::cerr << "Object " << i << " rotation info missing. Using defaults\n";
 
-		float mass{ 4.0f };
-		if (object.contains("mass"))
-			mass = object["mass"];
-		else
-			std::cerr << "Object " << i << " mass info missing. Using defaults\n";
-
 		std::shared_ptr<Texture> texture;
 		if (object.contains("texture"))
 		{
@@ -159,11 +162,11 @@ void scene::readSceneJson(std::string filePath)
 			texture = resourceManager::getTexture("../assets/textures/plain.png");
 		}
 
-		bool emitsLight{ false };
+		bool objectGlows{ false };
 		if (!object.contains("emitsLight"))
 			std::cerr << "Object " << i << " is missing emitsLight boolean. Defaulting to false.\n";
 		else
-			emitsLight = object["emitsLight"];
+			objectGlows = object["emitsLight"];
 
 		const nlohmann::json& meshInfo = object["mesh"];
 		std::shared_ptr<Mesh> mesh;
@@ -194,7 +197,7 @@ void scene::readSceneJson(std::string filePath)
 			else
 				std::cerr << "Object " << i << " sphere mesh resolution info missing. Using defaults\n";
 
-			const bool hasNormals{ emitsLight ? false : true };
+			const bool hasNormals{ objectGlows ? false : true };
 			if (!resourceManager::sphereMeshExists(radius, stacks, slices, hasNormals))
 				resourceManager::loadSphereMeshIntoCache(radius, stacks, slices, hasNormals);
 
@@ -226,102 +229,89 @@ void scene::readSceneJson(std::string filePath)
 			std::exit(EXIT_FAILURE);
 		}
 
-		if (emitsLight)
+		std::shared_ptr<PointLight> pLight{ nullptr };
+		if (object.contains("pointLight"))
 		{
+			if (!objectGlows)
+				std::cerr << "Object " << i << " contains pointLight but has emitsLight bool set to false\n";
+
+			const nlohmann::json& pointLight = object["pointLight"];
+
 			int shadowWidth{ 1024 };
+			if (pointLight.contains("shadowWidth"))
+				shadowWidth = pointLight["shadowWidth"];
+			else
+				std::cerr << "Object " << i << " point light shadowWidth missing. Using default value\n";
+
 			int shadowHeight{ 1024 };
+			if (pointLight.contains("shadowHeight"))
+				shadowHeight = pointLight["shadowHeight"];
+			else
+				std::cerr << "Object " << i << " point light shadowHeight missing. Using default value\n";
+
 			float near{ 0.01f };
+			if (pointLight.contains("near"))
+				near = pointLight["near"];
+			else
+				std::cerr << "Object " << i << " point light near missing. Using default value\n";
+
 			float far{ 100.0f };
+			if (pointLight.contains("far"))
+				far = pointLight["far"];
+			else
+				std::cerr << "Object " << i << " point light far missing. Using default value\n";
+
 			float ambientIntensity{ 5.0f };
+			if (pointLight.contains("ambientIntensity"))
+				ambientIntensity = pointLight["ambientIntensity"];
+			else
+				std::cerr << "Object " << i << " point light ambientIntensity missing. Using default value\n";
+
 			float diffuseIntensity{ 300.0f };
+			if (pointLight.contains("diffuseIntensity"))
+				diffuseIntensity = pointLight["diffuseIntensity"];
+			else
+				std::cerr << "Object " << i << " point light diffuseIntensity missing. Using default value\n";
+
 			glm::vec3 attenuation{ 1.0f };
-			glm::vec3 color{ 1.0f };
-			if (object.contains("pointLight"))
+			if (pointLight.contains("attenuation") && pointLight["attenuation"].is_array() && pointLight["attenuation"].size() == 3)
 			{
-				const nlohmann::json& pointLight = object["pointLight"];
+				attenuation.x = pointLight["attenuation"][0];
+				attenuation.y = pointLight["attenuation"][1];
+				attenuation.z = pointLight["attenuation"][2];
+			}
 
-				if (pointLight.contains("shadowWidth"))
-					shadowWidth = pointLight["shadowWidth"];
-				else
-					std::cerr << "Object " << i << " point light shadowWidth missing. Using default value\n";
+			else
+				std::cerr << "Object " << i << " point light attenuation missing. Using default value\n";
 
-				if (pointLight.contains("shadowHeight"))
-					shadowHeight = pointLight["shadowHeight"];
-				else
-					std::cerr << "Object " << i << " point light shadowHeight missing. Using default value\n";
-
-				if (pointLight.contains("near"))
-					near = pointLight["near"];
-				else
-					std::cerr << "Object " << i << " point light near missing. Using default value\n";
-
-				if (pointLight.contains("far"))
-					far = pointLight["far"];
-				else
-					std::cerr << "Object " << i << " point light far missing. Using default value\n";
-
-				if (pointLight.contains("ambientIntensity"))
-					ambientIntensity = pointLight["ambientIntensity"];
-				else
-					std::cerr << "Object " << i << " point light ambientIntensity missing. Using default value\n";
-
-				if (pointLight.contains("diffuseIntensity"))
-					diffuseIntensity = pointLight["diffuseIntensity"];
-				else
-					std::cerr << "Object " << i << " point light diffuseIntensity missing. Using default value\n";
-
-				if (pointLight.contains("attenuation") && pointLight["attenuation"].is_array() && pointLight["attenuation"].size() == 3)
-				{
-					attenuation.x = pointLight["attenuation"][0];
-					attenuation.y = pointLight["attenuation"][1];
-					attenuation.z = pointLight["attenuation"][2];
-				}
-
-				else
-					std::cerr << "Object " << i << " point light attenuation missing. Using default value\n";
-
-				if (pointLight.contains("color") && pointLight["color"].is_array() && pointLight["color"].size() == 3)
-				{
-					color.x = pointLight["color"][0];
-					color.y = pointLight["color"][1];
-					color.z = pointLight["color"][2];
-				}
-				else
-					std::cerr << "Object " << i << " point light color missing. Using default value\n";
+			glm::vec3 color{ 1.0f };
+			if (pointLight.contains("color") && pointLight["color"].is_array() && pointLight["color"].size() == 3)
+			{
+				color.x = pointLight["color"][0];
+				color.y = pointLight["color"][1];
+				color.z = pointLight["color"][2];
 			}
 			else
-				std::cerr << "Object " << i << " has emitsLight flag set but no pointligh.\n\n";
+				std::cerr << "Object " << i << " point light color missing. Using default value\n";
 
-			std::shared_ptr<PointLight> pLight{ std::make_shared<PointLight>(
+			pLight = std::make_shared<PointLight>(
 				static_cast<GLuint>(shadowWidth), static_cast<GLuint>(shadowHeight),
 				near, far,
 				color,
 				ambientIntensity, diffuseIntensity,
 				position,
 				attenuation[0], attenuation[1], attenuation[2]
-			)};
+			);
 
 			pointLights[pointLightCount++] = pLight;
-
-			std::shared_ptr<SpaceObject> sun { std::make_shared<SpaceObject>(mass, true, mesh, texture, nullptr, pLight) };
-			sun->setPosition(position);
-			sun->setRotation(rotationVector);
-			sun->setAngle(angle);
-			sun->setRotationSpeed(rotationSpeed);
-			sun->setCollisionDistance(collisionDistance);
-
-			movables.push_back(sun);
-			lightEmitters.push_back(sun);
 		}
-		else
+
+		std::shared_ptr<Material> material{ nullptr };
+		if (object.contains("material"))
 		{
-			if (!object.contains("emitsLight"))
-				std::cerr << "Object " << i << " is missing emitsLight boolean. Defaulting to false.\n";
+			if (objectGlows)
+				std::cerr << "Object " << i << " emitsLight bool set to true but contains a material\n";
 
-			if (object.contains("pointLight"))
-				std::cerr << "Object " << i << " is a planet but contains a pointlight\n";
-
-			std::shared_ptr<Material> material;
 			if (object.contains("material"))
 			{
 				const std::string materialFilePath{ object["material"] };
@@ -332,23 +322,28 @@ void scene::readSceneJson(std::string filePath)
 			}
 			else
 			{
-				std::cerr << "Object " << i << " is a planet and material info missing. Using default\n";
+				std::cerr << "Object " << i << " emitsLight flag set to false but material info is missing. Using default\n";
 				if (!resourceManager::materialExists("../assets/materials/planetMaterial.json"))
 					resourceManager::loadMaterialIntoCache("../assets/materials/planetMaterial.json");
 
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
-			
-			std::shared_ptr<SpaceObject> planet{ std::make_shared<SpaceObject>(mass, false, mesh, texture, material, nullptr) };
-			planet->setPosition(position);
-			planet->setVelocity(velocity);
-			planet->setRotation(rotationVector);
-			planet->setRotationSpeed(rotationSpeed);
-			planet->setCollisionDistance(collisionDistance);
-
-			movables.push_back(planet);
-			litObjects.push_back(planet);
 		}
+
+		spaceObject = std::make_shared<SpaceObject>(mass, objectGlows, mesh, texture, material, pLight);
+		spaceObject->setPosition(position);
+		spaceObject->setVelocity(velocity);
+		spaceObject->setRotation(rotationVector);
+		spaceObject->setAngle(angle);
+		spaceObject->setRotationSpeed(rotationSpeed);
+		spaceObject->setCollisionDistance(collisionDistance);
+
+		if (objectGlows)
+			lightEmitters.push_back(spaceObject);
+		else
+			litObjects.push_back(spaceObject);
+
+		movables.push_back(spaceObject);
 	}
 
     if (orbitalPhysics::verlet)

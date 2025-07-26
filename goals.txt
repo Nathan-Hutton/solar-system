@@ -11,3 +11,5 @@ Meshes in json:
 - Make collider its own thing
 - Potentially use lodepng for skybox instead of whatever we use
 - Use lodepng for m_texture as well
+
+- Name to glowingObjects and shadedObjects

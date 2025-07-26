@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <iostream>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -56,7 +57,7 @@ class SpaceObject
         void setWorldProperties(glm::mat4& model) const
 		{
 			model = glm::translate(model, getPosition());
-			model = glm::rotate(model, glm::radians(getAngle()), getRotation());
+			model = glm::rotate(model, glm::radians(m_angle), m_rotation);
 		}
 
 		void setCollisionDistance(float collisionDistance) { m_collisionDistance = collisionDistance; }
