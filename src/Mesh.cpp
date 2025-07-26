@@ -1,16 +1,20 @@
 #include "Mesh.h"
 
+#include "cyCore/cyTriMesh.h"
+
 #include <glm/gtc/matrix_transform.hpp>
+#include <unordered_map>
+#include <sstream>
 
 Mesh::Mesh(const GLfloat* const vertices, const GLuint* const indices,
 		GLsizei numVertices, GLsizei numIndices,
 		bool hasNormals, bool threeVertices)
-	: m_indexCount{ numIndices }
+	: m_numIndices{ numIndices }
 {
     glGenVertexArrays(1, &m_VAO);
     glBindVertexArray(m_VAO);
-    glGenBuffers(1, &m_IBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+    glGenBuffers(1, &m_EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numIndices, indices, GL_STATIC_DRAW);
 
     glGenBuffers(1, &m_VBO);
@@ -91,12 +95,58 @@ std::shared_ptr<Mesh> Mesh::getSphereMesh(float radius, int stacks, int slices, 
 	return std::make_shared<Mesh>( vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size()), hasNormals );
 }
 
+std::shared_ptr<Mesh> Mesh::getMeshFromFile(const std::string& path)
+{
+			cy::TriMesh obj;
+            obj.LoadFromFileObj(path.c_str(), false);
+            obj.ComputeNormals(true);
+
+            std::unordered_map<std::string, GLuint> uniqueVertexMap;
+			std::vector<GLfloat> interleavedObjData;
+			std::vector<GLuint> indices;
+
+            GLuint indexCounter{ 0 };
+            for (size_t i { 0 }; i < obj.NF(); ++i)
+            {
+                const cy::TriMesh::TriFace& vertFace { obj.F(i) };
+                const cy::TriMesh::TriFace& normFace { obj.FN(i) };
+				const cy::TriMesh::TriFace& texCoordFace { obj.FT(i) };
+
+                for (size_t j { 0 }; j < 3; ++j)
+                {
+                    const cy::Vec3f& vert { obj.V(vertFace.v[j]) };
+                    const cy::Vec3f& norm { obj.VN(normFace.v[j]) };
+					const cy::Vec3f& tex { obj.VT(texCoordFace.v[j]) };
+
+                    std::ostringstream vertexKey;
+                    vertexKey << vert.x << "," << vert.y << "," << vert.z << "," << norm.x << "," << norm.y << "," << norm.z;
+
+                    if (uniqueVertexMap.find(vertexKey.str()) == uniqueVertexMap.end())
+                    {
+                        uniqueVertexMap[vertexKey.str()] = indexCounter;
+                        indices.push_back(indexCounter++);
+
+						for (size_t k { 0 }; k < 3; ++k)
+							interleavedObjData.push_back(vert[k]);
+						for (size_t k { 0 }; k < 2; ++k)
+							interleavedObjData.push_back(tex[k]);
+						for (size_t k { 0 }; k < 3; ++k)
+							interleavedObjData.push_back(norm[k]);
+                    }
+                    else
+                        indices.push_back(uniqueVertexMap[vertexKey.str()]);
+                }
+            }
+
+			return std::make_shared<Mesh>( interleavedObjData.data(), indices.data(), static_cast<GLsizei>(interleavedObjData.size()), static_cast<GLsizei>(indices.size()), true );
+}
+
 void Mesh::render() const
 {
     glBindVertexArray(m_VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 
-    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -104,9 +154,9 @@ void Mesh::render() const
 
 Mesh::~Mesh()
 {
-    if (m_IBO != 0) {
-        glDeleteBuffers(1, &m_IBO);
-        m_IBO = 0;
+    if (m_EBO != 0) {
+        glDeleteBuffers(1, &m_EBO);
+        m_EBO = 0;
     }
 
     if (m_VBO != 0) {
@@ -119,5 +169,5 @@ Mesh::~Mesh()
         m_VAO = 0;
     }
 
-    m_indexCount = 0;
+    m_numIndices = 0;
 }

@@ -84,11 +84,6 @@ namespace resourceManager
 		return fileMeshCache.at(path);
 	}
 
-	//std::shared_ptr<Mesh> getFileMesh(const std::string& path)
-	//{
-
-	//}
-
 	std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals)
 	{
 		if (!sphereMeshExists(radius, stacks, slices, hasNormals))
@@ -97,7 +92,6 @@ namespace resourceManager
 		return sphereMeshCache.at(std::to_string(static_cast<int>(radius)) + '-' + std::to_string(stacks) + '-' + std::to_string(slices) + '-' + std::to_string(hasNormals));
 	}
 
-	
 	void loadFileMeshIntoCache(const std::string& path)
 	{
 		if (fileMeshExists(path))
@@ -106,7 +100,8 @@ namespace resourceManager
 			return;
 		}
 
-		//TODO: Finish this
+		std::shared_ptr<Mesh> fileMesh{ Mesh::getMeshFromFile(path) };
+		fileMeshCache[path] = fileMesh;
 	}
 
 	void loadSphereMeshIntoCache(float radius, int stacks, int slices, bool hasNormals)

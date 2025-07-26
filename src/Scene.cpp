@@ -81,6 +81,18 @@ void scene::readSceneJson(std::string filePath)
 			std::exit(EXIT_FAILURE);
 		}
 
+		if (!object.contains("mesh"))
+		{
+			std::cerr << "\nJson file object " << i << " is missing mesh info\n\n";
+			std::exit(EXIT_FAILURE);
+		}
+
+		if (!object["mesh"].contains("type"))
+		{
+			std::cerr << "\nJson file object " << i << " is missing mesh type\n\n";
+			std::exit(EXIT_FAILURE);
+		}
+
 		glm::vec3 position{ 0.0f };
 		if (object.contains("position") && object["position"].is_array() && object["position"].size() == 3)
 		{
@@ -136,29 +148,6 @@ void scene::readSceneJson(std::string filePath)
 		else
 			std::cerr << "Object " << i << " mass info missing. Using defaults\n";
 
-		float radius{ 1.0f };
-		if (object.contains("radius"))
-			radius = object["radius"];
-		else
-			std::cerr << "Object " << i << " radius info missing. Using defaults\n";
-
-		int stacks{ 20 };
-		int slices{ 20 };
-		if (object.contains("resolution"))
-		{
-			if (object["resolution"].contains("stacks"))
-				stacks = object["resolution"]["stacks"];
-			else
-				std::cerr << "Object " << i << " stacks info missing. Using defaults\n";
-
-			if (object["resolution"].contains("slices"))
-				slices = object["resolution"]["slices"];
-			else
-				std::cerr << "Object " << i << " slices info missing. Using defaults\n";
-		}
-		else
-			std::cerr << "Object " << i << " resolution info missing. Using defaults\n";
-
 		std::shared_ptr<Texture> texture;
 		if (object.contains("texture"))
 		{
@@ -177,11 +166,60 @@ void scene::readSceneJson(std::string filePath)
 			texture = resourceManager::getTexture("../assets/textures/plain.png");
 		}
 
-		const bool hasNormals{ object["type"] == "planet" ? true : false };
-		if (!resourceManager::sphereMeshExists(radius, stacks, slices, hasNormals))
-			resourceManager::loadSphereMeshIntoCache(radius, stacks, slices, hasNormals);
+		const nlohmann::json& meshInfo = object["mesh"];
+		std::shared_ptr<Mesh> mesh;
+		float collisionDistance{};
+		if (meshInfo["type"] == "sphere")
+		{
+			float radius{ 1.0f };
+			if (meshInfo.contains("radius"))
+				radius = meshInfo["radius"];
+			else
+				std::cerr << "Object " << i << " sphere mesh radius info missing. Using defaults\n";
+			collisionDistance = radius;
 
-		std::shared_ptr<Mesh> sphereMesh{ resourceManager::getSphereMesh(radius, stacks, slices, hasNormals) };
+			int stacks{ 20 };
+			int slices{ 20 };
+			if (meshInfo.contains("resolution"))
+			{
+				if (meshInfo["resolution"].contains("stacks"))
+					stacks = meshInfo["resolution"]["stacks"];
+				else
+					std::cerr << "Object " << i << " sphere mesh stacks info missing. Using defaults\n";
+
+				if (meshInfo["resolution"].contains("slices"))
+					slices = meshInfo["resolution"]["slices"];
+				else
+					std::cerr << "Object " << i << " sphere mesh slices info missing. Using defaults\n";
+			}
+			else
+				std::cerr << "Object " << i << " sphere mesh resolution info missing. Using defaults\n";
+
+			const bool hasNormals{ object["type"] == "planet" ? true : false };
+			if (!resourceManager::sphereMeshExists(radius, stacks, slices, hasNormals))
+				resourceManager::loadSphereMeshIntoCache(radius, stacks, slices, hasNormals);
+
+			mesh = resourceManager::getSphereMesh(radius, stacks, slices, hasNormals);
+		}
+		else if (meshInfo["type"] == "file")
+		{
+			if (!meshInfo.contains("filePath"))
+			{
+				std::cerr << "\nJson file object " << i << " mesh file path missing\n\n";
+				std::exit(EXIT_FAILURE);
+			}
+			const std::string filePath{ meshInfo["filePath"] };
+
+			if (!resourceManager::fileMeshExists(filePath))
+				resourceManager::loadFileMeshIntoCache(filePath);
+
+			mesh = resourceManager::getFileMesh(filePath);
+		}
+		else
+		{
+			std::cerr << "\nJson file object " << i << " mesh type not valid: " << meshInfo["type"] << "\n\n";
+			std::exit(EXIT_FAILURE);
+		}
 
 		if (object["type"] == "sun")
 		{
@@ -260,12 +298,12 @@ void scene::readSceneJson(std::string filePath)
 
 			pointLights[pointLightCount++] = pLight;
 
-			std::shared_ptr<SpaceObject> sun { std::make_shared<SpaceObject>(mass, true, sphereMesh, texture, nullptr, pLight) };
+			std::shared_ptr<SpaceObject> sun { std::make_shared<SpaceObject>(mass, true, mesh, texture, nullptr, pLight) };
 			sun->setPosition(position);
 			sun->setRotation(rotationVector);
 			sun->setAngle(angle);
 			sun->setRotationSpeed(rotationSpeed);
-			sun->setCollisionDistance(radius);
+			sun->setCollisionDistance(collisionDistance);
 
 			movables.push_back(sun);
 			lightEmitters.push_back(sun);
@@ -293,12 +331,12 @@ void scene::readSceneJson(std::string filePath)
 				material = resourceManager::getMaterial("../assets/materials/planetMaterial.json");
 			}
 			
-			std::shared_ptr<SpaceObject> planet{ std::make_shared<SpaceObject>(mass, false, sphereMesh, texture, material, nullptr) };
+			std::shared_ptr<SpaceObject> planet{ std::make_shared<SpaceObject>(mass, false, mesh, texture, material, nullptr) };
 			planet->setPosition(position);
 			planet->setVelocity(velocity);
 			planet->setRotation(rotationVector);
 			planet->setRotationSpeed(rotationSpeed);
-			planet->setCollisionDistance(radius);
+			planet->setCollisionDistance(collisionDistance);
 
 			movables.push_back(planet);
 			litObjects.push_back(planet);

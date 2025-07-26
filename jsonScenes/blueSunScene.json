@@ -28,10 +28,13 @@
 				"angle": 90.0
 			},
 			"mass": 425.0,
-			"radius": 15.0,
-			"resolution": {
-				"stacks": 25,
-				"slices": 25
+			"mesh": {
+				"type": "sphere",
+				"radius": 15.0,
+				"resolution": {
+					"stacks": 25,
+					"slices": 25
+				}
 			},
 			"texture": "../assets/textures/sun2.jpg",
 			"pointLight": {
@@ -55,13 +58,16 @@
 				"angle": 0.0
 			},
 			"mass": 4.0,
-			"radius": 4.0,
+			"mesh": {
+				"type": "sphere",
+				"radius": 4.0,
+				"resolution": {
+					"stacks": 20,
+					"slices": 20
+				}
+			},
 			"material": "../assets/materials/planetMaterial.json",
-			"texture": "../assets/textures/jupiter.jpg",
-			"resolution": {
-				"stacks": 20,
-				"slices": 20
-			}
+			"texture": "../assets/textures/jupiter.jpg"
 		},
 		{
 			"type": "planet",
@@ -73,13 +79,16 @@
 				"angle": 0.0
 			},
 			"mass": 4.0,
-			"radius": 1.0,
+			"mesh": {
+				"type": "sphere",
+				"radius": 1.0,
+				"resolution": {
+					"stacks": 15,
+					"slices": 15
+				}
+			},
 			"material": "../assets/materials/planetMaterial.json",
-			"texture": "../assets/textures/neptune.jpg",
-			"resolution": {
-				"stacks": 15,
-				"slices": 15
-			}
+			"texture": "../assets/textures/neptune.jpg"
 		},
 		{
 			"type": "planet",
@@ -91,13 +100,16 @@
 				"angle": 0.0
 			},
 			"mass": 1.25,
-			"radius": 0.5,
+			"mesh": {
+				"type": "sphere",
+				"radius": 0.5,
+				"resolution": {
+					"stacks": 15,
+					"slices": 15
+				}
+			},
 			"material": "../assets/materials/planetMaterial.json",
-			"texture": "../assets/textures/moon.jpg",
-			"resolution": {
-				"stacks": 15,
-				"slices": 15
-			}
+			"texture": "../assets/textures/moon.jpg"
 		},
 		{
 			"type": "planet",
@@ -109,12 +121,15 @@
 				"angle": 0.0
 			},
 			"mass": 4.0,
-			"radius": 1.0,
 			"material": "../assets/materials/planetMaterial.json",
 			"texture": "../assets/textures/venus.jpg",
-			"resolution": {
-				"stacks": 15,
-				"slices": 15
+			"mesh": {
+				"type": "sphere",
+				"radius": 1.0,
+				"resolution": {
+					"stacks": 15,
+					"slices": 15
+				}
 			}
 		},
 		{
@@ -127,12 +142,15 @@
 				"angle": 0.0
 			},
 			"mass": 1.25,
-			"radius": 0.5,
 			"material": "../assets/materials/planetMaterial.json",
 			"texture": "../assets/textures/venus.jpg",
-			"resolution": {
-				"stacks": 12,
-				"slices": 12
+			"mesh": {
+				"type": "sphere",
+				"radius": 0.5,
+				"resolution": {
+					"stacks": 12,
+					"slices": 12
+				}
 			}
 		},
 		{
@@ -145,13 +163,16 @@
 				"angle": 0.0
 			},
 			"mass": 4.0,
-			"radius": 1.0,
+			"mesh": {
+				"type": "sphere",
+				"radius": 1.0,
+				"resolution": {
+					"stacks": 15,
+					"slices": 15
+				}
+			},
 			"material": "../assets/materials/planetMaterial.json",
-			"texture": "../assets/textures/mars.jpg",
-			"resolution": {
-				"stacks": 15,
-				"slices": 15
-			}
+			"texture": "../assets/textures/mars.jpg"
 		}
 
 	]

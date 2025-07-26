@@ -9,5 +9,6 @@ Meshes in json:
 - Don't use MainShader class and whatnot
 
 - See if we even need to set things like the material properties in the uniform variables each frame or if that's preserved
-- See if we can make SpaceObject pointer const in renderVector() method in Renderer.cpp
 - Make collider its own thing
+- Potentially use lodepng for skybox instead of whatever we use
+- Use lodepng for m_texture as well

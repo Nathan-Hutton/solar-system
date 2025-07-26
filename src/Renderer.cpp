@@ -262,7 +262,7 @@ namespace
     {
         // They'll all use GL_TEXTURE2
         glActiveTexture(GL_TEXTURE2);
-        for (std::shared_ptr<SpaceObject> object : objects)
+        for (const std::shared_ptr<SpaceObject>& object : objects)
         {
             glm::mat4 model {1.0f};
             object->setWorldProperties(model);

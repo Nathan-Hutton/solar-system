@@ -12,12 +12,13 @@ class Mesh
 				bool hasNormals=true, bool threeVertices=true);
 
 		static std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals=true);
+		static std::shared_ptr<Mesh> getMeshFromFile(const std::string& path);
 
         void render() const;
 
         ~Mesh();
 
     private:
-        GLuint m_VAO {}, m_VBO {}, m_IBO {};
-        GLsizei m_indexCount {};
+        GLuint m_VAO {}, m_VBO {}, m_EBO {};
+        GLsizei m_numIndices {};
 };

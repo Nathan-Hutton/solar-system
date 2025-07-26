@@ -28,10 +28,13 @@
 				"angle": 90.0
 			},
 			"mass": 429.3,
-			"radius": 7.0,
-			"resolution": {
-				"stacks": 25,
-				"slices": 25
+			"mesh": {
+				"type": "sphere",
+				"radius": 7.0,
+				"resolution": {
+					"stacks": 25,
+					"slices": 25
+				}
 			},
 			"texture": "../assets/textures/sun.jpg",
 			"pointLight": {
@@ -55,13 +58,16 @@
 				"angle": 0.0
 			},
 			"mass": 4.0,
-			"radius": 1.0,
+			"mesh": {
+				"type": "sphere",
+				"radius": 1.0,
+				"resolution": {
+					"stacks": 20,
+					"slices": 20
+				}
+			},
 			"material": "../assets/materials/planetMaterial.json",
-			"texture": "../assets/textures/earth.jpg",
-			"resolution": {
-				"stacks": 20,
-				"slices": 20
-			}
+			"texture": "../assets/textures/earth.jpg"
 		},
 		{
 			"type": "planet",
@@ -73,13 +79,16 @@
 				"angle": 0.0
 			},
 			"mass": 4.0,
-			"radius": 1.0,
+			"mesh": {
+				"type": "sphere",
+				"radius": 1.0,
+				"resolution": {
+					"stacks": 20,
+					"slices": 20
+				}
+			},
 			"material": "../assets/materials/planetMaterial.json",
-			"texture": "../assets/textures/mars.jpg",
-			"resolution": {
-				"stacks": 20,
-				"slices": 20
-			}
+			"texture": "../assets/textures/mars.jpg"
 		},
 		{
 			"type": "planet",
@@ -91,14 +100,33 @@
 				"angle": 0.0
 			},
 			"mass": 1.25,
-			"radius": 0.5,
 			"material": "../assets/materials/planetMaterial.json",
 			"texture": "../assets/textures/moon.jpg",
-			"resolution": {
-				"stacks": 12,
-				"slices": 12
+			"mesh": {
+				"type": "sphere",
+				"radius": 0.5,
+				"resolution": {
+					"stacks": 12,
+					"slices": 12
+				}
+			}
+		},
+		{
+			"type": "planet",
+			"position": [-44.0, 0.0, -2.5],
+			"velocity": [-3.0, 27.0, 0.0],
+			"rotation": {
+				"rotationVector": [1.0, 0.0, 2.0],
+				"rotationSpeed": 200.0,
+				"angle": 0.0
+			},
+			"mass": 0.25,
+			"material": "../assets/materials/planetMaterial.json",
+			"texture": "../assets/textures/moon.jpg",
+			"mesh": {
+				"type": "file",
+				"filePath": "../assets/models/teapot.obj"
 			}
 		}
-
 	]
 }
