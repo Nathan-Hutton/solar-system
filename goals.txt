@@ -11,5 +11,3 @@ Meshes in json:
 - See if we even need to set things like the material properties in the uniform variables each frame or if that's preserved
 - See if we can make SpaceObject pointer const in renderVector() method in Renderer.cpp
 - Make collider its own thing
-
-- Make color a glm::vec3 for pointlight

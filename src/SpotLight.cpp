@@ -1,5 +1,7 @@
 #include "SpotLight.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
     GLfloat near, GLfloat far,
 	glm::vec3 color,
@@ -27,19 +29,19 @@ void SpotLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensit
 {
     glUniform1f(ambientIntensityLocation, m_ambientIntensity);
     glUniform1f(diffuseIntensityLocation, m_diffuseIntensity);
-    glUniform3f(colorLocation, m_color.x, m_color.y, m_color.z);
+    glUniform3fv(colorLocation, 1, glm::value_ptr(m_color));
 
-    glUniform3f(positionLocation, m_position.x, m_position.y, m_position.z);
+    glUniform3fv(positionLocation, 1, glm::value_ptr(m_position));
     glUniform1f(exponentialLocation, m_exponential);
     glUniform1f(linearLocation, m_linear);
     glUniform1f(constantLocation, m_constant);
 
-    glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
+    glUniform3fv(directionLocation, 1, glm::value_ptr(m_direction));
     glUniform1f(edgeLocation, m_procEdge);
 }
 
 void SpotLight::setPosAndDir(GLuint positionLocation, GLuint directionLocation) const
 {
-    glUniform3f(positionLocation, m_position.x, m_position.y, m_position.z);
-    glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
+    glUniform3fv(positionLocation, 1, glm::value_ptr(m_position));
+    glUniform3fv(directionLocation, 1, glm::value_ptr(m_direction));
 }

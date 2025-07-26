@@ -2,6 +2,8 @@
 
 #include "OmniShadowMap.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
 					glm::vec3 color,
@@ -32,7 +34,7 @@ void PointLight::useLight(GLuint ambientIntensityLocation, GLuint diffuseIntensi
 {
     glUniform1f(ambientIntensityLocation, m_ambientIntensity);
     glUniform1f(diffuseIntensityLocation, m_diffuseIntensity);
-    glUniform3f(colorLocation, m_color.x, m_color.y, m_color.z);
+    glUniform3fv(colorLocation, 1, glm::value_ptr(m_color));
 
     glUniform3f(positionLocation, m_position.x, m_position.y, m_position.z);
     glUniform1f(exponentialLocation, m_exponential);
