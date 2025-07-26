@@ -1,5 +1,4 @@
 Meshes in json:
-- Get rid of the model class. Just extend the mesh class to be able to read in obj triangle mesh files.
 - Make just one object class. Have a bool for whether it emitsLight and a pointLight* that can be a nullptr. If it emits light, make sure the normals aren't generated.
 - Make the meshes use shared pointers
 

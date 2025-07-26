@@ -6,7 +6,6 @@
 
 #include "ResourceManager.h"
 #include "OrbitalPhysics.h"
-#include "Model.h"
 #include "Material.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -74,12 +73,6 @@ void scene::readSceneJson(std::string filePath)
 	for (size_t i{ 0 }; i < sceneData["objects"].size(); ++i)
 	{
 		const nlohmann::json& object = sceneData["objects"][i];
-
-		if (!object.contains("type"))
-		{
-			std::cerr << "\nJson file object " << i << " is missing a type\n\n";
-			std::exit(EXIT_FAILURE);
-		}
 
 		if (!object.contains("mesh"))
 		{
@@ -166,6 +159,12 @@ void scene::readSceneJson(std::string filePath)
 			texture = resourceManager::getTexture("../assets/textures/plain.png");
 		}
 
+		bool emitsLight{ false };
+		if (!object.contains("emitsLight"))
+			std::cerr << "Object " << i << " is missing emitsLight boolean. Defaulting to false.\n";
+		else
+			emitsLight = object["emitsLight"];
+
 		const nlohmann::json& meshInfo = object["mesh"];
 		std::shared_ptr<Mesh> mesh;
 		float collisionDistance{};
@@ -195,7 +194,7 @@ void scene::readSceneJson(std::string filePath)
 			else
 				std::cerr << "Object " << i << " sphere mesh resolution info missing. Using defaults\n";
 
-			const bool hasNormals{ object["type"] == "planet" ? true : false };
+			const bool hasNormals{ emitsLight ? false : true };
 			if (!resourceManager::sphereMeshExists(radius, stacks, slices, hasNormals))
 				resourceManager::loadSphereMeshIntoCache(radius, stacks, slices, hasNormals);
 
@@ -227,7 +226,7 @@ void scene::readSceneJson(std::string filePath)
 			std::exit(EXIT_FAILURE);
 		}
 
-		if (object["type"] == "sun")
+		if (emitsLight)
 		{
 			int shadowWidth{ 1024 };
 			int shadowHeight{ 1024 };
@@ -291,7 +290,7 @@ void scene::readSceneJson(std::string filePath)
 					std::cerr << "Object " << i << " point light color missing. Using default value\n";
 			}
 			else
-				std::cerr << "Object " << i << " is a sun but contains no pointlight. Using defaults.\n";
+				std::cerr << "Object " << i << " has emitsLight flag set but no pointligh.\n\n";
 
 			std::shared_ptr<PointLight> pLight{ std::make_shared<PointLight>(
 				static_cast<GLuint>(shadowWidth), static_cast<GLuint>(shadowHeight),
@@ -314,8 +313,11 @@ void scene::readSceneJson(std::string filePath)
 			movables.push_back(sun);
 			lightEmitters.push_back(sun);
 		}
-		else if (object["type"] == "planet")
+		else
 		{
+			if (!object.contains("emitsLight"))
+				std::cerr << "Object " << i << " is missing emitsLight boolean. Defaulting to false.\n";
+
 			if (object.contains("pointLight"))
 				std::cerr << "Object " << i << " is a planet but contains a pointlight\n";
 
@@ -346,11 +348,6 @@ void scene::readSceneJson(std::string filePath)
 
 			movables.push_back(planet);
 			litObjects.push_back(planet);
-		}
-		else
-		{
-			std::cerr << "\nJson file object " << i << " type must be planet or sun\n\n";
-			std::exit(EXIT_FAILURE);
 		}
 	}
 
