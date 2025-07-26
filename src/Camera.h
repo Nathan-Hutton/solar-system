@@ -19,7 +19,7 @@ namespace camera {
     void mouseControl(GLfloat xChange, GLfloat yChange);
     void setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                     GLfloat near, GLfloat far,
-                    GLfloat red, GLfloat green, GLfloat blue, 
+					glm::vec3 color,
                     GLfloat ambientIntensity, GLfloat diffuseIntensity, 
                     glm::vec3 position,
                     glm::vec3 direction,

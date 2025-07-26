@@ -12,5 +12,4 @@ Meshes in json:
 - See if we can make SpaceObject pointer const in renderVector() method in Renderer.cpp
 - Make collider its own thing
 
-- Give SpaceObject a std::shared_ptr<Material>. If it's null in the renderObjectsVector method, then don't bother with material uniform variables
 - Make color a glm::vec3 for pointlight

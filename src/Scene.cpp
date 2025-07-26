@@ -252,7 +252,7 @@ void scene::readSceneJson(std::string filePath)
 			std::shared_ptr<PointLight> pLight{ std::make_shared<PointLight>(
 				static_cast<GLuint>(shadowWidth), static_cast<GLuint>(shadowHeight),
 				near, far,
-				color.x, color.y, color.z,
+				color,
 				ambientIntensity, diffuseIntensity,
 				position,
 				attenuation[0], attenuation[1], attenuation[2]

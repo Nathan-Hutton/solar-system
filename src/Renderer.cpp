@@ -271,9 +271,8 @@ namespace
 
 			std::shared_ptr<Material> material{ object->getMaterial() };
 			if (material != nullptr)
-			{
 				material->useMaterial(uniformVariables.uniformSpecularIntensityPlanets, uniformVariables.uniformShininessPlanets);
-			}
+
             object->render();
         }
     }

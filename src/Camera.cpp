@@ -203,7 +203,7 @@ void camera::jsonSetup(nlohmann::json sceneData)
 
 		setSpotLight(shadowWidth, shadowHeight, 
 			 near, far,
-			 color[0], color[1], color[2],
+			 color,
 			 ambientIntensity, diffuseIntensity,
 			 camera::position,
 			 direction,
@@ -228,7 +228,7 @@ void camera::jsonSetup(nlohmann::json sceneData)
 
 		camera::setSpotLight(shadowWidth, shadowHeight, 
 			 near, far,
-			 color[0], color[1], color[2],
+			 color,
 			 ambientIntensity, diffuseIntensity,
 			 camera::position,
 			 direction,
@@ -279,7 +279,7 @@ void camera::mouseControl(GLfloat xChange, GLfloat yChange)
 
 void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
                 GLfloat near, GLfloat far,
-                GLfloat red, GLfloat green, GLfloat blue, 
+				glm::vec3 color,
                 GLfloat ambientIntensity, GLfloat diffuseIntensity, 
                 glm::vec3 position,
                 glm::vec3 direction,
@@ -288,7 +288,7 @@ void camera::setSpotLight(GLuint shadowWidth, GLuint shadowHeight,
 {
     spotLight = std::make_unique<SpotLight>(shadowWidth, shadowHeight,
                         near, far,
-                        red, green, blue,
+						color,
                         ambientIntensity, diffuseIntensity,
                         position,
                         direction,
