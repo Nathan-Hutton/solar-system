@@ -125,7 +125,8 @@
 			"texture": "../assets/textures/moon.jpg",
 			"mesh": {
 				"type": "file",
-				"filePath": "../assets/models/teapot.obj"
+				"filePath": "../assets/models/teapot.obj",
+				"scaleFactor": 0.1
 			}
 		}
 	]

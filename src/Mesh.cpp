@@ -95,7 +95,7 @@ std::shared_ptr<Mesh> Mesh::getSphereMesh(float radius, int stacks, int slices, 
 	return std::make_shared<Mesh>( vertices.data(), indices.data(), static_cast<GLsizei>(vertices.size()), static_cast<GLsizei>(indices.size()), hasNormals );
 }
 
-std::shared_ptr<Mesh> Mesh::getMeshFromFile(const std::string& path)
+std::shared_ptr<Mesh> Mesh::getMeshFromFile(const std::string& path, float scaleFactor)
 {
 			cy::TriMesh obj;
             obj.LoadFromFileObj(path.c_str(), false);
@@ -114,7 +114,7 @@ std::shared_ptr<Mesh> Mesh::getMeshFromFile(const std::string& path)
 
                 for (size_t j { 0 }; j < 3; ++j)
                 {
-                    const cy::Vec3f& vert { obj.V(vertFace.v[j]) };
+                    const cy::Vec3f& vert { obj.V(vertFace.v[j]) * scaleFactor };
                     const cy::Vec3f& norm { obj.VN(normFace.v[j]) };
 					const cy::Vec3f& tex { obj.VT(texCoordFace.v[j]) };
 

@@ -23,6 +23,6 @@ namespace resourceManager
 	bool sphereMeshExists(float radius, int stacks, int slices, bool hasNormals);
 	std::shared_ptr<Mesh> getFileMesh(const std::string& path);
 	std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals);
-	void loadFileMeshIntoCache(const std::string& path);
+	void loadFileMeshIntoCache(const std::string& path, float scaleFactor=1.0f);
 	void loadSphereMeshIntoCache(float radius, int stacks, int slices, bool hasNormals);
 };

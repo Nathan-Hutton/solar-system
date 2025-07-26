@@ -210,8 +210,14 @@ void scene::readSceneJson(std::string filePath)
 			}
 			const std::string filePath{ meshInfo["filePath"] };
 
+			float scaleFactor{ 1.0f };
+			if (meshInfo.contains("scaleFactor"))
+				scaleFactor = meshInfo["scaleFactor"];
+			else
+				std::cerr << "Object " << i << " mesh is from an obj file and is missing a scaleFactor. Using default (1.0f)\n\n";
+
 			if (!resourceManager::fileMeshExists(filePath))
-				resourceManager::loadFileMeshIntoCache(filePath);
+				resourceManager::loadFileMeshIntoCache(filePath, scaleFactor);
 
 			mesh = resourceManager::getFileMesh(filePath);
 		}

@@ -12,7 +12,7 @@ class Mesh
 				bool hasNormals=true, bool threeVertices=true);
 
 		static std::shared_ptr<Mesh> getSphereMesh(float radius, int stacks, int slices, bool hasNormals=true);
-		static std::shared_ptr<Mesh> getMeshFromFile(const std::string& path);
+		static std::shared_ptr<Mesh> getMeshFromFile(const std::string& path, float scaleFactor=1.0f);
 
         void render() const;
 
