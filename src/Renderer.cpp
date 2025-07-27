@@ -43,6 +43,7 @@ namespace
         GLuint uniformHorizontal{};
         GLuint uniformLightMatrices[6]{};
 		GLuint uniformTextureSuns{};
+		GLuint uniformBloomTexture{};
     } uniformVariables;
 
     struct {
@@ -51,7 +52,7 @@ namespace
 		GLuint sunShaderID{};
 		GLuint omniShadowShaderID{};
 		GLuint hdrShaderID{};
-        std::unique_ptr<MainShader> bloomShader{};
+		GLuint bloomShaderID{};
         std::unique_ptr<MainShader> halfShader{};
     } shaders;
 
@@ -100,11 +101,10 @@ namespace
         glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "theTexture"), 0);
         glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "blurTexture"), 1);
 
-        shaders.bloomShader = std::make_unique<MainShader>();
-        shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
-        shaders.bloomShader->useShader();
-        shaders.bloomShader->setTexture(0);
-        uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShader->getShaderID(), "horizontal");
+		shaders.bloomShaderID = ShaderHandler::compileShader({"../assets/shaders/bloomShader.vert", "../assets/shaders/bloomShader.frag"});
+		glUseProgram(shaders.bloomShaderID);
+        glUniform1i(uniformVariables.uniformBloomTexture, 0);
+        uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShaderID, "horizontal");
         
         // Shader for the movables, moons, and models. Includes shadows
         shaders.shaderNotInUse = std::make_unique<MainShader>();
@@ -360,7 +360,7 @@ namespace
         // Ping-pong bloom effect. Performs horiztonal and vertical bluring.
         // First iteration of the bloom effect. This means we don't need if conditions in the for loop
         bool horizontal {false};
-        shaders.bloomShader->useShader();
+		glUseProgram(shaders.bloomShaderID);
         glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.pingPongFBO[!horizontal]);
         glUniform1i(uniformVariables.uniformHorizontal, !horizontal);
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.halfTexture);
