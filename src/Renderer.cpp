@@ -44,6 +44,7 @@ namespace
         GLuint uniformLightMatrices[6]{};
 		GLuint uniformTextureSuns{};
 		GLuint uniformBloomTexture{};
+		GLuint uniformHalfTexture{};
     } uniformVariables;
 
     struct {
@@ -53,7 +54,7 @@ namespace
 		GLuint omniShadowShaderID{};
 		GLuint hdrShaderID{};
 		GLuint bloomShaderID{};
-        std::unique_ptr<MainShader> halfShader{};
+		GLuint halfShaderID{};
     } shaders;
 
     glm::mat4 g_projection {};
@@ -119,10 +120,9 @@ namespace
         shaders.shaderNotInUse->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
         glUniform1i(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
-        shaders.halfShader = std::make_unique<MainShader>();
-        shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
-        shaders.halfShader->useShader();
-        shaders.halfShader->setTexture(0);
+		shaders.halfShaderID = ShaderHandler::compileShader({"../assets/shaders/half.vert", "../assets/shaders/half.frag"});
+		glUseProgram(shaders.halfShaderID);
+		glUniform1i(uniformVariables.uniformHalfTexture, 0);
         
         // Shader for the movables, moons, and models. Doesn't use shadows
         shaders.mainShader = std::make_unique<MainShader>();
@@ -351,7 +351,7 @@ namespace
         // Half the bloom texture size before the pingPongFBOs can actually start bluring it
         glViewport(0, 0, window::windowWidth/2, window::windowHeight/2);
 
-        shaders.halfShader->useShader();
+		glUseProgram(shaders.halfShaderID);
         glActiveTexture(GL_TEXTURE0);
         glBindFramebuffer(GL_FRAMEBUFFER, postProcessingResources.halfFBO);
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.textureToBlur);
