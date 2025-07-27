@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Shader.h"
-
 #include <string>
 #include <array>
 
@@ -11,10 +9,13 @@
 #include "Scene.h"
 #include "SpotLight.h"
 
-class MainShader : public Shader
+class MainShader
 {
     public:
         MainShader() {};
+
+        void createFromFiles(std::string_view file1, std::string_view file2, std::string_view file3 = "");
+        void validate();
 
         void setLightsUniformVariables();
         void setPointLightsWithoutShadows(const std::array<std::shared_ptr<PointLight>, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount) const;
@@ -22,10 +23,23 @@ class MainShader : public Shader
         void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
         void setSpotLightDirAndPos(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;
 
-        ~MainShader() {};
+        GLuint getShaderID() const { return m_shaderID; }
+
+        // Set the active shader program for subsequent rendering operations
+        void useShader() const { glUseProgram(m_shaderID); }
+
+        void setTexture(GLuint textureUnit) const { glUniform1i(m_uniformTexture, textureUnit); }
+
+        ~MainShader();
 
     private:
+        void compileShader(const std::string& shader1Code, const std::string& shader2Code, const std::string& shader3Code = "");
+        void compileProgram();
+
         int m_pointLightCount;
+
+        GLuint m_shaderID {}; 
+        GLuint m_uniformTexture {}; 
 
         struct {
             GLuint uniformFlashLightOn {};

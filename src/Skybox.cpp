@@ -5,24 +5,23 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Mesh.h"
-#include "Shader.h"
+#include "MainShader.h"
 #include "stb_image.h"
-
+#include "ShaderHandler.h"
 
 namespace
 {
-    Mesh* skyMesh {};
-    GLuint textureID {};
-    Shader* skyShader {};
-    GLuint uniformWorldToClip {};
+    Mesh* skyMesh{};
+	GLuint shaderID{};
+    GLuint textureID{};
+    GLuint uniformWorldToClip{};
 }
 
 void skybox::setup(const std::array<std::string, 6>& faceLocations)
 {
     // Shader setup
-    skyShader = new Shader{};
-    skyShader->createFromFiles("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
-    uniformWorldToClip    = glGetUniformLocation(skyShader->getShaderID(), "worldToClip");
+	compileShader(shaderID, std::vector<std::string>{"../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag"});
+    uniformWorldToClip    = glGetUniformLocation(shaderID, "worldToClip");
 
     // Texture setup
     glGenTextures(1, &textureID);
@@ -90,15 +89,13 @@ void skybox::drawSkybox(glm::mat4& view, const glm::mat4& projection)
     view[3][0] = 0.0f;
     view[3][1] = 0.0f;
     view[3][2] = 0.0f;
-    skyShader->useShader();
+	glUseProgram(shaderID);
 
     glUniformMatrix4fv(uniformWorldToClip, 1, GL_FALSE, glm::value_ptr(projection * view));
 
     // We can set this to GL_TEXTURE0 since it's independent of the other shaders
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-    skyShader->validate();
 
     skyMesh->render();
 }

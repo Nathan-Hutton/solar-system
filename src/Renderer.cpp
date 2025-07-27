@@ -10,7 +10,6 @@
 
 #include "Mesh.h"
 #include "Skybox.h"
-#include "Shader.h"
 #include "MainShader.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -47,11 +46,11 @@ namespace
     struct {
         std::unique_ptr<MainShader> mainShader {}; // Initially, this is the shader that doesn't use shadows
         std::unique_ptr<MainShader> shaderNotInUse {}; // Initially this is the shader that uses shadows
-        std::unique_ptr<Shader> sunShader {};
-        std::unique_ptr<Shader> omniShadowShader {};
-        std::unique_ptr<Shader> hdrShader {};
-        std::unique_ptr<Shader> bloomShader {};
-        std::unique_ptr<Shader> halfShader {};
+        std::unique_ptr<MainShader> sunShader {};
+        std::unique_ptr<MainShader> omniShadowShader {};
+        std::unique_ptr<MainShader> hdrShader {};
+        std::unique_ptr<MainShader> bloomShader {};
+        std::unique_ptr<MainShader> halfShader {};
     } shaders;
 
     glm::mat4 g_projection {};
@@ -63,7 +62,7 @@ namespace
     void createShaders()
     {
         // Shader for the suns (no lighting or shadows)
-        shaders.sunShader = std::make_unique<Shader>();
+        shaders.sunShader = std::make_unique<MainShader>();
         shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
         shaders.sunShader->useShader();
         shaders.sunShader->setTexture(2);
@@ -72,7 +71,7 @@ namespace
         uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShader->getShaderID(), "model");
         uniformVariables.uniformModelToClipSpaceSuns = glGetUniformLocation(shaders.sunShader->getShaderID(), "modelToClipSpace");
 
-        shaders.omniShadowShader = std::make_unique<Shader>();
+        shaders.omniShadowShader = std::make_unique<MainShader>();
         shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
             "../assets/shaders/omni_shadow_map.geom",
             "../assets/shaders/omni_shadow_map.frag");
@@ -92,13 +91,13 @@ namespace
             ss.clear(); // Clear error flags
         }
 
-        shaders.hdrShader = std::make_unique<Shader>();
+        shaders.hdrShader = std::make_unique<MainShader>();
         shaders.hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
         shaders.hdrShader->useShader();
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 0);
         glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 1);
 
-        shaders.bloomShader = std::make_unique<Shader>();
+        shaders.bloomShader = std::make_unique<MainShader>();
         shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
         shaders.bloomShader->useShader();
         shaders.bloomShader->setTexture(0);
@@ -117,7 +116,7 @@ namespace
         shaders.shaderNotInUse->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
         glUniform1i(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
-        shaders.halfShader = std::make_unique<Shader>();
+        shaders.halfShader = std::make_unique<MainShader>();
         shaders.halfShader->createFromFiles("../assets/shaders/half.vert", "../assets/shaders/half.frag");
         shaders.halfShader->useShader();
         shaders.halfShader->setTexture(0);
