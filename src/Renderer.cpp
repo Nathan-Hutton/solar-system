@@ -18,7 +18,7 @@
 
 namespace
 {
-    struct PostProcessingResources {
+    struct {
         GLuint halfFBO {};
         GLuint halfTexture {};
         GLuint postProcessingFBO {};
@@ -27,10 +27,9 @@ namespace
         std::array<unsigned int, 2> pingPongFBO;;
         std::array<unsigned int, 2> pingPongBuffer;
         std::unique_ptr<Mesh> framebufferQuad {};
-    };
-    PostProcessingResources postProcessingResources {};
+    } postProcessingResources;
 
-    struct UniformVariables {
+    struct {
         GLuint uniformModelPlanets {};
         GLuint uniformModelToClipSpacePlanets {};
         GLuint uniformModelToClipSpaceSuns {};
@@ -43,10 +42,9 @@ namespace
         GLuint uniformModelOmniShadowMap {};
         GLuint uniformHorizontal {};
         GLuint uniformLightMatrices[6] {};
-    };
-    UniformVariables uniformVariables {};
+    } uniformVariables;
 
-    struct Shaders {
+    struct {
         std::unique_ptr<MainShader> mainShader {}; // Initially, this is the shader that doesn't use shadows
         std::unique_ptr<MainShader> shaderNotInUse {}; // Initially this is the shader that uses shadows
         std::unique_ptr<Shader> sunShader {};
@@ -54,8 +52,7 @@ namespace
         std::unique_ptr<Shader> hdrShader {};
         std::unique_ptr<Shader> bloomShader {};
         std::unique_ptr<Shader> halfShader {};
-    };
-    Shaders shaders {};
+    } shaders;
 
     glm::mat4 g_projection {};
 }

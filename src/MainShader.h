@@ -17,7 +17,6 @@ class MainShader : public Shader
         MainShader() {};
 
         void setLightsUniformVariables();
-
         void setPointLightsWithoutShadows(const std::array<std::shared_ptr<PointLight>, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount) const;
         void setPointLights(const std::array<std::shared_ptr<PointLight>, scene::MAX_POINT_LIGHTS> pLights, unsigned int lightCount, unsigned int textureUnit, unsigned int offset) const;
         void setSpotLight(SpotLight* sLight, bool shadowsEnabled, unsigned int textureUnit, unsigned int offset) const;

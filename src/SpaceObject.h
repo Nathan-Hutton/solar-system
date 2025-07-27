@@ -78,5 +78,5 @@ class SpaceObject
         GLfloat m_angle{};
         GLfloat m_rotationSpeed{};
 		float m_collisionDistance{};
-		std::shared_ptr<PointLight> m_pLight{ nullptr };
+		std::shared_ptr<PointLight> m_pLight{};
 };
