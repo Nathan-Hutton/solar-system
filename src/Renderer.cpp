@@ -49,8 +49,7 @@ namespace
         std::unique_ptr<MainShader> mainShader{}; // Initially, this is the shader that doesn't use shadows
         std::unique_ptr<MainShader> shaderNotInUse{}; // Initially this is the shader that uses shadows
 		GLuint sunShaderID{};
-        std::unique_ptr<MainShader> sunShader{};
-        std::unique_ptr<MainShader> omniShadowShader{};
+		GLuint omniShadowShaderID{};
         std::unique_ptr<MainShader> hdrShader{};
         std::unique_ptr<MainShader> bloomShader{};
         std::unique_ptr<MainShader> halfShader{};
@@ -65,7 +64,7 @@ namespace
     void createShaders()
     {
         // Shader for the suns (no lighting or shadows)
-		compileShader(shaders.sunShaderID, std::vector<std::string>{"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
+		shaders.sunShaderID = ShaderHandler::compileShader(std::vector<std::string>{"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
         glUseProgram(shaders.sunShaderID);
 		uniformVariables.uniformTextureSuns = glGetUniformLocation(shaders.sunShaderID, "theTexture");
         glUniform1i(uniformVariables.uniformTextureSuns, 2);
@@ -73,22 +72,25 @@ namespace
         uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShaderID, "model");
         uniformVariables.uniformModelToClipSpaceSuns = glGetUniformLocation(shaders.sunShaderID, "modelToClipSpace");
 
-        shaders.omniShadowShader = std::make_unique<MainShader>();
-        shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
-            "../assets/shaders/omni_shadow_map.geom",
-            "../assets/shaders/omni_shadow_map.frag");
+		shaders.omniShadowShaderID = ShaderHandler::compileShader(
+			std::vector<std::string> {
+				"../assets/shaders/omni_shadow_map.vert",
+				"../assets/shaders/omni_shadow_map.frag",
+				"../assets/shaders/omni_shadow_map.geom"
+			}
+		);
 
         // The shadow map shader will record the depth values of all objects except suns
-        uniformVariables.uniformModelOmniShadowMap   = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "model");
-        uniformVariables.uniformOmniLightPos         = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "lightPos");
-        uniformVariables.uniformFarPlane             = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), "farPlane");
-        
+		uniformVariables.uniformModelOmniShadowMap 	= glGetUniformLocation(shaders.omniShadowShaderID, "model");
+		uniformVariables.uniformOmniLightPos 		= glGetUniformLocation(shaders.omniShadowShaderID, "lightPos");
+		uniformVariables.uniformFarPlane 			= glGetUniformLocation(shaders.omniShadowShaderID, "farPlane");
+
         // Light matrices
         std::stringstream ss {};
         for (size_t i {0}; i < 6; ++i)
         {
             ss << "lightMatrices[" << i << "]";
-            uniformVariables.uniformLightMatrices[i] = glGetUniformLocation(shaders.omniShadowShader->getShaderID(), ss.str().c_str());
+            uniformVariables.uniformLightMatrices[i] = glGetUniformLocation(shaders.omniShadowShaderID, ss.str().c_str());
             ss.str(""); // Clear the buffer
             ss.clear(); // Clear error flags
         }
@@ -277,7 +279,7 @@ namespace
 
     void omniShadowMapPass(const std::shared_ptr<PointLight> light)
     {
-        shaders.omniShadowShader->useShader();
+		glUseProgram(shaders.omniShadowShaderID);
 
         // Make the viewport the same dimenstions as the FBO
         glViewport(0, 0, light->getShadowMapWidth(), light->getShadowMapHeight());
@@ -292,8 +294,6 @@ namespace
         glUniform3fv(uniformVariables.uniformOmniLightPos, 1, glm::value_ptr(light->getPosition()));
         glUniform1f(uniformVariables.uniformFarPlane, light->getFarPlane());
         setLightMatrices(light->calculateLightTransform());
-
-        shaders.omniShadowShader->validate();
 
         // Draw just to the depth buffer
         //glActiveTexture(GL_TEXTURE2);

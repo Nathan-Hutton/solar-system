@@ -20,8 +20,8 @@ namespace
 void skybox::setup(const std::array<std::string, 6>& faceLocations)
 {
     // Shader setup
-	compileShader(shaderID, std::vector<std::string>{"../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag"});
-    uniformWorldToClip    = glGetUniformLocation(shaderID, "worldToClip");
+	shaderID = ShaderHandler::compileShader(std::vector<std::string>{"../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag"});
+    uniformWorldToClip = glGetUniformLocation(shaderID, "worldToClip");
 
     // Texture setup
     glGenTextures(1, &textureID);
