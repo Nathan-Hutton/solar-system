@@ -10,11 +10,10 @@
 
 #include "Mesh.h"
 #include "Skybox.h"
-#include "MainShader.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Window.h"
-#include "ShaderHandler.h"
+#include "ShaderCreator.h"
 
 namespace
 {
@@ -36,22 +35,47 @@ namespace
         GLuint uniformEyePositionPlanets{};
         GLuint uniformSpecularIntensityPlanets{};
         GLuint uniformShininessPlanets{};
-        GLuint uniformOmniLightPos{};
-        GLuint uniformFarPlane{};
         GLuint uniformModelSuns{};
-        GLuint uniformModelOmniShadowMap{};
         GLuint uniformHorizontal{};
-        GLuint uniformLightMatrices[6]{};
 		GLuint uniformTextureSuns{};
 		GLuint uniformBloomTexture{};
 		GLuint uniformHalfTexture{};
     } uniformVariables;
 
+	struct {
+		GLuint shaderID{};
+		GLuint uniformTexture{};
+		struct {
+			struct {
+				GLuint uniformColor {};
+				GLuint uniformAmbientIntensity {};
+				GLuint uniformDiffuseIntensity {};
+				
+				GLuint uniformPosition {};
+				GLuint uniformExponential {};
+				GLuint uniformLinear {};
+				GLuint uniformConstant {};
+			} uniformPointLights[scene::MAX_POINT_LIGHTS];
+
+			struct {
+				GLuint uniformFlashLightOn{};
+				GLuint uniformColor {};
+				GLuint uniformAmbientIntensity {};
+				GLuint uniformDiffuseIntensity {};
+				
+				GLuint uniformPosition {};
+				GLuint uniformExponential {};
+				GLuint uniformLinear {};
+				GLuint uniformConstant {};
+
+				GLuint uniformDirection {};
+				GLuint uniformEdge {};
+			} uniformSpotLight;
+		} uniformLightingVariables;
+	} mainShader;
+
     struct {
-        std::unique_ptr<MainShader> mainShader{}; // Initially, this is the shader that doesn't use shadows
-        std::unique_ptr<MainShader> shaderNotInUse{}; // Initially this is the shader that uses shadows
 		GLuint sunShaderID{};
-		GLuint omniShadowShaderID{};
 		GLuint hdrShaderID{};
 		GLuint bloomShaderID{};
 		GLuint halfShaderID{};
@@ -65,83 +89,129 @@ namespace
 {
     void createShaders()
     {
-        // Shader for the suns (no lighting or shadows)
-		shaders.sunShaderID = ShaderHandler::compileShader({"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
+		shaders.sunShaderID = shaderCreator::compileShader({"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
         glUseProgram(shaders.sunShaderID);
 		uniformVariables.uniformTextureSuns = glGetUniformLocation(shaders.sunShaderID, "theTexture");
         glUniform1i(uniformVariables.uniformTextureSuns, 2);
-        // For the sun shaders we don't do any light or shadow calculations
         uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShaderID, "model");
         uniformVariables.uniformModelToClipSpaceSuns = glGetUniformLocation(shaders.sunShaderID, "modelToClipSpace");
 
-		shaders.omniShadowShaderID = ShaderHandler::compileShader(
-			{
-				"../assets/shaders/omni_shadow_map.vert",
-				"../assets/shaders/omni_shadow_map.frag",
-				"../assets/shaders/omni_shadow_map.geom"
-			}
-		);
-
-        // The shadow map shader will record the depth values of all objects except suns
-		uniformVariables.uniformModelOmniShadowMap 	= glGetUniformLocation(shaders.omniShadowShaderID, "model");
-		uniformVariables.uniformOmniLightPos 		= glGetUniformLocation(shaders.omniShadowShaderID, "lightPos");
-		uniformVariables.uniformFarPlane 			= glGetUniformLocation(shaders.omniShadowShaderID, "farPlane");
-
-        // Light matrices
-        std::stringstream ss {};
-        for (size_t i {0}; i < 6; ++i)
-        {
-            ss << "lightMatrices[" << i << "]";
-            uniformVariables.uniformLightMatrices[i] = glGetUniformLocation(shaders.omniShadowShaderID, ss.str().c_str());
-            ss.str(""); // Clear the buffer
-            ss.clear(); // Clear error flags
-        }
-
-		shaders.hdrShaderID = ShaderHandler::compileShader({"../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag"});
+		shaders.hdrShaderID = shaderCreator::compileShader({"../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag"});
 		glUseProgram(shaders.hdrShaderID);
         glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "theTexture"), 0);
         glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "blurTexture"), 1);
 
-		shaders.bloomShaderID = ShaderHandler::compileShader({"../assets/shaders/bloomShader.vert", "../assets/shaders/bloomShader.frag"});
+		shaders.bloomShaderID = shaderCreator::compileShader({"../assets/shaders/bloomShader.vert", "../assets/shaders/bloomShader.frag"});
 		glUseProgram(shaders.bloomShaderID);
         glUniform1i(uniformVariables.uniformBloomTexture, 0);
         uniformVariables.uniformHorizontal = glGetUniformLocation(shaders.bloomShaderID, "horizontal");
         
-        // Shader for the movables, moons, and models. Includes shadows
-        shaders.shaderNotInUse = std::make_unique<MainShader>();
-        shaders.shaderNotInUse->createFromFiles("../assets/shaders/planetShaderShadows.vert", "../assets/shaders/planetShaderShadows.frag");
-        shaders.shaderNotInUse->setLightsUniformVariables();
-        shaders.shaderNotInUse->useShader();
-        shaders.shaderNotInUse->setTexture(2);
-        shaders.shaderNotInUse->validate();
-        shaders.shaderNotInUse->setSpotLight(camera::spotLight.get(), true, 4+scene::pointLightCount, scene::pointLightCount);
-        // We need offsets of 4 since the first texture unit is the skybox, the second is the framebuffer
-        // texture, and the third is the texture(s) of the objects we're rendering
-        shaders.shaderNotInUse->setPointLights(scene::pointLights, scene::pointLightCount, 4, 0);
-        glUniform1i(glGetUniformLocation(shaders.shaderNotInUse->getShaderID(), "pointLightCount"), scene::pointLightCount);
-
-		shaders.halfShaderID = ShaderHandler::compileShader({"../assets/shaders/half.vert", "../assets/shaders/half.frag"});
+		shaders.halfShaderID = shaderCreator::compileShader({"../assets/shaders/half.vert", "../assets/shaders/half.frag"});
 		glUseProgram(shaders.halfShaderID);
 		glUniform1i(uniformVariables.uniformHalfTexture, 0);
-        
-        // Shader for the movables, moons, and models. Doesn't use shadows
-        shaders.mainShader = std::make_unique<MainShader>();
-        shaders.mainShader->createFromFiles("../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag");
-        shaders.mainShader->setLightsUniformVariables();
-        shaders.mainShader->useShader();
-        shaders.mainShader->setTexture(2);
-        shaders.mainShader->validate();
-        shaders.mainShader->setSpotLight(camera::spotLight.get(), false, 4+scene::pointLightCount, scene::pointLightCount);
-        shaders.mainShader->setPointLightsWithoutShadows(scene::pointLights, scene::pointLightCount);
-        glUniform1i(glGetUniformLocation(shaders.mainShader->getShaderID(), "pointLightCount"), scene::pointLightCount);
 
-        // This is so we can disable shadows
-        // By default, shadows will be turned off
-        uniformVariables.uniformModelPlanets                = glGetUniformLocation(shaders.mainShader->getShaderID(), "model");
-        uniformVariables.uniformModelToClipSpacePlanets     = glGetUniformLocation(shaders.mainShader->getShaderID(), "modelToClipSpace");
-        uniformVariables.uniformEyePositionPlanets          = glGetUniformLocation(shaders.mainShader->getShaderID(), "eyePosition");
-        uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.specularIntensity");
-        uniformVariables.uniformShininessPlanets            = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.shininess");
+		// ***********
+		// MAIN SHADER
+		// ***********
+		mainShader.shaderID = shaderCreator::compileShader({"../assets/shaders/planetShaderNoShadows.vert", "../assets/shaders/planetShaderNoShadows.frag"});
+		glUseProgram(mainShader.shaderID);
+		mainShader.uniformTexture = glGetUniformLocation(mainShader.shaderID, "theTexture");
+		glUniform1i(mainShader.uniformTexture, 2);
+
+		// Point lights
+        std::stringstream ss {};
+		for (size_t i {0}; i < scene::MAX_POINT_LIGHTS; ++i)
+		{
+			// Base color
+			ss << "pointLights[" << i << "].base.color";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformColor = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+
+			// Ambient intensity
+			ss << "pointLights[" << i << "].base.ambientIntensity";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformAmbientIntensity = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+
+			// Diffuse intensity
+			ss << "pointLights[" << i << "].base.diffuseIntensity";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformDiffuseIntensity = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+
+			// Position
+			ss << "pointLights[" << i << "].position";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformPosition = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+
+			// Exponential
+			ss << "pointLights[" << i << "].exponential";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformExponential = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+
+			// Linear
+			ss << "pointLights[" << i << "].linear";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformLinear = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+
+			// Constant
+			ss << "pointLights[" << i << "].constant";
+			mainShader.uniformLightingVariables.uniformPointLights[i].uniformConstant = glGetUniformLocation(mainShader.shaderID, ss.str().c_str());
+			ss.str(""); // Clear the buffer
+			ss.clear(); // Clear error flags
+		}
+		
+		// Spot light
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformFlashLightOn = glGetUniformLocation(mainShader.shaderID, "flashLightOn");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformColor = glGetUniformLocation(mainShader.shaderID, "spotLight.base.base.color");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformAmbientIntensity = glGetUniformLocation(mainShader.shaderID, "spotLight.base.base.ambientIntensity");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformDiffuseIntensity = glGetUniformLocation(mainShader.shaderID, "spotLight.base.base.diffuseIntensity");
+
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformPosition = glGetUniformLocation(mainShader.shaderID, "spotLight.base.position");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformExponential = glGetUniformLocation(mainShader.shaderID, "spotLight.base.exponential");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformLinear = glGetUniformLocation(mainShader.shaderID, "spotLight.base.linear");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformConstant = glGetUniformLocation(mainShader.shaderID, "spotLight.base.constant");
+
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformDirection = glGetUniformLocation(mainShader.shaderID, "spotLight.direction");
+		mainShader.uniformLightingVariables.uniformSpotLight.uniformEdge = glGetUniformLocation(mainShader.shaderID, "spotLight.edge");
+
+		glUniform1i(mainShader.uniformLightingVariables.uniformSpotLight.uniformFlashLightOn, camera::spotLight->isOn());
+		camera::spotLight->useLight(
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformAmbientIntensity,
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformDiffuseIntensity,
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformColor, 
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformPosition, 
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformDirection,
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformExponential,
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformLinear,
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformConstant,
+			mainShader.uniformLightingVariables.uniformSpotLight.uniformEdge
+		);
+
+		for (int i{ 0 }; i < scene::pointLightCount; ++i)
+		{
+			scene::pointLights[i]->useLight(
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformAmbientIntensity,
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformDiffuseIntensity,
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformColor,
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformPosition, 
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformExponential, 
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformLinear,
+				mainShader.uniformLightingVariables.uniformPointLights[i].uniformConstant
+			);
+		}
+
+		glUniform1i(glGetUniformLocation(mainShader.shaderID, "pointLightCount"), scene::pointLightCount);
+
+        uniformVariables.uniformModelPlanets                = glGetUniformLocation(mainShader.shaderID, "model");
+        uniformVariables.uniformModelToClipSpacePlanets     = glGetUniformLocation(mainShader.shaderID, "modelToClipSpace");
+        uniformVariables.uniformEyePositionPlanets          = glGetUniformLocation(mainShader.shaderID, "eyePosition");
+        uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(mainShader.shaderID, "material.specularIntensity");
+        uniformVariables.uniformShininessPlanets            = glGetUniformLocation(mainShader.shaderID, "material.shininess");
     }
 
     void setupPostProcessingObjects()
@@ -243,20 +313,11 @@ namespace
         if (status != GL_FRAMEBUFFER_COMPLETE)
             throw std::runtime_error("Framebuffer error in Renderer namespace when trying to make postProcessingResources FBO");
     }
-
-    void setLightMatrices(const std::array<glm::mat4, 6>& lightMatrices)
-    {
-        for (size_t i {0}; i < 6; ++i)
-            glUniformMatrix4fv(uniformVariables.uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
-    }
-
 }
 
 // Called when renderering
 namespace
 {
-    bool shadowsEnabled {false};
-
     void renderObjectsVector(const std::vector<std::shared_ptr<SpaceObject>>& objects, GLuint uniformModel, GLuint uniformModelToClipSpace, const glm::mat4& worldToClip)
     {
         // They'll all use GL_TEXTURE2
@@ -276,73 +337,27 @@ namespace
         }
     }
 
-    void omniShadowMapPass(const std::shared_ptr<PointLight> light)
-    {
-		glUseProgram(shaders.omniShadowShaderID);
-
-        // Make the viewport the same dimenstions as the FBO
-        glViewport(0, 0, light->getShadowMapWidth(), light->getShadowMapHeight());
-
-        // Bind our framebuffer so that the shader output goes to it
-        // Every draw call after this will go to that framebuffer
-        light->shadowMapWrite();
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        // Get the uniformModel and lightTransform for the shader
-
-        glUniform3fv(uniformVariables.uniformOmniLightPos, 1, glm::value_ptr(light->getPosition()));
-        glUniform1f(uniformVariables.uniformFarPlane, light->getFarPlane());
-        setLightMatrices(light->calculateLightTransform());
-
-        // Draw just to the depth buffer
-        //glActiveTexture(GL_TEXTURE2);
-        for (const std::shared_ptr<SpaceObject>& satellite : scene::movables)
-        {
-            glm::mat4 model {1.0f};
-            satellite->setWorldProperties(model);
-            glUniformMatrix4fv(uniformVariables.uniformModelOmniShadowMap, 1, GL_FALSE, glm::value_ptr(model));
-            satellite->render();
-        }
-
-        // Bind the default framebuffer
-        // If we called swapbuffers without doing this the image wouldn't change
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
     void renderAllObjects()
     {
         glm::mat4 view;
         camera::calculateViewMatrix(view);
         glm::mat4 worldToClip = g_projection * view;
 
-        // ====================================
-        // RENDER SUNS
-        // ====================================
-
 		glUseProgram(shaders.sunShaderID);
-        
-        // Apply view matrix.
-        // View matrix represents the camera's position and orientation in world.
-        // The world is actually moved to and rotated around the camera with the view matrix. The camera is stationary.
-        //glUniformMatrix4fv(uniformVariables.uniformViewSuns, 1, GL_FALSE, glm::value_ptr(view));
-
         renderObjectsVector(scene::glowingObjects, uniformVariables.uniformModelSuns, uniformVariables.uniformModelToClipSpaceSuns, worldToClip);
 
-        // =================================================
-        // RENDER PLANETS, MOONS, ASTEROIDS, and the SKYBOX
-        // =================================================
+		glUseProgram(mainShader.shaderID);
+		glUniform1i(mainShader.uniformLightingVariables.uniformSpotLight.uniformFlashLightOn, camera::spotLight->isOn());
 
-        shaders.mainShader->useShader();
-        shaders.mainShader->setSpotLightDirAndPos(camera::spotLight.get(), shadowsEnabled, 4+scene::pointLightCount, scene::pointLightCount);
+		if (!camera::spotLight->isOn())
+		{
+			camera::spotLight->setPosAndDir(mainShader.uniformLightingVariables.uniformSpotLight.uniformPosition, mainShader.uniformLightingVariables.uniformSpotLight.uniformDirection);
 
-        // Eye position is for specular lighting
-        glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera::position));
+			glUniform3fv(uniformVariables.uniformEyePositionPlanets, 1, glm::value_ptr(camera::position));
+		}
 
         renderObjectsVector(scene::shadedObjects, uniformVariables.uniformModelPlanets, uniformVariables.uniformModelToClipSpacePlanets, worldToClip);
 
-        // ==============
-        // RENDER SKYBOX
-        // ==============
         skybox::drawSkybox(view, g_projection);
     }
 
@@ -394,33 +409,12 @@ namespace
     }
 }
 
-void renderer::toggleShadows()
-{
-    shadowsEnabled = !shadowsEnabled;
-    std::swap(shaders.mainShader, shaders.shaderNotInUse);
-
-    uniformVariables.uniformModelToClipSpacePlanets     = glGetUniformLocation(shaders.mainShader->getShaderID(), "modelToClipSpace");
-    uniformVariables.uniformEyePositionPlanets          = glGetUniformLocation(shaders.mainShader->getShaderID(), "eyePosition");
-    uniformVariables.uniformSpecularIntensityPlanets    = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.specularIntensity");
-    uniformVariables.uniformShininessPlanets            = glGetUniformLocation(shaders.mainShader->getShaderID(), "material.shininess");
-}
-
 void renderer::setup(const glm::mat4& projection)
 {
     g_projection = projection;
     createShaders();
     setupPostProcessingObjects();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-void renderer::omniShadowMapPasses()
-{
-    if (!shadowsEnabled)
-        return;
-
-    for (int i {0}; i < scene::pointLightCount; ++i)
-        omniShadowMapPass(scene::pointLights[i]);
-    omniShadowMapPass(camera::spotLight);
 }
 
 void renderer::renderPass()

@@ -1,4 +1,4 @@
-#include "ShaderHandler.h"
+#include "ShaderCreator.h"
 #include <string>
 #include <vector>
 #include <fstream>
@@ -75,18 +75,18 @@ namespace
     }
 }
 
-GLuint ShaderHandler::compileShader(const std::vector<std::string>& shaderPaths)
+GLuint shaderCreator::compileShader(const std::vector<std::string>& shaderPaths)
 {
     GLuint shaderProgram;
 
 	if (getFileExtension(shaderPaths[0]) != "vert")
 	{
-		std::cerr << "\nWarning in ShaderHandler::compileShader\n";
+		std::cerr << "\nWarning in ShaderCreator::compileShader\n";
 		std::cerr << "Expecting " << shaderPaths[0] << " to have a 'vert' extension, not " << getFileExtension(shaderPaths[0]) << "\n\n";
 	}
 	if (getFileExtension(shaderPaths[1]) != "frag")
 	{
-		std::cerr << "\nWarning in ShaderHandler::compileShader\n";
+		std::cerr << "\nWarning in ShaderCreator::compileShader\n";
 		std::cerr << "Expecting " << shaderPaths[0] << " to have a 'frag' extension, not " << getFileExtension(shaderPaths[1]) << "\n\n";
 	}
 
@@ -105,7 +105,7 @@ GLuint ShaderHandler::compileShader(const std::vector<std::string>& shaderPaths)
     {
 		if (getFileExtension(shaderPaths[2]) != "geom")
 		{
-			std::cerr << "\nWarning in ShaderHandler::compileShader\n";
+			std::cerr << "\nWarning in ShaderCreator::compileShader\n";
 			std::cerr << "Expecting " << shaderPaths[2] << " to have a 'geom' extension, not " << getFileExtension(shaderPaths[2]) << "\n\n";
 		}
 
@@ -118,12 +118,12 @@ GLuint ShaderHandler::compileShader(const std::vector<std::string>& shaderPaths)
     // Control shader
 	if (getFileExtension(shaderPaths[2]) != "ctrl")
 	{
-		std::cerr << "\nWarning in ShaderHandler::compileShader\n";
+		std::cerr << "\nWarning in ShaderCreator::compileShader\n";
 		std::cerr << "Expecting " << shaderPaths[2] << " to have a 'ctrl' extension, not " << getFileExtension(shaderPaths[2]) << "\n\n";
 	}
 	if (getFileExtension(shaderPaths[3]) != "eval")
 	{
-		std::cerr << "\nWarning in ShaderHandler::compileShader\n";
+		std::cerr << "\nWarning in ShaderCreator::compileShader\n";
 		std::cerr << "Expecting " << shaderPaths[3] << " to have a 'eval' extension, not " << getFileExtension(shaderPaths[3]) << "\n\n";
 	}
     const GLuint tessellationCtrlShader{ createShader(shaderPaths[2], GL_TESS_CONTROL_SHADER) };
@@ -138,7 +138,7 @@ GLuint ShaderHandler::compileShader(const std::vector<std::string>& shaderPaths)
 
 	if (getFileExtension(shaderPaths[4]) != "geom")
 	{
-		std::cerr << "\nWarning in ShaderHandler::compileShader\n";
+		std::cerr << "\nWarning in ShaderCreator::compileShader\n";
 		std::cerr << "Expecting " << shaderPaths[4] << " to have a 'geom' extension, not " << getFileExtension(shaderPaths[4]) << "\n\n";
 	}
     const GLuint geometryShader{ createShader(shaderPaths[4], GL_GEOMETRY_SHADER) };

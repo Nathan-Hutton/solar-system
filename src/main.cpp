@@ -42,7 +42,6 @@ namespace
         std::cout << "Space: Move up\n";
         std::cout << "Shift: Move down\n\n";
         std::cout << "F: Toggle flashlight\n";
-        std::cout << "L: Toggle shadows\n\n\n";
     }
 
     bool clearFailedExtraction()
@@ -143,16 +142,6 @@ int main(int argc, char* argv[])
         camera::mouseControl(window::getXChange(), window::getYChange());
         handleTimeChange(window::getYScrollOffset(), timeChange);
 
-        // Check for flashlight toggle
-        if (keys[GLFW_KEY_L])
-        {
-            // Setting this to false means it won't trigger multiple times when we press it once
-            keys[GLFW_KEY_L] = false;
-
-            renderer::toggleShadows();
-        }
-
-        renderer::omniShadowMapPasses();
         renderer::renderPass();
 
         glUseProgram(0);

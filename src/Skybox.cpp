@@ -5,9 +5,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Mesh.h"
-#include "MainShader.h"
 #include "stb_image.h"
-#include "ShaderHandler.h"
+#include "ShaderCreator.h"
 
 namespace
 {
@@ -20,7 +19,7 @@ namespace
 void skybox::setup(const std::array<std::string, 6>& faceLocations)
 {
     // Shader setup
-	shaderID = ShaderHandler::compileShader({"../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag"});
+	shaderID = shaderCreator::compileShader({"../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag"});
     uniformWorldToClip = glGetUniformLocation(shaderID, "worldToClip");
 
     // Texture setup

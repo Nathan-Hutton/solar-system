@@ -6,3 +6,6 @@ Meshes in json:
 - Make collider its own thing
 - Potentially use lodepng for skybox instead of whatever we use
 - Use lodepng for m_texture as well
+- Make spotlight less complicated (not a point light) like it is the 6610 projects.
+
+- Instead of calling useLight for the spotlight, call setLight. Same with PointLights

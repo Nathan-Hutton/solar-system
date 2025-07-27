@@ -4,7 +4,7 @@
 #include <vector>
 #include <GL/glew.h>
 
-namespace  ShaderHandler
+namespace  shaderCreator
 {
     GLuint compileShader(const std::vector<std::string>& shaderPaths);
 }
