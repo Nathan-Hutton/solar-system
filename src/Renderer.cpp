@@ -50,7 +50,7 @@ namespace
         std::unique_ptr<MainShader> shaderNotInUse{}; // Initially this is the shader that uses shadows
 		GLuint sunShaderID{};
 		GLuint omniShadowShaderID{};
-        std::unique_ptr<MainShader> hdrShader{};
+		GLuint hdrShaderID{};
         std::unique_ptr<MainShader> bloomShader{};
         std::unique_ptr<MainShader> halfShader{};
     } shaders;
@@ -64,7 +64,7 @@ namespace
     void createShaders()
     {
         // Shader for the suns (no lighting or shadows)
-		shaders.sunShaderID = ShaderHandler::compileShader(std::vector<std::string>{"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
+		shaders.sunShaderID = ShaderHandler::compileShader({"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
         glUseProgram(shaders.sunShaderID);
 		uniformVariables.uniformTextureSuns = glGetUniformLocation(shaders.sunShaderID, "theTexture");
         glUniform1i(uniformVariables.uniformTextureSuns, 2);
@@ -73,7 +73,7 @@ namespace
         uniformVariables.uniformModelToClipSpaceSuns = glGetUniformLocation(shaders.sunShaderID, "modelToClipSpace");
 
 		shaders.omniShadowShaderID = ShaderHandler::compileShader(
-			std::vector<std::string> {
+			{
 				"../assets/shaders/omni_shadow_map.vert",
 				"../assets/shaders/omni_shadow_map.frag",
 				"../assets/shaders/omni_shadow_map.geom"
@@ -95,11 +95,10 @@ namespace
             ss.clear(); // Clear error flags
         }
 
-        shaders.hdrShader = std::make_unique<MainShader>();
-        shaders.hdrShader->createFromFiles("../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag");
-        shaders.hdrShader->useShader();
-        glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 0);
-        glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 1);
+		shaders.hdrShaderID = ShaderHandler::compileShader({"../assets/shaders/hdrShader.vert", "../assets/shaders/hdrShader.frag"});
+		glUseProgram(shaders.hdrShaderID);
+        glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "theTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "blurTexture"), 1);
 
         shaders.bloomShader = std::make_unique<MainShader>();
         shaders.bloomShader->createFromFiles("../assets/shaders/bloomShader.vert",  "../assets/shaders/bloomShader.frag");
@@ -221,14 +220,14 @@ namespace
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        shaders.hdrShader->useShader();
+		glUseProgram(shaders.hdrShaderID);
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.postProcessingTexture);
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, postProcessingResources.pingPongBuffer[1]);
         glActiveTexture(GL_TEXTURE5);
-        glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "theTexture"), 3);
-        glUniform1i(glGetUniformLocation(shaders.hdrShader->getShaderID(), "blurTexture"), 4);
+        glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "theTexture"), 3);
+        glUniform1i(glGetUniformLocation(shaders.hdrShaderID, "blurTexture"), 4);
 
         glGenFramebuffers(1, &postProcessingResources.halfFBO);
         glGenTextures(1, &postProcessingResources.halfTexture);
@@ -390,7 +389,7 @@ namespace
         // The HDR shader uses the texture of the entire scene + the bloom texture to render to the screen.
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        shaders.hdrShader->useShader();
+		glUseProgram(shaders.hdrShaderID);
         postProcessingResources.framebufferQuad->render();
     }
 }
