@@ -67,7 +67,7 @@ namespace
     }
 }
 
-void compileShader(GLuint& shaderProgram, const std::vector<std::string>& shaderPaths)
+inline void compileShader(GLuint& shaderProgram, const std::vector<std::string>& shaderPaths)
 {
     if (glIsProgram(shaderProgram))
         glDeleteProgram(shaderProgram);

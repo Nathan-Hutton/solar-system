@@ -14,6 +14,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Window.h"
+#include "ShaderHandler.h"
 
 namespace
 {
@@ -29,28 +30,30 @@ namespace
     } postProcessingResources;
 
     struct {
-        GLuint uniformModelPlanets {};
-        GLuint uniformModelToClipSpacePlanets {};
-        GLuint uniformModelToClipSpaceSuns {};
-        GLuint uniformEyePositionPlanets {};
-        GLuint uniformSpecularIntensityPlanets {};
-        GLuint uniformShininessPlanets {};
-        GLuint uniformOmniLightPos {};
-        GLuint uniformFarPlane {};
-        GLuint uniformModelSuns {};
-        GLuint uniformModelOmniShadowMap {};
-        GLuint uniformHorizontal {};
-        GLuint uniformLightMatrices[6] {};
+        GLuint uniformModelPlanets{};
+        GLuint uniformModelToClipSpacePlanets{};
+        GLuint uniformModelToClipSpaceSuns{};
+        GLuint uniformEyePositionPlanets{};
+        GLuint uniformSpecularIntensityPlanets{};
+        GLuint uniformShininessPlanets{};
+        GLuint uniformOmniLightPos{};
+        GLuint uniformFarPlane{};
+        GLuint uniformModelSuns{};
+        GLuint uniformModelOmniShadowMap{};
+        GLuint uniformHorizontal{};
+        GLuint uniformLightMatrices[6]{};
+		GLuint uniformTextureSuns{};
     } uniformVariables;
 
     struct {
-        std::unique_ptr<MainShader> mainShader {}; // Initially, this is the shader that doesn't use shadows
-        std::unique_ptr<MainShader> shaderNotInUse {}; // Initially this is the shader that uses shadows
-        std::unique_ptr<MainShader> sunShader {};
-        std::unique_ptr<MainShader> omniShadowShader {};
-        std::unique_ptr<MainShader> hdrShader {};
-        std::unique_ptr<MainShader> bloomShader {};
-        std::unique_ptr<MainShader> halfShader {};
+        std::unique_ptr<MainShader> mainShader{}; // Initially, this is the shader that doesn't use shadows
+        std::unique_ptr<MainShader> shaderNotInUse{}; // Initially this is the shader that uses shadows
+		GLuint sunShaderID{};
+        std::unique_ptr<MainShader> sunShader{};
+        std::unique_ptr<MainShader> omniShadowShader{};
+        std::unique_ptr<MainShader> hdrShader{};
+        std::unique_ptr<MainShader> bloomShader{};
+        std::unique_ptr<MainShader> halfShader{};
     } shaders;
 
     glm::mat4 g_projection {};
@@ -62,14 +65,13 @@ namespace
     void createShaders()
     {
         // Shader for the suns (no lighting or shadows)
-        shaders.sunShader = std::make_unique<MainShader>();
-        shaders.sunShader->createFromFiles("../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag");
-        shaders.sunShader->useShader();
-        shaders.sunShader->setTexture(2);
-        shaders.sunShader->validate();
+		compileShader(shaders.sunShaderID, std::vector<std::string>{"../assets/shaders/sunShader.vert", "../assets/shaders/sunShader.frag"});
+        glUseProgram(shaders.sunShaderID);
+		uniformVariables.uniformTextureSuns = glGetUniformLocation(shaders.sunShaderID, "theTexture");
+        glUniform1i(uniformVariables.uniformTextureSuns, 2);
         // For the sun shaders we don't do any light or shadow calculations
-        uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShader->getShaderID(), "model");
-        uniformVariables.uniformModelToClipSpaceSuns = glGetUniformLocation(shaders.sunShader->getShaderID(), "modelToClipSpace");
+        uniformVariables.uniformModelSuns    = glGetUniformLocation(shaders.sunShaderID, "model");
+        uniformVariables.uniformModelToClipSpaceSuns = glGetUniformLocation(shaders.sunShaderID, "modelToClipSpace");
 
         shaders.omniShadowShader = std::make_unique<MainShader>();
         shaders.omniShadowShader->createFromFiles("../assets/shaders/omni_shadow_map.vert",
@@ -318,7 +320,7 @@ namespace
         // RENDER SUNS
         // ====================================
 
-        shaders.sunShader->useShader();
+		glUseProgram(shaders.sunShaderID);
         
         // Apply view matrix.
         // View matrix represents the camera's position and orientation in world.
