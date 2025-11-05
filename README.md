@@ -1,6 +1,6 @@
-# solar-system
+# Solar System
 
-Go into the build directory and run:
-cmake ..
-make
-./main
+## Video (click gif to go to YouTube video)
+
+[<img src="blueSun1.gif" width="900"
+/>](https://www.youtube.com/watch?v=KRmn0imU6Xk)
